@@ -79,28 +79,29 @@ class Vitrine_Element_Aranha2 extends Vitrine_Element {
         $center_lbl  = esc_html( $s['center_label'] );
         $card_style      = $this->sanitize_card_style( $s['card_style'] );
         $use_preset      = 'default' !== $card_style;
-        $card_min_height = max( 80, intval( isset( $s['card_min_height'] ) ? $s['card_min_height'] : 190 ) );
-        $orbit_radius    = $this->resolve_orbit_radius( $radius, $center_size, $use_preset, $card_min_height, $n );
+        $layout          = $this->compute_orbit_layout( $radius, $center_size, $card_style, $n );
 
-        $stage       = $this->compute_stage_size( $center_size, $orbit_radius, $n, $use_preset, $card_min_height );
-        $stage_w     = $stage['w'];
-        $stage_h     = $stage['h'];
-        $r_pct_w     = $stage['r_pct_w'];
-        $r_pct_h     = $stage['r_pct_h'];
-        $cs_pct_w    = $stage['cs_pct_w'];
+        $r_pct      = $layout['r_pct'];
+        $cs_pct_w   = $layout['cs_pct'];
+        $card_max_w = $layout['card_max_w'];
+        $dense      = ! empty( $layout['dense'] );
 
         $wrap_style  = 'background:' . $bg_color
             . ';--a2-accent:' . $accent
-            . ';--a2-stage-w:' . $stage_w . 'px'
-            . ';--a2-stage-h:' . $stage_h . 'px'
-            . ';--a2-orbit-r:' . $orbit_radius . 'px'
-            . ';--a2-card-min-h:' . $card_min_height . 'px;';
+            . ';--a2-card-max-w:' . $card_max_w . '%'
+            . ';--a2-card-min-h:0px;';
 
         if ( $use_preset ) {
             $wrap_style .= $this->build_card_preset_style( $s, $icon_color );
         }
 
-        $output  = '<div class="vitrine-el-aranha2 vitrine-card-style--' . esc_attr( $card_style ) . '" style="' . esc_attr( $wrap_style ) . '">';
+        $root_class = 'vitrine-el-aranha2 vitrine-card-style--' . esc_attr( $card_style );
+        if ( $dense ) {
+            $root_class .= ' is-dense';
+        }
+
+        $output  = '<div class="' . esc_attr( $root_class ) . '" style="' . esc_attr( $wrap_style ) . '" data-a2-compact-auto="1" data-a2-items="' . (int) $n . '">';
+        $output .= '<div class="vitrine-aranha2__fit">';
         $output .= '<div class="vitrine-aranha2__stage">';
 
         $output .= '<div class="vitrine-aranha2__center"'
@@ -124,8 +125,8 @@ class Vitrine_Element_Aranha2 extends Vitrine_Element {
         for ( $i = 0; $i < $n; $i++ ) {
             $item  = $items[ $i ];
             $angle = - M_PI / 2 + $i * ( 2 * M_PI / max( 1, $n ) );
-            $x_pct = round( 50 + $r_pct_w * cos( $angle ), 4 );
-            $y_pct = round( 50 + $r_pct_h * sin( $angle ), 4 );
+            $x_pct = round( 50 + $r_pct * cos( $angle ), 4 );
+            $y_pct = round( 50 + $r_pct * sin( $angle ), 4 );
 
             $title = isset( $item['title'] ) ? wp_kses_post( $item['title'] ) : '';
             $text  = isset( $item['text'] )  ? wp_kses_post( $item['text'] )  : '';
@@ -187,91 +188,94 @@ class Vitrine_Element_Aranha2 extends Vitrine_Element {
         }
 
         $output .= '</div>'; // stage
+        $output .= '</div>'; // fit
         $output .= '</div>'; // el-aranha2
 
         return $output;
     }
 
-    private function resolve_orbit_radius( $radius, $center_size, $use_preset, $card_min_height = 190, $n_items = 0 ) {
-        $radius = max( 80, intval( $radius ) );
+    /**
+     * Layout orbital em % do stage — um único círculo limpo.
+     * A largura do card é limitada pelo número de itens para não encavalar.
+     * Com muitos itens, marca dense (só ícone + título; texto no hover).
+     *
+     * @param string $card_style default|dark|white|border-left
+     * @return array{r_pct:float,cs_pct:float,card_max_w:float,dense:bool}
+     */
+    private function compute_orbit_layout( $radius_px, $center_size_px, $card_style, $n_items ) {
+        $n_items    = max( 0, intval( $n_items ) );
+        $ref        = 720;
+        $card_style = $this->sanitize_card_style( $card_style );
+        $preset     = 'default' !== $card_style;
+        $dense      = $n_items >= 6;
 
-        if ( ! $use_preset ) {
-            return $radius;
+        // Alvos de largura (serão reduzidos se não couberem no círculo).
+        if ( 'border-left' === $card_style || 'white' === $card_style ) {
+            $want_w = 26.0;
+            $card_h = $dense ? 10.0 : 12.0;
+        } elseif ( 'dark' === $card_style ) {
+            $want_w = 24.0;
+            $card_h = $dense ? 14.0 : 18.0;
+        } else {
+            $want_w = 18.0;
+            $card_h = $dense ? 12.0 : 16.0;
         }
 
-        $card_w      = 280;
-        $card_h      = max( 190, intval( $card_min_height ) );
-        $card_half_w = $card_w / 2;
-        $card_half_h = max( 95, $card_h / 2 );
-        $card_diag   = sqrt( ( $card_half_w * $card_half_w ) + ( $card_half_h * $card_half_h ) );
-        $clearance   = 64;
-        $min_radius  = (int) ceil( $card_diag + ( $center_size / 2 ) + $clearance );
+        // Com densos, cards mais compactos permitem um pouco mais de largura.
+        if ( $dense && $preset ) {
+            $want_w = min( 28.0, $want_w + 2.0 );
+        }
 
-        $n_items = max( 0, intval( $n_items ) );
+        $gap    = 2.0 + min( 3.0, $n_items * 0.2 );
+        $cs_pct = max( 10.0, min( 22.0, ( max( 60, intval( $center_size_px ) ) / $ref ) * 100 ) );
+        // Centro menor quando há muitos itens — sobra espaço para o anel.
+        if ( $n_items >= 8 ) {
+            $cs_pct = min( $cs_pct, 18.0 );
+        }
+
+        $r_user = max( 12.0, min( 42.0, ( max( 80, intval( $radius_px ) ) / $ref ) * 100 ) );
+        $card_w = $want_w;
+
         if ( $n_items > 1 ) {
-            $gap_w = 36;
-            $gap_h = 28;
-            $by_w  = (int) ceil( ( $card_w + $gap_w ) / ( 2 * sin( M_PI / $n_items ) ) );
-            $by_h  = (int) ceil( ( $card_h + $gap_h ) / ( 2 * sin( M_PI / $n_items ) ) );
-            $min_radius = max( $min_radius, $by_w, $by_h );
+            $sin_half = sin( M_PI / $n_items );
+            // Raio máximo para o card caber no stage (centro do card).
+            $max_r = 47.0 - ( $card_w / 2 );
+
+            // Largura máxima que ainda cabe no círculo com esse max_r.
+            if ( $sin_half > 0.001 ) {
+                $fit_w = max( 12.0, ( 2 * $sin_half * $max_r ) - $gap );
+                $card_w = min( $card_w, $fit_w );
+                // Recalcula max_r com a largura final.
+                $max_r = 47.0 - ( $card_w / 2 );
+
+                $need_r = ( $card_w + $gap ) / ( 2 * $sin_half );
+                $need_r = max( $need_r, ( $card_h + $gap ) / ( 2 * $sin_half ) );
+            } else {
+                $need_r = $r_user;
+                $max_r  = 47.0 - ( $card_w / 2 );
+            }
+        } else {
+            $need_r = $r_user;
+            $max_r  = 47.0 - ( $card_w / 2 );
         }
 
-        return max( $radius, $min_radius );
-    }
+        // Folga do centro (imagem principal livre).
+        $clear_center = ( $cs_pct / 2 ) + ( $card_h / 2 ) + 5.0;
+        $r_pct        = max( $r_user, $need_r, $clear_center );
+        $r_pct        = min( $r_pct, $max_r );
 
-    private function compute_stage_size( $center_size, $radius, $n_items, $use_preset, $card_min_height = 190 ) {
-        $card_max_w  = $use_preset ? 280 : 220;
-        $card_half_w = $card_max_w / 2;
-        $card_half_h = $use_preset ? max( 95, $card_min_height / 2 ) : 50;
-
-        $pad_w = $use_preset ? (int) ceil( $card_half_w + 72 ) : 40;
-        $pad_h = $use_preset ? (int) ceil( $card_half_h + 72 ) : 28;
-
-        $stage_w = $center_size + 2 * $radius + 2 * $pad_w;
-        $stage_h = $stage_w;
-
-        for ( $pass = 0; $pass < 4; $pass++ ) {
-            $r_pct_w  = $radius / max( 1, $stage_w ) * 100;
-            $r_pct_h  = $radius / max( 1, $stage_h ) * 100;
-            $cs_pct_w = $center_size / max( 1, $stage_w ) * 100;
-            $cs_pct_h = $center_size / max( 1, $stage_h ) * 100;
-
-            $half_w_pct = ( $card_half_w / max( 1, $stage_w ) ) * 100;
-            $half_h_pct = ( $card_half_h / max( 1, $stage_h ) ) * 100;
-
-            $x_min = 50 - ( $cs_pct_w / 2 );
-            $x_max = 50 + ( $cs_pct_w / 2 );
-            $y_min = 50 - ( $cs_pct_h / 2 );
-            $y_max = 50 + ( $cs_pct_h / 2 );
-
-            if ( $n_items > 0 ) {
-                for ( $i = 0; $i < $n_items; $i++ ) {
-                    $angle = - M_PI / 2 + $i * ( 2 * M_PI / max( 1, $n_items ) );
-                    $x     = 50 + $r_pct_w * cos( $angle );
-                    $y     = 50 + $r_pct_h * sin( $angle );
-                    $x_min = min( $x_min, $x - $half_w_pct );
-                    $x_max = max( $x_max, $x + $half_w_pct );
-                    $y_min = min( $y_min, $y - $half_h_pct );
-                    $y_max = max( $y_max, $y + $half_h_pct );
-                }
-            }
-
-            $span_w = max( 58, $x_max - $x_min );
-            $span_h = max( 48, $y_max - $y_min );
-
-            $need_w = (int) ceil( $stage_w * ( $span_w / 100 ) );
-            $need_h = (int) ceil( $stage_h * ( $span_h / 100 ) );
-
-            $stage_w = max( $stage_w, $need_w );
-            $stage_h = max( $stage_h, $need_h, $center_size + 2 * $pad_h + (int) ceil( $card_half_h * 0.5 ) );
+        // Se ainda encavalaria no centro, reduz centro.
+        if ( $r_pct < $clear_center ) {
+            $cs_pct = max( 10.0, 2 * ( $r_pct - ( $card_h / 2 ) - 5.0 ) );
+            $clear_center = ( $cs_pct / 2 ) + ( $card_h / 2 ) + 5.0;
+            $r_pct = max( $r_pct, min( $max_r, $clear_center ) );
         }
 
         return array(
-            'w'        => $stage_w,
-            'h'        => $stage_h,
-            'r_pct_w'  => round( $radius / max( 1, $stage_w ) * 100, 4 ),
-            'r_pct_h'  => round( $radius / max( 1, $stage_h ) * 100, 4 ),
-            'cs_pct_w' => round( $center_size / max( 1, $stage_w ) * 100, 4 ),
+            'r_pct'      => round( $r_pct, 4 ),
+            'cs_pct'     => round( $cs_pct, 4 ),
+            'card_max_w' => round( $card_w, 2 ),
+            'dense'      => $dense,
         );
     }
 

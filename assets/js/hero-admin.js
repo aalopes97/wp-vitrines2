@@ -117,10 +117,15 @@
             renderHeroPreview();
         });
 
-        $('#vitrine-hero-meta-box').on('input change', '#vitrine-hero-text, #vitrine-hero-text-color, #vitrine-hero-opacity, #vitrine-hero-height, #vitrine-hero-font-size, #vitrine-hero-text-align, #vitrine-hero-desc-size, #vitrine-hero-desc-color, #vitrine-hero-desc-max-width, #vitrine-hero-date, #vitrine-hero-date-size, #vitrine-hero-date-color, #vitrine-hero-date-align', function () {
+        $('#vitrine-hero-meta-box').on('input change', '#vitrine-hero-text, #vitrine-hero-text-color, #vitrine-hero-opacity, #vitrine-hero-height, #vitrine-hero-font-size, #vitrine-hero-text-align, #vitrine-hero-desc-size, #vitrine-hero-desc-color, #vitrine-hero-desc-max-width', function () {
             if (this.id === 'vitrine-hero-opacity') {
                 $('#vitrine-hero-opacity-val').text($(this).val() + '%');
             }
+            renderHeroPreview();
+        });
+
+        // Date fields live in the builder right sidebar (outside the hero meta box).
+        $(document).on('input change', '#vitrine-hero-date, #vitrine-hero-date-size, #vitrine-hero-date-color, #vitrine-hero-date-align', function () {
             renderHeroPreview();
         });
 

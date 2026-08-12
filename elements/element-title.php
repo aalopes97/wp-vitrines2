@@ -45,7 +45,7 @@ class Vitrine_Element_Title extends Vitrine_Element {
         $tag          = in_array( $s['tag'], $allowed_tags, true ) ? $s['tag'] : 'h2';
 
         $style = sprintf(
-            'text-align:%s;color:%s;font-size:%spx;',
+            'margin:0;padding:0;text-align:%s;color:%s;font-size:%spx;line-height:1.25;',
             esc_attr( $s['align'] ),
             esc_attr( $s['color'] ),
             intval( $s['font_size'] )

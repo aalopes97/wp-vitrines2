@@ -195,13 +195,8 @@ class Vitrine_Editor {
 
         wp_enqueue_style( 'dashicons' );
 
-        // Font Awesome 6 Free
-        wp_enqueue_style(
-            'font-awesome',
-            'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css',
-            array(),
-            '6.7.2'
-        );
+        // Font Awesome 6 Free (biblioteca completa no plugin)
+        Vitrine_Icons::enqueue_fontawesome();
 
         // SortableJS via CDN
         wp_enqueue_script(
@@ -270,6 +265,8 @@ class Vitrine_Editor {
         wp_nonce_field( 'vitrine_save', 'vitrine_nonce' );
 
         $elements = Vitrine_Plugin::load_elements();
+        $hero     = Vitrine_Hero_Meta::get_settings( $post->ID );
+        $date_color = ! empty( $hero['hero_date_color'] ) ? $hero['hero_date_color'] : ( ! empty( $hero['hero_text_color'] ) ? $hero['hero_text_color'] : '#ffffff' );
         ?>
         <div id="vitrine-editor">
             <!-- Área principal: sidebar esquerda + canvas + sidebar direita -->
@@ -288,12 +285,30 @@ class Vitrine_Editor {
                             <input type="search" id="vitrine-element-search" placeholder="<?php echo esc_attr( Vitrine_I18n::t( 'Search element...', 'ui.search_elements' ) ); ?>" autocomplete="off" spellcheck="false" aria-label="<?php echo esc_attr( Vitrine_I18n::t( 'Search element...', 'ui.search_elements' ) ); ?>">
                         </div>
                         <div id="vitrine-element-list">
-                            <?php foreach ( $elements as $slug => $el ) : ?>
-                                <div class="vitrine-element-item" data-type="<?php echo esc_attr( $slug ); ?>" data-label="<?php echo esc_attr( Vitrine_I18n::element_label( $slug, $el->label() ) ); ?>">
-                                    <span class="dashicons <?php echo esc_attr( $el->icon() ); ?>"></span>
-                                    <span><?php echo esc_html( Vitrine_I18n::element_label( $slug, $el->label() ) ); ?></span>
+                            <div class="vitrine-element-group" data-group="structural">
+                                <h4 class="vitrine-element-group__title"><?php echo esc_html( Vitrine_I18n::t( 'Structural', 'ui.structural' ) ); ?></h4>
+                                <div class="vitrine-element-group__items">
+                                    <?php foreach ( $elements as $slug => $el ) : ?>
+                                        <?php if ( 'container' !== $slug ) { continue; } ?>
+                                        <div class="vitrine-element-item" data-type="<?php echo esc_attr( $slug ); ?>" data-label="<?php echo esc_attr( Vitrine_I18n::element_label( $slug, $el->label() ) ); ?>">
+                                            <span class="dashicons <?php echo esc_attr( $el->icon() ); ?>"></span>
+                                            <span><?php echo esc_html( Vitrine_I18n::element_label( $slug, $el->label() ) ); ?></span>
+                                        </div>
+                                    <?php endforeach; ?>
                                 </div>
-                            <?php endforeach; ?>
+                            </div>
+                            <div class="vitrine-element-group" data-group="elements">
+                                <h4 class="vitrine-element-group__title"><?php echo esc_html( Vitrine_I18n::t( 'Elements', 'ui.elements' ) ); ?></h4>
+                                <div class="vitrine-element-group__items">
+                                    <?php foreach ( $elements as $slug => $el ) : ?>
+                                        <?php if ( 'container' === $slug ) { continue; } ?>
+                                        <div class="vitrine-element-item" data-type="<?php echo esc_attr( $slug ); ?>" data-label="<?php echo esc_attr( Vitrine_I18n::element_label( $slug, $el->label() ) ); ?>">
+                                            <span class="dashicons <?php echo esc_attr( $el->icon() ); ?>"></span>
+                                            <span><?php echo esc_html( Vitrine_I18n::element_label( $slug, $el->label() ) ); ?></span>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
                         </div>
                         <p id="vitrine-element-list-empty" class="vitrine-element-list-empty" hidden><?php echo esc_html( Vitrine_I18n::t( 'No elements found.', 'ui.no_elements_found' ) ); ?></p>
                     </div>
@@ -314,26 +329,58 @@ class Vitrine_Editor {
 
                 <div class="vitrine-panel-resizer" data-panel="right" title="Arrastar para redimensionar"></div>
 
-                <!-- Sidebar direita: configurações do elemento selecionado -->
+                <!-- Sidebar direita: data da vitrine (fixa) + propriedades do elemento -->
                 <aside id="vitrine-settings-sidebar">
-                    <div id="vitrine-settings-sidebar-header">
-                        <div id="vitrine-settings-el-info">
-                            <span id="vitrine-settings-el-icon" class="dashicons dashicons-admin-settings"></span>
-                            <span id="vitrine-settings-el-label"><?php echo esc_html( Vitrine_I18n::t( 'Settings', 'ui.settings' ) ); ?></span>
+                    <div id="vitrine-date-panel" class="vitrine-date-panel">
+                        <h4 class="vitrine-date-panel__title"><?php echo esc_html( Vitrine_I18n::t( 'Vitrine date', 'ui.vitrine_date' ) ); ?></h4>
+                        <p class="description vitrine-date-panel__hint"><?php echo esc_html( Vitrine_I18n::t( 'Shown at the bottom of the hero.', 'ui.vitrine_date_hint' ) ); ?></p>
+                        <div class="vitrine-date-panel__fields">
+                            <div class="vitrine-date-panel__field">
+                                <label for="vitrine-hero-date"><?php echo esc_html( Vitrine_I18n::t( 'Vitrine date', 'ui.vitrine_date' ) ); ?></label>
+                                <input type="date" name="vitrine_hero[hero_date]" id="vitrine-hero-date" value="<?php echo esc_attr( $hero['hero_date'] ); ?>" />
+                            </div>
+                            <div class="vitrine-date-panel__row">
+                                <div class="vitrine-date-panel__field">
+                                    <label for="vitrine-hero-date-size"><?php echo esc_html( Vitrine_I18n::t( 'Size (px)', 'ui.vitrine_date_size' ) ); ?></label>
+                                    <input type="number" name="vitrine_hero[hero_date_size]" id="vitrine-hero-date-size" value="<?php echo esc_attr( $hero['hero_date_size'] ); ?>" min="10" max="72" step="1" class="small-text" />
+                                </div>
+                                <div class="vitrine-date-panel__field">
+                                    <label for="vitrine-hero-date-color"><?php echo esc_html( Vitrine_I18n::t( 'Color', 'ui.vitrine_date_color' ) ); ?></label>
+                                    <input type="color" name="vitrine_hero[hero_date_color]" id="vitrine-hero-date-color" value="<?php echo esc_attr( $date_color ); ?>" />
+                                </div>
+                            </div>
+                            <div class="vitrine-date-panel__field">
+                                <label for="vitrine-hero-date-align"><?php echo esc_html( Vitrine_I18n::t( 'Alignment', 'ui.vitrine_date_align' ) ); ?></label>
+                                <select name="vitrine_hero[hero_date_align]" id="vitrine-hero-date-align">
+                                    <option value="left"<?php selected( $hero['hero_date_align'], 'left' ); ?>><?php echo esc_html( Vitrine_I18n::t( 'Left', 'ui.align_left' ) ); ?></option>
+                                    <option value="center"<?php selected( $hero['hero_date_align'], 'center' ); ?>><?php echo esc_html( Vitrine_I18n::t( 'Center', 'ui.align_center' ) ); ?></option>
+                                    <option value="right"<?php selected( $hero['hero_date_align'], 'right' ); ?>><?php echo esc_html( Vitrine_I18n::t( 'Right', 'ui.align_right' ) ); ?></option>
+                                </select>
+                            </div>
                         </div>
-                        <button type="button" class="vitrine-sidebar-collapse" data-panel="right" title="<?php echo esc_attr( Vitrine_I18n::t( 'Collapse settings panel', 'ui.collapse_settings_panel' ) ); ?>">
-                            <span class="dashicons dashicons-arrow-right-alt2"></span>
-                        </button>
-                        <button type="button" id="vitrine-settings-sidebar-close" title="<?php echo esc_attr( Vitrine_I18n::t( 'Close panel', 'ui.close_settings_panel' ) ); ?>">
-                            <span class="dashicons dashicons-no-alt"></span>
-                        </button>
                     </div>
-                    <div id="vitrine-settings-panel">
-                        <div class="vitrine-settings-empty-state">
-                            <span class="dashicons dashicons-edit-large"></span>
-                            <p><?php echo esc_html( Vitrine_I18n::t( 'Click an element on the canvas to edit its settings.', 'ui.settings_empty' ) ); ?></p>
+
+                    <div class="vitrine-element-settings" id="vitrine-element-settings">
+                        <div id="vitrine-settings-sidebar-header">
+                            <div id="vitrine-settings-el-info">
+                                <span id="vitrine-settings-el-icon" class="dashicons dashicons-admin-settings"></span>
+                                <span id="vitrine-settings-el-label"><?php echo esc_html( Vitrine_I18n::t( 'Settings', 'ui.settings' ) ); ?></span>
+                            </div>
+                            <button type="button" class="vitrine-sidebar-collapse" data-panel="right" title="<?php echo esc_attr( Vitrine_I18n::t( 'Collapse settings panel', 'ui.collapse_settings_panel' ) ); ?>">
+                                <span class="dashicons dashicons-arrow-right-alt2"></span>
+                            </button>
+                            <button type="button" id="vitrine-settings-sidebar-close" title="<?php echo esc_attr( Vitrine_I18n::t( 'Close panel', 'ui.close_settings_panel' ) ); ?>">
+                                <span class="dashicons dashicons-no-alt"></span>
+                            </button>
+                        </div>
+                        <div id="vitrine-settings-panel">
+                            <div class="vitrine-settings-empty-state">
+                                <span class="dashicons dashicons-edit-large"></span>
+                                <p><?php echo esc_html( Vitrine_I18n::t( 'Click an element on the canvas to edit its settings.', 'ui.settings_empty' ) ); ?></p>
+                            </div>
                         </div>
                     </div>
+
                     <button type="button" class="vitrine-sidebar-expand" data-panel="right" title="<?php echo esc_attr( Vitrine_I18n::t( 'Show settings panel', 'ui.show_settings_panel' ) ); ?>">
                         <span class="dashicons dashicons-arrow-left-alt2"></span>
                         <span class="vitrine-sidebar-expand-text"><?php echo esc_html( Vitrine_I18n::t( 'Settings', 'ui.settings' ) ); ?></span>

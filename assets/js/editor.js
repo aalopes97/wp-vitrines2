@@ -262,12 +262,32 @@
     }
 
     function getContainerDirectionUi(direction) {
-        var isRow = direction === 'row';
+        var raw = String(direction || 'column').toLowerCase().trim();
+        var isRow = (raw === 'row' || raw === 'linha' || raw === 'horizontal');
+        // direction row = linha (horizontal); column = coluna (vertical).
+        // Ícone = destino: "Alterar para coluna" → >; "Alterar para linha" → chevron down.
+        if (isRow) {
+            return {
+                label: 'Alterar para coluna',
+                previewLabel: 'Atual: linha',
+                icon: 'dashicons-arrow-right-alt2',
+                title: 'Alterar para coluna'
+            };
+        }
         return {
-            label: isRow ? 'Linha' : 'Coluna',
-            previewLabel: isRow ? 'Linha (↓)' : 'Coluna (→)',
-            icon: isRow ? 'dashicons-arrow-down-alt2' : 'dashicons-arrow-right-alt2'
+            label: 'Alterar para linha',
+            previewLabel: 'Atual: coluna',
+            icon: 'dashicons-arrow-down-alt2',
+            title: 'Alterar para linha'
         };
+    }
+
+    function normalizeContainerDirection(direction) {
+        var raw = String(direction || 'column').toLowerCase().trim();
+        if (raw === 'row' || raw === 'linha' || raw === 'horizontal') {
+            return 'row';
+        }
+        return 'column';
     }
 
     function getContainerPreviewLabel(settings) {
@@ -517,10 +537,10 @@
                         '<span class="vitrine-block-label">' + escapeHtml(getBlockToolbarLabel(item, elDef)) + '</span>' +
                         widthBadgeHtml +
                         (isContainer && !containerContainsAranha(item) ? (function() {
-                            var dirUi = getContainerDirectionUi(settings.direction || 'column');
-                            return '<button type="button" class="vitrine-dir-toggle" title="Alternar layout do container" data-id="' + escapeAttr(item.id) + '">' +
+                            var dirUi = getContainerDirectionUi(settings.direction);
+                            return '<button type="button" class="vitrine-dir-toggle" title="' + escapeAttr(dirUi.title) + '" data-id="' + escapeAttr(item.id) + '" data-dir="' + escapeAttr(normalizeContainerDirection(settings.direction)) + '">' +
                                 '<span class="dashicons ' + dirUi.icon + '"></span>' +
-                                '<span class="vitrine-dir-label">' + dirUi.label + '</span>' +
+                                '<span class="vitrine-dir-label">' + escapeHtml(dirUi.label) + '</span>' +
                             '</button>';
                         })() : '') +
                         (isContainer ? '<button type="button" class="vitrine-block-collapse" title="Colapsar/Expandir"><span class="dashicons dashicons-arrow-right-alt2"></span></button>' : '') +
@@ -546,7 +566,7 @@
                                 dropStyle += 'background-color:' + escapeAttr(settings.bg_color || '#f5f5f5') + ';';
                             }
                         }
-                        return '<div class="vitrine-container-drop' + (settings.direction === 'row' ? ' vitrine-container-drop--row' : '') + (isFullBg ? ' vitrine-container-drop--boxed' : '') + '" data-parent-id="' + item.id + '" style="' + dropStyle + '"></div>';
+                        return '<div class="vitrine-container-drop' + (normalizeContainerDirection(settings.direction) === 'row' ? ' vitrine-container-drop--row' : '') + (isFullBg ? ' vitrine-container-drop--boxed' : '') + '" data-parent-id="' + item.id + '" style="' + dropStyle + '"></div>';
                     })() : '') +
                     '<div class="vitrine-resize-handle"></div>' +
                 '</div>';
@@ -614,7 +634,7 @@
         switch (type) {
             case 'title':
                 var tag = settings.tag || 'h2';
-                return '<' + tag + ' style="color:' + escapeAttr(settings.color || '#333') + ';font-size:' + parseInt(settings.font_size || 28, 10) + 'px;text-align:' + escapeAttr(settings.align || 'left') + '">' + escapeHtml(settings.text || '') + '</' + tag + '>';
+                return '<' + tag + ' class="vitrine-el-title" style="margin:0;padding:0;color:' + escapeAttr(settings.color || '#333') + ';font-size:' + parseInt(settings.font_size || 28, 10) + 'px;text-align:' + escapeAttr(settings.align || 'left') + ';line-height:1.25;">' + escapeHtml(settings.text || '') + '</' + tag + '>';
             case 'text':
                 return '<div class="vitrine-el-text" style="color:' + escapeAttr(settings.color || '#555') + ';font-size:' + parseInt(settings.font_size || 16, 10) + 'px;text-align:' + escapeAttr(settings.align || 'left') + ';--vitrine-text-color:' + escapeAttr(settings.color || '#555') + ';--vitrine-text-size:' + parseInt(settings.font_size || 16, 10) + 'px;">' + (settings.content || '') + '</div>';
             case 'textimage': {
@@ -947,14 +967,13 @@
     function initAllSortables() {
         destroyAllSortables();
 
-        var elList = document.getElementById('vitrine-element-list');
-        if (elList) {
+        document.querySelectorAll('#vitrine-element-list .vitrine-element-group__items').forEach(function (elList) {
             sortableInstances.push(Sortable.create(elList, {
                 group: { name: 'vitrine', pull: 'clone', put: false },
                 sort: false,
                 animation: 200
             }));
-        }
+        });
 
         var canvas = document.getElementById('vitrine-canvas');
         if (canvas) {
@@ -1116,7 +1135,9 @@
         var id   = $(this).data('id');
         var item = findItemById(id);
         if (!item) return;
-        var newDir = (item.settings.direction === 'row') ? 'column' : 'row';
+        if (!item.settings) item.settings = {};
+        var current = normalizeContainerDirection(item.settings.direction);
+        var newDir = current === 'row' ? 'column' : 'row';
         item.settings.direction = newDir;
         if (newDir === 'row') {
             distributeWidths(id);
@@ -1399,6 +1420,12 @@
             var match = !q || label.indexOf(q) !== -1 || type.indexOf(q) !== -1;
             $item.toggleClass('is-filter-hidden', !match);
             if (match) visible++;
+        });
+
+        $('#vitrine-element-list .vitrine-element-group').each(function () {
+            var $group = $(this);
+            var groupVisible = $group.find('.vitrine-element-item:not(.is-filter-hidden)').length > 0;
+            $group.toggleClass('is-filter-empty', !groupVisible);
         });
 
         var $empty = $('#vitrine-element-list-empty');
@@ -2324,8 +2351,8 @@
         h += '<div class="vitrine-icons-grid"></div>';
         h += '</div>';
         h += '<div class="vitrine-icon-tab-panel" data-panel="fa" style="display:none;">';
-        h += '<input type="text" class="vitrine-icon-search" placeholder="Filtrar ícones FA..." />';
-        h += '<div class="vitrine-icons-grid"></div>';
+        h += '<input type="text" class="vitrine-icon-search" placeholder="Buscar Font Awesome (ex: leaf, user, github)..." />';
+        h += '<div class="vitrine-icons-grid vitrine-icons-grid--fa"></div>';
         h += '</div>';
         h += '<div class="vitrine-icon-tab-panel" data-panel="upload" style="display:none;">';
         h += '<p class="vitrine-field-hint" style="margin:0 0 8px;">Use imagem apenas se não houver ícone adequado.</p>';

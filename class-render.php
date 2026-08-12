@@ -76,8 +76,8 @@ class Vitrine_Render {
 
             if ( 'aranha2' === $type ) {
                 $inline_styles[] = 'position:relative';
-                $inline_styles[] = 'z-index:50';
-                $inline_styles[] = 'overflow:visible';
+                $inline_styles[] = 'z-index:auto';
+                $inline_styles[] = 'overflow:hidden';
             }
 
             $style = $inline_styles ? ' style="' . esc_attr( implode( ';', $inline_styles ) ) . '"' : '';
@@ -103,12 +103,7 @@ class Vitrine_Render {
         if ( ! is_singular( 'vitrine' ) ) {
             return;
         }
-        wp_enqueue_style(
-            'font-awesome',
-            'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css',
-            array(),
-            '6.7.2'
-        );
+        Vitrine_Icons::enqueue_fontawesome();
 
         wp_enqueue_style( 'dashicons' );
 

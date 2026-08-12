@@ -11,6 +11,7 @@ class Vitrine_AI {
     const OPTION_API_KEY  = 'vitrine_ai_api_key';
     const OPTION_MODEL    = 'vitrine_ai_model';
     const OPTION_API_BASE = 'vitrine_ai_api_base';
+    const OPTION_ENABLED  = 'vitrine_ai_enabled';
 
     public static function init() {
         if ( ! is_admin() ) {
@@ -28,14 +29,31 @@ class Vitrine_AI {
     }
 
     public static function register_menu() {
-        add_submenu_page(
-            'edit.php?post_type=vitrine',
-            __( 'Criar com IA', 'builder-vitrine' ),
-            __( 'Criar com IA', 'builder-vitrine' ),
-            'edit_posts',
-            'vitrine-ai-builder',
-            array( __CLASS__, 'render_page' )
-        );
+        $enabled = self::is_enabled();
+
+        if ( $enabled ) {
+            add_submenu_page(
+                'edit.php?post_type=vitrine',
+                __( 'Criar com IA', 'builder-vitrine' ),
+                __( 'Criar com IA', 'builder-vitrine' ),
+                'edit_posts',
+                'vitrine-ai-builder',
+                array( __CLASS__, 'render_page' )
+            );
+            return;
+        }
+
+        // Modo chat desativado: só página de configuração para administradores.
+        if ( current_user_can( 'manage_options' ) ) {
+            add_submenu_page(
+                'edit.php?post_type=vitrine',
+                __( 'Configurações IA', 'builder-vitrine' ),
+                __( 'Configurações IA', 'builder-vitrine' ),
+                'manage_options',
+                'vitrine-ai-builder',
+                array( __CLASS__, 'render_page' )
+            );
+        }
     }
 
     public static function handle_settings_save() {
@@ -49,15 +67,27 @@ class Vitrine_AI {
             return;
         }
 
+        $enabled = ! empty( $_POST['vitrine_ai_enabled'] ) ? '1' : '0';
         $api_key = isset( $_POST['vitrine_ai_api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['vitrine_ai_api_key'] ) ) : '';
         $model   = isset( $_POST['vitrine_ai_model'] ) ? sanitize_text_field( wp_unslash( $_POST['vitrine_ai_model'] ) ) : 'gpt-4o-mini';
         $base    = isset( $_POST['vitrine_ai_api_base'] ) ? esc_url_raw( wp_unslash( $_POST['vitrine_ai_api_base'] ) ) : '';
 
+        update_option( self::OPTION_ENABLED, $enabled );
         update_option( self::OPTION_API_KEY, $api_key );
         update_option( self::OPTION_MODEL, $model ? $model : 'gpt-4o-mini' );
         update_option( self::OPTION_API_BASE, $base ? untrailingslashit( $base ) : '' );
 
-        add_settings_error( 'vitrine_ai', 'saved', __( 'Configurações de IA salvas.', 'builder-vitrine' ), 'updated' );
+        wp_safe_redirect(
+            add_query_arg(
+                array(
+                    'post_type'         => 'vitrine',
+                    'page'              => 'vitrine-ai-builder',
+                    'vitrine_ai_saved'  => '1',
+                ),
+                admin_url( 'edit.php' )
+            )
+        );
+        exit;
     }
 
     public static function enqueue_assets( $hook ) {
@@ -73,6 +103,10 @@ class Vitrine_AI {
             array(),
             filemtime( VITRINE_PATH . 'assets/css/ai-builder.css' )
         );
+
+        if ( ! self::is_enabled() ) {
+            return;
+        }
 
         wp_enqueue_script(
             'vitrine-ai-builder-js',
@@ -122,13 +156,25 @@ class Vitrine_AI {
     }
 
     public static function render_page() {
-        if ( ! current_user_can( 'edit_posts' ) ) {
-            wp_die( esc_html__( 'Sem permissão.', 'builder-vitrine' ) );
+        $enabled = self::is_enabled();
+
+        if ( $enabled ) {
+            if ( ! current_user_can( 'edit_posts' ) ) {
+                wp_die( esc_html__( 'Sem permissão.', 'builder-vitrine' ) );
+            }
+        } elseif ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( esc_html__( 'O modo chat com IA está desativado.', 'builder-vitrine' ) );
         }
 
         $api_key  = get_option( self::OPTION_API_KEY, '' );
         $model    = get_option( self::OPTION_MODEL, 'gpt-4o-mini' );
         $api_base = get_option( self::OPTION_API_BASE, '' );
+        $page_title = $enabled
+            ? __( 'Criar vitrine com IA', 'builder-vitrine' )
+            : __( 'Configurações IA', 'builder-vitrine' );
+        $page_lead = $enabled
+            ? __( 'Converse com o assistente BVS, gere um rascunho e refine no editor visual.', 'builder-vitrine' )
+            : __( 'Ative o modo chat para criar vitrines com IA. Enquanto estiver desligado, apenas esta tela de configuração fica disponível.', 'builder-vitrine' );
         ?>
         <div class="wrap vitrine-ai-wrap">
             <div class="vitrine-ai-page-head">
@@ -136,20 +182,35 @@ class Vitrine_AI {
                     <img src="<?php echo esc_url( self::get_logo_url() ); ?>" alt="<?php echo esc_attr__( 'Biblioteca Virtual em Saúde', 'builder-vitrine' ); ?>" class="vitrine-ai-page-logo" />
                 <?php endif; ?>
                 <div class="vitrine-ai-page-head__text">
-                    <h1><?php echo esc_html__( 'Criar vitrine com IA', 'builder-vitrine' ); ?></h1>
+                    <h1><?php echo esc_html( $page_title ); ?></h1>
                     <p class="vitrine-ai-lead">
-                        <?php echo esc_html__( 'Converse com o assistente BVS, gere um rascunho e refine no editor visual.', 'builder-vitrine' ); ?>
+                        <?php echo esc_html( $page_lead ); ?>
                     </p>
                 </div>
             </div>
 
             <?php if ( current_user_can( 'manage_options' ) ) : ?>
-                <details id="vitrine-ai-settings" class="vitrine-ai-settings"<?php echo self::is_configured() ? '' : ' open'; ?>>
-                    <summary><?php echo esc_html__( 'Configurações da API (OpenAI)', 'builder-vitrine' ); ?></summary>
+                <details id="vitrine-ai-settings" class="vitrine-ai-settings"<?php echo ( $enabled && self::is_configured() ) ? '' : ' open'; ?>>
+                    <summary><?php echo esc_html__( 'Configurações da IA', 'builder-vitrine' ); ?></summary>
                     <form method="post" class="vitrine-ai-settings-form">
                         <?php wp_nonce_field( 'vitrine_ai_settings', 'vitrine_ai_settings_nonce' ); ?>
-                        <?php settings_errors( 'vitrine_ai' ); ?>
+                        <?php
+                        if ( ! empty( $_GET['vitrine_ai_saved'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+                            echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Configurações de IA salvas.', 'builder-vitrine' ) . '</p></div>';
+                        }
+                        settings_errors( 'vitrine_ai' );
+                        ?>
                         <table class="form-table" role="presentation">
+                            <tr>
+                                <th scope="row"><?php echo esc_html__( 'Modo chat', 'builder-vitrine' ); ?></th>
+                                <td>
+                                    <label for="vitrine_ai_enabled">
+                                        <input type="checkbox" id="vitrine_ai_enabled" name="vitrine_ai_enabled" value="1" <?php checked( $enabled ); ?> />
+                                        <?php echo esc_html__( 'Ativar criar com IA (modo chat)', 'builder-vitrine' ); ?>
+                                    </label>
+                                    <p class="description"><?php echo esc_html__( 'Quando desativado, o chat e o botão “Criar com IA” ficam ocultos. Só esta página de configuração permanece disponível para administradores.', 'builder-vitrine' ); ?></p>
+                                </td>
+                            </tr>
                             <tr>
                                 <th scope="row"><label for="vitrine_ai_api_key"><?php echo esc_html__( 'Chave da API', 'builder-vitrine' ); ?></label></th>
                                 <td>
@@ -178,6 +239,7 @@ class Vitrine_AI {
                 <div class="notice notice-warning"><p><?php echo esc_html__( 'A IA ainda não está configurada neste site.', 'builder-vitrine' ); ?></p></div>
             <?php endif; ?>
 
+            <?php if ( $enabled ) : ?>
             <div id="vitrine-ai-app" class="vitrine-ai-app">
                 <header class="vitrine-ai-header">
                     <?php if ( self::get_logo_url() ) : ?>
@@ -213,6 +275,7 @@ class Vitrine_AI {
                 </div>
                 </div>
             </div>
+            <?php endif; ?>
         </div>
         <?php
     }
@@ -223,7 +286,7 @@ class Vitrine_AI {
     public static function render_list_page_button() {
         global $typenow;
 
-        if ( 'vitrine' !== $typenow || ! current_user_can( 'edit_posts' ) ) {
+        if ( ! self::is_enabled() || 'vitrine' !== $typenow || ! current_user_can( 'edit_posts' ) ) {
             return;
         }
 
@@ -270,6 +333,10 @@ class Vitrine_AI {
             wp_send_json_error( array( 'message' => __( 'Permissão negada.', 'builder-vitrine' ) ) );
         }
 
+        if ( ! self::is_enabled() ) {
+            wp_send_json_error( array( 'message' => __( 'O modo chat com IA está desativado.', 'builder-vitrine' ) ) );
+        }
+
         if ( ! self::is_configured() ) {
             wp_send_json_error( array( 'message' => __( 'API de IA não configurada.', 'builder-vitrine' ) ) );
         }
@@ -313,6 +380,11 @@ class Vitrine_AI {
 
         if ( ! current_user_can( 'edit_posts' ) ) {
             self::sse_send( array( 'type' => 'error', 'message' => __( 'Permissão negada.', 'builder-vitrine' ) ) );
+            exit;
+        }
+
+        if ( ! self::is_enabled() ) {
+            self::sse_send( array( 'type' => 'error', 'message' => __( 'O modo chat com IA está desativado.', 'builder-vitrine' ) ) );
             exit;
         }
 
@@ -371,6 +443,10 @@ class Vitrine_AI {
 
         if ( ! current_user_can( 'edit_posts' ) ) {
             wp_send_json_error( array( 'message' => __( 'Permissão negada.', 'builder-vitrine' ) ) );
+        }
+
+        if ( ! self::is_enabled() ) {
+            wp_send_json_error( array( 'message' => __( 'O modo chat com IA está desativado.', 'builder-vitrine' ) ) );
         }
 
         if ( ! self::is_configured() ) {
@@ -635,6 +711,10 @@ class Vitrine_AI {
             wp_send_json_error( array( 'message' => __( 'Permissão negada.', 'builder-vitrine' ) ) );
         }
 
+        if ( ! self::is_enabled() ) {
+            wp_send_json_error( array( 'message' => __( 'O modo chat com IA está desativado.', 'builder-vitrine' ) ) );
+        }
+
         if ( ! self::is_configured() ) {
             wp_send_json_error( array( 'message' => __( 'API de IA não configurada.', 'builder-vitrine' ) ) );
         }
@@ -742,6 +822,15 @@ class Vitrine_AI {
             return '';
         }
         return VITRINE_URL . $relative;
+    }
+
+    /**
+     * Modo chat ativo? Padrão: desligado.
+     *
+     * @return bool
+     */
+    public static function is_enabled() {
+        return '1' === (string) get_option( self::OPTION_ENABLED, '0' );
     }
 
     /**
