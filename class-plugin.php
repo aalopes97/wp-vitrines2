@@ -19,6 +19,7 @@ class Vitrine_Plugin {
         Vitrine_Polylang::init();
         if ( is_admin() ) {
             Vitrine_Translations_Admin::init();
+            Vitrine_AI::init();
         }
 
         add_action( 'init', array( $this, 'register_post_type' ) );

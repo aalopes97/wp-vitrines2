@@ -21,6 +21,8 @@ require_once VITRINE_PATH . 'class-vitrine-polylang.php';
 require_once VITRINE_PATH . 'class-vitrine-translations-admin.php';
 require_once VITRINE_PATH . 'class-vitrine-icons.php';
 require_once VITRINE_PATH . 'class-vitrine-hero.php';
+require_once VITRINE_PATH . 'class-vitrine-layout.php';
+require_once VITRINE_PATH . 'class-vitrine-ai.php';
 require_once VITRINE_PATH . 'class-editor.php';
 require_once VITRINE_PATH . 'class-render.php';
 

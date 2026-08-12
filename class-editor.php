@@ -368,7 +368,7 @@ class Vitrine_Editor {
         }
 
         // Sanitiza recursivamente
-        $layout = $this->sanitize_layout( $layout );
+        $layout = Vitrine_Layout::sanitize( $layout );
         update_post_meta( $post_id, '_vitrine_layout', $layout );
 
         // Salva configurações da página
@@ -406,69 +406,6 @@ class Vitrine_Editor {
         }
 
         // O layout principal é salvo via AJAX, mas mantemos este hook caso necessário.
-    }
-
-    /**
-     * Sanitiza o array do layout de forma recursiva.
-     */
-    private function sanitize_layout( $layout ) {
-        $clean = array();
-        foreach ( $layout as $item ) {
-            if ( ! is_array( $item ) || empty( $item['type'] ) ) {
-                continue;
-            }
-            $clean_item = array(
-                'type' => sanitize_key( $item['type'] ),
-                'id'   => isset( $item['id'] ) ? sanitize_key( $item['id'] ) : wp_generate_uuid4(),
-            );
-
-            if ( isset( $item['settings'] ) && is_array( $item['settings'] ) ) {
-                $clean_item['settings'] = array_map( function ( $v ) {
-                    if ( is_array( $v ) ) {
-                        // Suporte a arrays de itens (ex: aranha left_items/right_items)
-                        return array_map( function ( $sub ) {
-                            if ( is_array( $sub ) ) {
-                                return array_map( function ( $val ) {
-                                    return wp_kses_post( (string) $val );
-                                }, $sub );
-                            }
-                            return sanitize_text_field( (string) $sub );
-                        }, $v );
-                    }
-                    if ( is_string( $v ) ) {
-                        return wp_kses_post( $v );
-                    }
-                    if ( is_numeric( $v ) ) {
-                        return $v;
-                    }
-                    return sanitize_text_field( (string) $v );
-                }, $item['settings'] );
-
-                if ( 'html' === $clean_item['type'] && isset( $item['settings']['content'] ) ) {
-                    Vitrine_Plugin::load_elements();
-                    $clean_item['settings']['content'] = Vitrine_Element_Html::sanitize_html_content( $item['settings']['content'] );
-                }
-            } else {
-                $clean_item['settings'] = array();
-            }
-
-            if ( isset( $item['height'] ) ) {
-                $clean_item['height'] = absint( $item['height'] );
-            }
-
-            // Largura personalizada para layout em linha
-            if ( isset( $item['width'] ) && is_string( $item['width'] ) ) {
-                $clean_item['width'] = sanitize_text_field( $item['width'] );
-            }
-
-            // Suporte a elementos filhos (containers)
-            if ( isset( $item['children'] ) && is_array( $item['children'] ) ) {
-                $clean_item['children'] = $this->sanitize_layout( $item['children'] );
-            }
-
-            $clean[] = $clean_item;
-        }
-        return $clean;
     }
 
     /**
