@@ -17,7 +17,28 @@ class Vitrine_I18n {
     public static function init() {
         add_action( 'init', array( __CLASS__, 'load_textdomain' ), 0 );
         add_action( 'init', array( __CLASS__, 'register_polylang_strings' ), 20 );
+        add_action( 'admin_init', array( __CLASS__, 'maybe_seed_bundled_translations' ), 4 );
         add_action( 'admin_init', array( __CLASS__, 'maybe_migrate_stale_labels' ), 5 );
+    }
+
+    /**
+     * Importa o CSV empacotado uma vez, preenchendo apenas chaves vazias/faltantes.
+     */
+    public static function maybe_seed_bundled_translations() {
+        $flag = 'vitrine_seeded_bundled_translations_v3';
+        if ( get_option( $flag ) ) {
+            return;
+        }
+
+        $path = self::get_bundled_csv_path();
+        if ( is_readable( $path ) ) {
+            $parsed = self::parse_translations_csv( $path );
+            if ( ! is_wp_error( $parsed ) && is_array( $parsed ) ) {
+                self::import_parsed_translations( $parsed, false, true );
+            }
+        }
+
+        update_option( $flag, '1', false );
     }
 
     /**
@@ -78,27 +99,101 @@ class Vitrine_I18n {
     }
 
     /**
-     * Idioma ativo no admin do builder (Polylang admin > usuário > site).
+     * Idioma ativo no admin do builder (idioma do post > Polylang > usuário > site).
      */
     public static function get_admin_language() {
+        $available = self::get_available_languages();
+
+        // 1) Idioma do post em edição (mais confiável no admin com Polylang).
+        $post_id = self::get_editing_post_id();
+        if ( $post_id && function_exists( 'pll_get_post_language' ) ) {
+            $post_lang = pll_get_post_language( $post_id, 'slug' );
+            if ( $post_lang ) {
+                return self::normalize_language_slug( $post_lang, $available );
+            }
+        }
+
+        // 1b) Novo post: Polylang passa new_lang / lang na URL.
+        if ( isset( $_GET['new_lang'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            $new_lang = sanitize_key( wp_unslash( $_GET['new_lang'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            if ( $new_lang ) {
+                return self::normalize_language_slug( $new_lang, $available );
+            }
+        }
+        if ( isset( $_GET['lang'] ) && function_exists( 'pll_languages_list' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            $url_lang = sanitize_key( wp_unslash( $_GET['lang'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            if ( $url_lang && isset( $available[ $url_lang ] ) ) {
+                return $url_lang;
+            }
+        }
+
+        // 2) Idioma atual do Polylang (quando disponível).
         if ( function_exists( 'pll_current_language' ) ) {
             $lang = pll_current_language( 'slug' );
             if ( $lang ) {
-                return $lang;
+                return self::normalize_language_slug( $lang, $available );
             }
         }
+
+        // 3) Locale do usuário mapeado para o slug do site (pt_BR → pt).
         $locale = get_user_locale();
         if ( function_exists( 'pll_languages_list' ) ) {
-            $map = pll_languages_list( array( 'fields' => 'locale' ) );
+            $map   = pll_languages_list( array( 'fields' => 'locale' ) );
             $slugs = pll_languages_list( array( 'fields' => 'slug' ) );
             if ( is_array( $map ) && is_array( $slugs ) ) {
                 $idx = array_search( $locale, $map, true );
                 if ( false !== $idx && isset( $slugs[ $idx ] ) ) {
-                    return $slugs[ $idx ];
+                    return self::normalize_language_slug( $slugs[ $idx ], $available );
                 }
             }
         }
-        return $locale;
+
+        return self::normalize_language_slug( $locale, $available );
+    }
+
+    /**
+     * ID do post em edição no admin (quando houver).
+     */
+    private static function get_editing_post_id() {
+        global $post;
+        if ( isset( $_GET['post'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            $id = absint( $_GET['post'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            if ( $id ) {
+                return $id;
+            }
+        }
+        if ( isset( $post->ID ) ) {
+            return absint( $post->ID );
+        }
+        return 0;
+    }
+
+    /**
+     * Normaliza slug/locale para um idioma disponível no site.
+     *
+     * @param string $lang
+     * @param array  $available
+     * @return string
+     */
+    public static function normalize_language_slug( $lang, array $available = array() ) {
+        $lang = (string) $lang;
+        if ( '' === $lang ) {
+            return $lang;
+        }
+        if ( ! $available ) {
+            $available = self::get_available_languages();
+        }
+        if ( isset( $available[ $lang ] ) ) {
+            return $lang;
+        }
+
+        $family = strtolower( preg_replace( '/[^a-z].*$/', '', strtolower( str_replace( '-', '_', $lang ) ) ) );
+        if ( '' === $family ) {
+            $family = strtolower( substr( $lang, 0, 2 ) );
+        }
+
+        $resolved = self::resolve_site_lang_slug( $family, $available );
+        return $resolved ? $resolved : $lang;
     }
 
     /**
@@ -118,7 +213,69 @@ class Vitrine_I18n {
                 return $out;
             }
         }
-        return array( get_locale() => self::t( 'Default language', 'ui' ) );
+        return array( get_locale() => 'Default language' );
+    }
+
+    /**
+     * Candidatos de chave de idioma para lookup de overrides (pt_BR, pt-br, pt…).
+     *
+     * @param string $lang
+     * @return string[]
+     */
+    private static function language_lookup_candidates( $lang ) {
+        $lang = (string) $lang;
+        $list = array( $lang );
+
+        $norm_us = strtolower( str_replace( '-', '_', $lang ) );
+        $norm_hy = strtolower( str_replace( '_', '-', $lang ) );
+        $list[]  = $norm_us;
+        $list[]  = $norm_hy;
+
+        if ( preg_match( '/^([a-z]{2})/', $norm_us, $m ) ) {
+            $list[] = $m[1];
+            $resolved = self::resolve_site_lang_slug( $m[1], self::get_available_languages() );
+            if ( $resolved ) {
+                $list[] = $resolved;
+            }
+        }
+
+        return array_values( array_unique( array_filter( $list ) ) );
+    }
+
+    /**
+     * Busca tradução nos overrides tentando aliases de idioma.
+     *
+     * @param string $lang
+     * @param string $name
+     * @return string|null
+     */
+    private static function find_override_translation( $lang, $name ) {
+        $overrides = self::get_overrides();
+        if ( ! $overrides ) {
+            return null;
+        }
+
+        foreach ( self::language_lookup_candidates( $lang ) as $candidate ) {
+            if ( isset( $overrides[ $candidate ][ $name ] ) && '' !== $overrides[ $candidate ][ $name ] ) {
+                return $overrides[ $candidate ][ $name ];
+            }
+        }
+
+        // Último recurso: se só houver um bloco de overrides da mesma família.
+        if ( preg_match( '/^([a-z]{2})/', strtolower( str_replace( '-', '_', (string) $lang ) ), $m ) ) {
+            $family = $m[1];
+            foreach ( $overrides as $slug => $rows ) {
+                if ( ! is_array( $rows ) ) {
+                    continue;
+                }
+                $slug_l = strtolower( str_replace( array( '-', '_' ), '', (string) $slug ) );
+                if ( 0 === strpos( $slug_l, $family ) && isset( $rows[ $name ] ) && '' !== $rows[ $name ] ) {
+                    return $rows[ $name ];
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -135,15 +292,17 @@ class Vitrine_I18n {
             $lang = self::get_admin_language();
         }
 
-        $overrides = self::get_overrides();
-        if ( isset( $overrides[ $lang ][ $name ] ) && '' !== $overrides[ $lang ][ $name ] ) {
-            return $overrides[ $lang ][ $name ];
+        $from_override = self::find_override_translation( $lang, $name );
+        if ( null !== $from_override ) {
+            return $from_override;
         }
 
         if ( function_exists( 'pll_translate_string' ) ) {
-            $pll = pll_translate_string( $default, $lang );
-            if ( is_string( $pll ) && $pll !== $default ) {
-                return $pll;
+            foreach ( self::language_lookup_candidates( $lang ) as $pll_lang ) {
+                $pll = pll_translate_string( $default, $pll_lang );
+                if ( is_string( $pll ) && $pll !== $default ) {
+                    return $pll;
+                }
             }
         }
 
@@ -236,12 +395,17 @@ class Vitrine_I18n {
             'ui.content_tab'                   => 'Content',
             'ui.style_tab'                     => 'Styles',
             'ui.canvas_placeholder'            => 'Drag elements here',
+            'ui.template_picker_title'         => 'Initial template',
+            'ui.template_picker_hint'          => 'Or drag containers from the sidebar to start from scratch',
+            'ui.template_complete_name'        => 'Complete showcase',
+            'ui.template_complete_desc'        => 'Highlights + Text + Toggle + Text + Banner',
             'ui.collapse_elements_panel'       => 'Collapse elements panel',
             'ui.show_elements_panel'           => 'Show elements panel',
             'ui.collapse_settings_panel'       => 'Collapse settings panel',
             'ui.show_settings_panel'           => 'Show settings panel',
             'ui.close_settings_panel'          => 'Close panel',
             'ui.builder_title'                 => 'Vitrine Builder',
+            'ui.hero_title'                    => 'Vitrine Hero',
             'ui.page_custom_css'               => 'Custom vitrine CSS',
             'ui.clone_to_language'             => 'Clone to language',
             'ui.clone_to_language_help'        => 'Creates or updates the Polylang translation with the same layout and content.',
@@ -431,11 +595,12 @@ class Vitrine_I18n {
     /**
      * Aplica traduções do CSV aos overrides salvos.
      *
-     * @param array $parsed  Resultado de parse_translations_csv().
-     * @param bool  $replace Se true, substitui o idioma; se false, merge.
+     * @param array $parsed     Resultado de parse_translations_csv().
+     * @param bool  $replace    Se true, substitui o idioma; se false, merge.
+     * @param bool  $only_empty Se true, não sobrescreve chaves já preenchidas.
      * @return array{langs:string[],count:int}
      */
-    public static function import_parsed_translations( array $parsed, $replace = false ) {
+    public static function import_parsed_translations( array $parsed, $replace = false, $only_empty = false ) {
         $overrides = self::get_overrides();
         $count     = 0;
         $langs     = array();
@@ -456,6 +621,9 @@ class Vitrine_I18n {
                 $key   = sanitize_text_field( (string) $key );
                 $value = sanitize_text_field( (string) $value );
                 if ( '' === $key || '' === $value ) {
+                    continue;
+                }
+                if ( $only_empty && isset( $overrides[ $lang ][ $key ] ) && '' !== $overrides[ $lang ][ $key ] ) {
                     continue;
                 }
                 $overrides[ $lang ][ $key ] = $value;

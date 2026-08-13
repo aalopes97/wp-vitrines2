@@ -24,6 +24,9 @@ class Vitrine_Layout {
             if ( ! is_array( $item ) || empty( $item['type'] ) ) {
                 continue;
             }
+
+            $item = self::migrate_aranha_item( $item );
+
             $clean_item = array(
                 'type' => sanitize_key( $item['type'] ),
                 'id'   => isset( $item['id'] ) ? sanitize_key( $item['id'] ) : self::generate_id(),
@@ -51,6 +54,59 @@ class Vitrine_Layout {
         }
 
         return $clean;
+    }
+
+    /**
+     * Unifica aranha2/aranha3 no elemento "aranha" com layout_mode.
+     *
+     * @param array $item
+     * @return array
+     */
+    public static function migrate_aranha_item( $item ) {
+        if ( ! is_array( $item ) || empty( $item['type'] ) ) {
+            return $item;
+        }
+
+        $type = sanitize_key( $item['type'] );
+        if ( ! isset( $item['settings'] ) || ! is_array( $item['settings'] ) ) {
+            $item['settings'] = array();
+        }
+
+        if ( 'aranha2' === $type ) {
+            $item['type'] = 'aranha';
+            $item['settings']['layout_mode'] = 'circular';
+        } elseif ( 'aranha3' === $type ) {
+            $item['type'] = 'aranha';
+            $item['settings']['layout_mode'] = 'grade';
+        } elseif ( 'aranha' === $type ) {
+            $mode = isset( $item['settings']['layout_mode'] ) ? sanitize_key( $item['settings']['layout_mode'] ) : 'circular';
+            $item['settings']['layout_mode'] = ( 'grade' === $mode ) ? 'grade' : 'circular';
+        }
+
+        if ( ! empty( $item['children'] ) && is_array( $item['children'] ) ) {
+            foreach ( $item['children'] as $i => $child ) {
+                $item['children'][ $i ] = self::migrate_aranha_item( $child );
+            }
+        }
+
+        return $item;
+    }
+
+    /**
+     * Migra layout completo (recursivo via migrate_aranha_item).
+     *
+     * @param mixed $layout
+     * @return array
+     */
+    public static function migrate_aranha_layout( $layout ) {
+        if ( ! is_array( $layout ) ) {
+            return array();
+        }
+        $out = array();
+        foreach ( $layout as $item ) {
+            $out[] = self::migrate_aranha_item( $item );
+        }
+        return $out;
     }
 
     /**
@@ -99,6 +155,7 @@ class Vitrine_Layout {
             return null;
         }
 
+        $item     = self::migrate_aranha_item( $item );
         $type     = sanitize_key( $item['type'] );
         $elements = Vitrine_Plugin::load_elements();
         if ( ! isset( $elements[ $type ] ) ) {

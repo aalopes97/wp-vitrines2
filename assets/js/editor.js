@@ -22,7 +22,6 @@
 
     /* ──────────────────────────── Estado ──────────────────────────── */
 
-    var layout     = vitrineData.layout || [];
     var elements   = vitrineData.elements || {};
     var selectedId = null;
     var settingsPanelItemId = null;
@@ -262,23 +261,13 @@
     }
 
     function getContainerDirectionUi(direction) {
-        var raw = String(direction || 'column').toLowerCase().trim();
-        var isRow = (raw === 'row' || raw === 'linha' || raw === 'horizontal');
-        // direction row = linha (horizontal); column = coluna (vertical).
-        // Ícone = destino: "Alterar para coluna" → >; "Alterar para linha" → chevron down.
-        if (isRow) {
-            return {
-                label: 'Alterar para coluna',
-                previewLabel: 'Atual: linha',
-                icon: 'dashicons-arrow-right-alt2',
-                title: 'Alterar para coluna'
-            };
-        }
+        var current = normalizeContainerDirection(direction);
+        var isRow = current === 'row';
+        // UI: "Linha" = um abaixo do outro (flex column); "Coluna" = lado a lado (flex row).
         return {
-            label: 'Alterar para linha',
-            previewLabel: 'Atual: coluna',
-            icon: 'dashicons-arrow-down-alt2',
-            title: 'Alterar para linha'
+            current: current,
+            previewLabel: isRow ? 'coluna' : 'linha',
+            title: 'Direção: linha (um abaixo do outro) ou coluna (lado a lado)'
         };
     }
 
@@ -304,8 +293,44 @@
     }
 
     function isAranhaType(type) {
-        return type === 'aranha2' || type === 'aranha3';
+        return type === 'aranha' || type === 'aranha2' || type === 'aranha3';
     }
+
+    function getAranhaLayoutMode(item) {
+        if (!item) return 'circular';
+        if (item.type === 'aranha3') return 'grade';
+        if (item.type === 'aranha2') return 'circular';
+        var mode = item.settings && item.settings.layout_mode
+            ? String(item.settings.layout_mode).toLowerCase().trim()
+            : 'circular';
+        return mode === 'grade' ? 'grade' : 'circular';
+    }
+
+    function migrateAranhaLayout(list) {
+        if (!Array.isArray(list)) return [];
+        return list.map(function (item) {
+            if (!item || typeof item !== 'object') return item;
+            var copy = $.extend(true, {}, item);
+            if (!copy.settings || typeof copy.settings !== 'object') {
+                copy.settings = {};
+            }
+            if (copy.type === 'aranha2') {
+                copy.type = 'aranha';
+                copy.settings.layout_mode = 'circular';
+            } else if (copy.type === 'aranha3') {
+                copy.type = 'aranha';
+                copy.settings.layout_mode = 'grade';
+            } else if (copy.type === 'aranha') {
+                copy.settings.layout_mode = getAranhaLayoutMode(copy);
+            }
+            if (Array.isArray(copy.children)) {
+                copy.children = migrateAranhaLayout(copy.children);
+            }
+            return copy;
+        });
+    }
+
+    var layout = migrateAranhaLayout(vitrineData.layout || []);
 
     function containerContainsAranha(container) {
         if (!container || !container.children || !container.children.length) {
@@ -399,10 +424,12 @@
 
     var vitrineTemplates = [
         {
-            name: 'Vitrine Completa',
-            desc: 'Aranha + Texto + Toggle + Texto + Banner',
+            nameKey: 'ui.template_complete_name',
+            nameFallback: 'Complete showcase',
+            descKey: 'ui.template_complete_desc',
+            descFallback: 'Highlights + Text + Toggle + Text + Banner',
             items: [
-                { type: 'aranha3' },
+                { type: 'aranha', overrides: { layout_mode: 'grade' } },
                 { type: 'text', overrides: { content: '<p>Escreva um texto descritivo aqui...</p>' } },
                 { type: 'toggle' },
                 { type: 'text', overrides: { content: '<p>Mais informações sobre o assunto...</p>' } },
@@ -468,16 +495,16 @@
 
         if (!layout.length) {
             var tplHtml = '<div class="vitrine-template-picker">';
-            tplHtml += '<p class="vitrine-template-picker__title">Modelo inicial</p>';
+            tplHtml += '<p class="vitrine-template-picker__title">' + escapeHtml(t('ui.template_picker_title', 'Initial template')) + '</p>';
             tplHtml += '<div class="vitrine-template-picker__grid vitrine-template-picker__grid--single">';
             vitrineTemplates.forEach(function (tpl, idx) {
                 tplHtml += '<button type="button" class="vitrine-template-picker__item" data-tpl-idx="' + idx + '">';
-                tplHtml += '<strong>' + escapeHtml(tpl.name) + '</strong>';
-                tplHtml += '<span>' + escapeHtml(tpl.desc) + '</span>';
+                tplHtml += '<strong>' + escapeHtml(t(tpl.nameKey, tpl.nameFallback)) + '</strong>';
+                tplHtml += '<span>' + escapeHtml(t(tpl.descKey, tpl.descFallback)) + '</span>';
                 tplHtml += '</button>';
             });
             tplHtml += '</div>';
-            tplHtml += '<p class="vitrine-template-picker__hint">Ou arraste containers da sidebar para começar do zero</p>';
+            tplHtml += '<p class="vitrine-template-picker__hint">' + escapeHtml(t('ui.template_picker_hint', 'Or drag containers from the sidebar to start from scratch')) + '</p>';
             tplHtml += '</div>';
             $canvas.append(tplHtml);
         } else {
@@ -538,10 +565,11 @@
                         widthBadgeHtml +
                         (isContainer && !containerContainsAranha(item) ? (function() {
                             var dirUi = getContainerDirectionUi(settings.direction);
-                            return '<button type="button" class="vitrine-dir-toggle" title="' + escapeAttr(dirUi.title) + '" data-id="' + escapeAttr(item.id) + '" data-dir="' + escapeAttr(normalizeContainerDirection(settings.direction)) + '">' +
-                                '<span class="dashicons ' + dirUi.icon + '"></span>' +
-                                '<span class="vitrine-dir-label">' + escapeHtml(dirUi.label) + '</span>' +
-                            '</button>';
+                            var isRow = dirUi.current === 'row';
+                            return '<div class="vitrine-dir-toggle" role="group" title="' + escapeAttr(dirUi.title) + '" data-id="' + escapeAttr(item.id) + '">' +
+                                '<button type="button" class="vitrine-dir-option' + (!isRow ? ' is-active' : '') + '" data-dir="column" title="Linha (um abaixo do outro)">Linha</button>' +
+                                '<button type="button" class="vitrine-dir-option' + (isRow ? ' is-active' : '') + '" data-dir="row" title="Coluna (lado a lado)">Coluna</button>' +
+                            '</div>';
                         })() : '') +
                         (isContainer ? '<button type="button" class="vitrine-block-collapse" title="Colapsar/Expandir"><span class="dashicons dashicons-arrow-right-alt2"></span></button>' : '') +
                         '<button type="button" class="vitrine-block-duplicate" title="Duplicar">' +
@@ -587,12 +615,13 @@
         });
     }
 
-    function buildAranhaEditorPlaceholder(type) {
-        var icons = { aranha2: 'dashicons-chart-pie', aranha3: 'dashicons-grid-view' };
-        var labels = { aranha2: 'Aranha Circular', aranha3: 'Aranha Grade' };
+    function buildAranhaEditorPlaceholder(type, settings) {
+        var mode = getAranhaLayoutMode({ type: type, settings: settings || {} });
+        var icon = mode === 'grade' ? 'dashicons-grid-view' : 'dashicons-chart-pie';
+        var label = mode === 'grade' ? 'Aranha · Grade' : 'Aranha · Circular';
         return '<div class="vitrine-block-preview-placeholder vitrine-block-preview-placeholder--aranha">' +
-            '<span class="dashicons ' + (icons[type] || 'dashicons-layout') + '"></span>' +
-            '<span class="vitrine-block-preview-placeholder__label">' + escapeHtml(labels[type] || type) + '</span>' +
+            '<span class="dashicons ' + icon + '"></span>' +
+            '<span class="vitrine-block-preview-placeholder__label">' + escapeHtml(label) + '</span>' +
             '<small>Configure no painel lateral · visualização no frontend</small>' +
         '</div>';
     }
@@ -627,8 +656,8 @@
      * Preview simplificado de cada tipo de elemento dentro do canvas.
      */
     function buildPreview(type, settings) {
-        if (type === 'aranha2' || type === 'aranha3') {
-            return buildAranhaEditorPlaceholder(type);
+        if (isAranhaType(type)) {
+            return buildAranhaEditorPlaceholder(type, settings);
         }
 
         switch (type) {
@@ -1129,15 +1158,17 @@
         renderSettings();
     });
 
-    $(document).on('click', '.vitrine-dir-toggle', function (e) {
+    $(document).on('click', '.vitrine-dir-option', function (e) {
         e.preventDefault();
         e.stopPropagation();
-        var id   = $(this).data('id');
+        var $opt = $(this);
+        var id   = $opt.closest('.vitrine-dir-toggle').attr('data-id');
         var item = findItemById(id);
         if (!item) return;
         if (!item.settings) item.settings = {};
+        var newDir = normalizeContainerDirection($opt.attr('data-dir'));
         var current = normalizeContainerDirection(item.settings.direction);
-        var newDir = current === 'row' ? 'column' : 'row';
+        if (newDir === current) return;
         item.settings.direction = newDir;
         if (newDir === 'row') {
             distributeWidths(id);
@@ -1498,7 +1529,37 @@
             return true;
         }
 
-        if (item.type === 'aranha2' || item.type === 'aranha3') {
+        if (isAranhaType(item.type)) {
+            var aranhaMode = getAranhaLayoutMode(item);
+            var circularOnly = {
+                center_label: 1,
+                radius: 1,
+                card_border: 1
+            };
+            var gradeOnly = {
+                center_image_fit: 1,
+                columns: 1,
+                card_border_radius: 1,
+                card_border_style: 1,
+                card_border_width: 1,
+                card_border_color: 1,
+                image_border_radius: 1,
+                card_shadow: 1,
+                center_bg_opacity: 1,
+                image_shadow: 1,
+                gap: 1,
+                card_height: 1,
+                card_text_align: 1,
+                wrapper_padding: 1,
+                wrapper_border_style: 1
+            };
+            if (aranhaMode === 'circular' && gradeOnly[field.name]) {
+                return true;
+            }
+            if (aranhaMode === 'grade' && circularOnly[field.name]) {
+                return true;
+            }
+
             var cardStyle = item.settings.card_style || 'default';
             var isPresetCard = cardStyle !== 'default';
             if (field.name.indexOf('preset_') === 0 && !isPresetCard) {
@@ -1584,6 +1645,9 @@
         var name = field.name;
 
         if (field.type === 'textarea' || field.type === 'plaintextarea') {
+            return 'content';
+        }
+        if (name === 'layout_mode') {
             return 'content';
         }
         if (/^(text|title|content|url|caption|box_title|center_label|name|alt)$/.test(name)) {
@@ -1705,11 +1769,14 @@
         if (item.type === 'container' && field.name === 'name') {
             fieldHint = '<p class="vitrine-field-hint">Aparece na barra do bloco no canvas para identificar cada container.</p>';
         }
-        if ((item.type === 'aranha2' || item.type === 'aranha3') && field.name === 'card_min_height') {
+        if (isAranhaType(item.type) && field.name === 'card_min_height') {
             fieldHint = '<p class="vitrine-field-hint">Aplica-se aos modelos Escuro, Branco e Borda esquerda.</p>';
         }
-        if ((item.type === 'aranha2' || item.type === 'aranha3') && field.name.indexOf('preset_') === 0) {
+        if (isAranhaType(item.type) && field.name.indexOf('preset_') === 0) {
             fieldHint = '<p class="vitrine-field-hint">Personaliza o modelo de card selecionado (substitui o CSS manual).</p>';
+        }
+        if (isAranhaType(item.type) && field.name === 'layout_mode') {
+            fieldHint = '<p class="vitrine-field-hint">Circular: cards em órbita. Grade: cards em moldura ao redor da imagem.</p>';
         }
         if (item.type === 'imagelinks' && field.name === 'image_height') {
             fieldHint = '<p class="vitrine-field-hint">Use 0 para ocultar a área da imagem (só legenda/conteúdo).</p>';
@@ -1777,7 +1844,7 @@
         if (item.type !== 'itemcarousel') {
             itemcarouselExpandedIdx = null;
         }
-        if (item.type !== 'aranha2' && item.type !== 'aranha3') {
+        if (!isAranhaType(item.type)) {
             aranhaExpandedIdx = null;
         }
         if (item.type !== 'toggle') {
@@ -1837,14 +1904,13 @@
             $targetPane.append(buildSettingsFieldGroup(item, elDef, field));
         });
 
-        // ── Aranha Circular: itens radiais ──
-        if (item.type === 'aranha2') {
-            renderAranha2Repeater($contentPane, item);
-        }
-
-        // ── Aranha Grade: itens do grid ──
-        if (item.type === 'aranha3') {
-            renderAranha3Repeater($contentPane, item);
+        // ── Aranha: itens (circular ou grade) ──
+        if (isAranhaType(item.type)) {
+            if (getAranhaLayoutMode(item) === 'grade') {
+                renderAranha3Repeater($contentPane, item);
+            } else {
+                renderAranha2Repeater($contentPane, item);
+            }
         }
 
         // ── Grade de Itens: cards com abas ──
@@ -1880,7 +1946,7 @@
         }
 
         // Inicializa TinyMCE e drag-sort nos itens das aranhas
-        if (item.type === 'aranha2' || item.type === 'aranha3') {
+        if (isAranhaType(item.type)) {
             setTimeout(initAranhaMCE, 50);
             setTimeout(initAranhaSort, 80);
         }
@@ -2059,7 +2125,7 @@
         var oldIndex = evt.oldIndex;
         var newIndex = evt.newIndex;
 
-        if (item.type === 'aranha3') {
+        if (getAranhaLayoutMode(item) === 'grade') {
             syncAranha3ItemsFromDOM(item);
             aranhaExpandedIdx = null;
             renderSettings();
@@ -2069,7 +2135,7 @@
 
         if (!fromKey || !toKey) return;
 
-        if (item.type === 'aranha2') {
+        if (isAranhaType(item.type)) {
             var arr = item.settings[fromKey];
             if (!arr) return;
             var movedA2 = arr.splice(oldIndex, 1)[0];
@@ -2142,14 +2208,12 @@
         return (div.textContent || div.innerText || '').trim();
     }
 
-    function defaultAranhaItem(type) {
-        if (type === 'aranha3') {
+    function defaultAranhaItem(typeOrMode) {
+        var mode = (typeOrMode === 'grade' || typeOrMode === 'aranha3') ? 'grade' : 'circular';
+        if (mode === 'grade') {
             return { title: '', text: '', icon: '', link: '', position: 'auto' };
         }
-        if (type === 'aranha2') {
-            return { title: '', text: '', icon: '', link: '' };
-        }
-        return { text: '', icon: '', link: '' };
+        return { title: '', text: '', icon: '', link: '' };
     }
 
     function syncAllAranhaMCE() {
@@ -2397,7 +2461,7 @@
         html += '<div class="vitrine-aranha-items-list vitrine-a2-items-list" data-aranha-key="items">';
 
         items.forEach(function (ai, idx) {
-            html += buildAranhaCardItemHtml(ai, idx, 'aranha2', aranhaExpandedIdx === idx);
+            html += buildAranhaCardItemHtml(ai, idx, 'circular', aranhaExpandedIdx === idx);
         });
 
         html += '</div>'; // items-list
@@ -2413,7 +2477,7 @@
     }
 
     function buildAranhaCardItemHtml(ai, idx, itemType, isExpanded) {
-        var isGrade = itemType === 'aranha3';
+        var isGrade = itemType === 'aranha3' || itemType === 'grade';
         var itemClass = isGrade ? 'vitrine-a3-item' : 'vitrine-a2-item';
         var hasIcon = !!ai.icon;
         var hasLink = !!ai.link;
@@ -2500,7 +2564,7 @@
     }
 
     function buildAranha3ItemHtml(ai, idx) {
-        return buildAranhaCardItemHtml(ai, idx, 'aranha3', aranhaExpandedIdx === idx);
+        return buildAranhaCardItemHtml(ai, idx, 'grade', aranhaExpandedIdx === idx);
     }
 
     /* ──────────────────────────────────────────────────────
@@ -3252,8 +3316,9 @@
             return;
         }
 
-        if ((item.type === 'aranha2' || item.type === 'aranha3') && field === 'card_style') {
+        if (isAranhaType(item.type) && (field === 'card_style' || field === 'layout_mode')) {
             renderSettings();
+            renderCanvas();
             return;
         }
 
@@ -3428,13 +3493,11 @@
 
         if (!item.settings[key]) item.settings[key] = [];
         if (!item.settings[key][idx]) {
-            item.settings[key][idx] = item.type === 'aranha3'
-                ? { title: '', text: '', icon: '', link: '', position: 'auto' }
-                : { text: '', icon: '', link: '' };
+            item.settings[key][idx] = defaultAranhaItem(getAranhaLayoutMode(item));
         }
         item.settings[key][idx][prop] = $(this).val();
 
-        if (item.type === 'aranha3' && prop === 'position') {
+        if (getAranhaLayoutMode(item) === 'grade' && prop === 'position') {
             renderSettings();
             renderCanvas();
             return;
@@ -3460,16 +3523,12 @@
         var $zoneWrap = $(this).closest('[data-aranha-zone]');
         var zone = $zoneWrap.length ? $zoneWrap.data('aranha-zone') : null;
         if (!item.settings[key]) item.settings[key] = [];
-        if (item.type === 'aranha3') {
-            item.settings[key].push({
-                title: '',
-                text: '',
-                icon: '',
-                link: '',
-                position: zone && zone !== 'auto' ? zone : 'auto'
-            });
+        if (getAranhaLayoutMode(item) === 'grade') {
+            var gradeItem = defaultAranhaItem('grade');
+            gradeItem.position = zone && zone !== 'auto' ? zone : 'auto';
+            item.settings[key].push(gradeItem);
         } else {
-            item.settings[key].push({ text: '', icon: '', link: '' });
+            item.settings[key].push(defaultAranhaItem('circular'));
         }
 
         aranhaExpandedIdx = item.settings[key].length - 1;
@@ -4269,6 +4328,13 @@
             $('#vitrine-opt-bg').val('#ffffff');
             $(this).remove();
         });
+
+        // Garante placeholder traduzido na busca de elementos.
+        var $elSearch = $('#vitrine-element-search');
+        if ($elSearch.length) {
+            var searchPh = t('ui.search_elements', 'Search element...');
+            $elSearch.attr('placeholder', searchPh).attr('aria-label', searchPh);
+        }
 
         renderCanvas();
         renderSettings();

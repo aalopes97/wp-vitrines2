@@ -43,7 +43,8 @@ class Vitrine_AI {
             return;
         }
 
-        // Modo chat desativado: só página de configuração para administradores.
+        // Temporariamente oculto: menu "Configurações IA" (reativar quando necessário).
+        /*
         if ( current_user_can( 'manage_options' ) ) {
             add_submenu_page(
                 'edit.php?post_type=vitrine',
@@ -54,6 +55,7 @@ class Vitrine_AI {
                 array( __CLASS__, 'render_page' )
             );
         }
+        */
     }
 
     public static function handle_settings_save() {
@@ -996,8 +998,9 @@ class Vitrine_AI {
         $instruction = "Gere agora a vitrine completa em JSON conforme o schema. Responda SOMENTE com JSON válido.\n";
 
         if ( $intent['wants_aranha'] ) {
-            $type_label = ( 'aranha3' === $intent['aranha_type'] ) ? 'aranha3 (Aranha Grade)' : 'aranha2 (Aranha Circular)';
-            $instruction .= "\nO usuário pediu uma ARANHA. Use type \"{$intent['aranha_type']}\" ({$type_label}) como bloco principal.\n";
+            $mode       = ( 'grade' === $intent['layout_mode'] ) ? 'grade' : 'circular';
+            $mode_label = ( 'grade' === $mode ) ? 'Grade' : 'Circular';
+            $instruction .= "\nO usuário pediu uma ARANHA. Use type \"aranha\" com settings.layout_mode \"{$mode}\" ({$mode_label}) como bloco principal.\n";
             $instruction .= "- Coloque o elemento aranha dentro de UM container na raiz (children).\n";
             $instruction .= "- \"elementos/itens/cards\" referem-se a settings.items dentro da aranha, NÃO a blocos separados no layout.\n";
 
@@ -1021,9 +1024,10 @@ class Vitrine_AI {
     private static function get_aranha_vocabulary_prompt() {
         return 'IMPORTANTE — elemento ARANHA: quando o usuário disser "aranha", "uma aranha" ou "layout aranha", '
             . 'refere-se ao componente visual do builder (NÃO é animal). '
-            . '"Aranha circular/orbital" = type aranha2 (cards ao redor de imagem central). '
-            . '"Aranha grade/moldura" = type aranha3 (cards em moldura 3×3). '
-            . 'Se não especificar grade, prefira aranha2. '
+            . 'Use sempre type "aranha" com settings.layout_mode "circular" ou "grade". '
+            . '"Aranha circular/orbital" = layout_mode circular (cards ao redor de imagem central). '
+            . '"Aranha grade/moldura" = layout_mode grade (cards em moldura 3×3). '
+            . 'Se não especificar grade, prefira circular. '
             . '"N elementos/itens/cards" = quantidade de cards em settings.items da aranha. '
             . '"Apenas/somente aranha" = vitrine só com esse bloco. ';
     }
@@ -1044,7 +1048,7 @@ class Vitrine_AI {
 
     /**
      * @param string $user_text Texto combinado do usuário.
-     * @return array{wants_aranha:bool,aranha_type:string,item_count:int|null,only_aranha:bool}
+     * @return array{wants_aranha:bool,layout_mode:string,item_count:int|null,only_aranha:bool}
      */
     private static function parse_aranha_intent( $user_text ) {
         $text = mb_strtolower( (string) $user_text, 'UTF-8' );
@@ -1061,14 +1065,14 @@ class Vitrine_AI {
             $item_count = max( 1, min( 12, (int) $matches[1] ) );
         }
 
-        $aranha_type = 'aranha2';
+        $layout_mode = 'circular';
         if ( preg_match( '/\baranha\s*grade\b|\bgrade\s*aranha\b|\bmoldura\b/u', $text ) ) {
-            $aranha_type = 'aranha3';
+            $layout_mode = 'grade';
         }
 
         return array(
             'wants_aranha' => $wants_aranha,
-            'aranha_type'  => $aranha_type,
+            'layout_mode'  => $layout_mode,
             'item_count'   => $item_count,
             'only_aranha'  => $only_aranha && $wants_aranha,
         );
@@ -1091,24 +1095,24 @@ class Vitrine_AI {
             return $parsed;
         }
 
-        $type  = $intent['aranha_type'];
+        $mode  = ! empty( $intent['layout_mode'] ) ? $intent['layout_mode'] : 'circular';
         $count = $intent['item_count'] ?: 7;
 
-        if ( ! self::layout_contains_type( $parsed['layout'], $type ) ) {
-            $parsed['layout'] = self::build_default_aranha_layout( $type, $count );
+        if ( ! self::layout_contains_aranha( $parsed['layout'] ) ) {
+            $parsed['layout'] = self::build_default_aranha_layout( $mode, $count );
         } else {
-            self::adjust_aranha_items_in_layout( $parsed['layout'], $type, $count );
+            self::adjust_aranha_items_in_layout( $parsed['layout'], $mode, $count );
         }
 
         if ( $intent['only_aranha'] || ( $intent['wants_aranha'] && $intent['item_count'] ) ) {
-            $filtered = self::filter_layout_to_aranha_only( $parsed['layout'], $type );
+            $filtered = self::filter_layout_to_aranha_only( $parsed['layout'] );
             if ( ! empty( $filtered ) ) {
                 $parsed['layout'] = $filtered;
             }
         }
 
         if ( empty( $parsed['title'] ) || __( 'Vitrine gerada por IA', 'builder-vitrine' ) === $parsed['title'] ) {
-            $parsed['title'] = ( 'aranha3' === $type )
+            $parsed['title'] = ( 'grade' === $mode )
                 ? __( 'Vitrine Aranha Grade', 'builder-vitrine' )
                 : __( 'Vitrine Aranha Circular', 'builder-vitrine' );
         }
@@ -1117,19 +1121,18 @@ class Vitrine_AI {
     }
 
     /**
-     * @param array  $layout Layout.
-     * @param string $type   aranha2|aranha3.
+     * @param array $layout Layout.
      * @return bool
      */
-    private static function layout_contains_type( $layout, $type ) {
+    private static function layout_contains_aranha( $layout ) {
         foreach ( $layout as $item ) {
             if ( ! is_array( $item ) ) {
                 continue;
             }
-            if ( isset( $item['type'] ) && $type === $item['type'] ) {
+            if ( isset( $item['type'] ) && in_array( $item['type'], array( 'aranha', 'aranha2', 'aranha3' ), true ) ) {
                 return true;
             }
-            if ( ! empty( $item['children'] ) && self::layout_contains_type( $item['children'], $type ) ) {
+            if ( ! empty( $item['children'] ) && self::layout_contains_aranha( $item['children'] ) ) {
                 return true;
             }
         }
@@ -1137,11 +1140,11 @@ class Vitrine_AI {
     }
 
     /**
-     * @param int    $count Quantidade de itens.
-     * @param string $type  aranha2|aranha3.
+     * @param int    $index Índice do item.
+     * @param string $mode  circular|grade.
      * @return array
      */
-    private static function build_default_aranha_item( $index, $type ) {
+    private static function build_default_aranha_item( $index, $mode ) {
         $item = array(
             'title' => sprintf(
                 /* translators: %d: item number */
@@ -1157,7 +1160,7 @@ class Vitrine_AI {
             'link'  => '',
         );
 
-        if ( 'aranha3' === $type ) {
+        if ( 'grade' === $mode ) {
             $item['position'] = 'auto';
         }
 
@@ -1165,21 +1168,23 @@ class Vitrine_AI {
     }
 
     /**
-     * @param string $type  aranha2|aranha3.
+     * @param string $mode  circular|grade.
      * @param int    $count Itens.
      * @return array
      */
-    private static function build_default_aranha_layout( $type, $count ) {
+    private static function build_default_aranha_layout( $mode, $count ) {
+        $mode  = ( 'grade' === $mode ) ? 'grade' : 'circular';
         $items = array();
         for ( $i = 1; $i <= $count; $i++ ) {
-            $items[] = self::build_default_aranha_item( $i, $type );
+            $items[] = self::build_default_aranha_item( $i, $mode );
         }
 
         $settings = array(
-            'items' => $items,
+            'layout_mode' => $mode,
+            'items'       => $items,
         );
 
-        if ( 'aranha2' === $type ) {
+        if ( 'circular' === $mode ) {
             $settings['center_label'] = __( 'Centro', 'builder-vitrine' );
             $settings['center_size']  = '160';
             $settings['radius']       = '200';
@@ -1201,7 +1206,7 @@ class Vitrine_AI {
                 ),
                 'children' => array(
                     array(
-                        'type'     => $type,
+                        'type'     => 'aranha',
                         'id'       => Vitrine_Layout::generate_id(),
                         'settings' => $settings,
                     ),
@@ -1212,19 +1217,22 @@ class Vitrine_AI {
 
     /**
      * @param array  $layout Referência ao layout.
-     * @param string $type   aranha2|aranha3.
+     * @param string $mode   circular|grade.
      * @param int    $count  Quantidade desejada.
      */
-    private static function adjust_aranha_items_in_layout( &$layout, $type, $count ) {
+    private static function adjust_aranha_items_in_layout( &$layout, $mode, $count ) {
+        $mode = ( 'grade' === $mode ) ? 'grade' : 'circular';
         foreach ( $layout as &$item ) {
             if ( ! is_array( $item ) ) {
                 continue;
             }
 
-            if ( isset( $item['type'] ) && $type === $item['type'] ) {
+            if ( isset( $item['type'] ) && in_array( $item['type'], array( 'aranha', 'aranha2', 'aranha3' ), true ) ) {
                 if ( ! isset( $item['settings'] ) || ! is_array( $item['settings'] ) ) {
                     $item['settings'] = array();
                 }
+                $item['type'] = 'aranha';
+                $item['settings']['layout_mode'] = $mode;
                 if ( ! isset( $item['settings']['items'] ) || ! is_array( $item['settings']['items'] ) ) {
                     $item['settings']['items'] = array();
                 }
@@ -1232,7 +1240,7 @@ class Vitrine_AI {
                 while ( count( $item['settings']['items'] ) < $count ) {
                     $item['settings']['items'][] = self::build_default_aranha_item(
                         count( $item['settings']['items'] ) + 1,
-                        $type
+                        $mode
                     );
                 }
 
@@ -1242,17 +1250,16 @@ class Vitrine_AI {
             }
 
             if ( ! empty( $item['children'] ) ) {
-                self::adjust_aranha_items_in_layout( $item['children'], $type, $count );
+                self::adjust_aranha_items_in_layout( $item['children'], $mode, $count );
             }
         }
     }
 
     /**
-     * @param array  $layout Layout.
-     * @param string $type   aranha2|aranha3.
+     * @param array $layout Layout.
      * @return array
      */
-    private static function filter_layout_to_aranha_only( $layout, $type ) {
+    private static function filter_layout_to_aranha_only( $layout ) {
         $result = array();
 
         foreach ( $layout as $item ) {
@@ -1262,7 +1269,7 @@ class Vitrine_AI {
 
             $aranha_children = array();
             foreach ( $item['children'] as $child ) {
-                if ( is_array( $child ) && isset( $child['type'] ) && in_array( $child['type'], array( 'aranha2', 'aranha3' ), true ) ) {
+                if ( is_array( $child ) && isset( $child['type'] ) && in_array( $child['type'], array( 'aranha', 'aranha2', 'aranha3' ), true ) ) {
                     $aranha_children[] = $child;
                 }
             }
@@ -1271,22 +1278,7 @@ class Vitrine_AI {
                 continue;
             }
 
-            $preferred = array_values(
-                array_filter(
-                    $aranha_children,
-                    function ( $child ) use ( $type ) {
-                        return isset( $child['type'] ) && $type === $child['type'];
-                    }
-                )
-            );
-
-            if ( empty( $preferred ) ) {
-                $preferred = array( $aranha_children[0] );
-            } else {
-                $preferred = array( $preferred[0] );
-            }
-
-            $item['children'] = $preferred;
+            $item['children'] = array( $aranha_children[0] );
             $result[]         = $item;
         }
 
@@ -1306,7 +1298,7 @@ class Vitrine_AI {
             . "Regras do layout:\n"
             . "- \"layout\" é um array na raiz; cada item de topo DEVE ser type \"container\".\n"
             . "- Cada container tem \"settings\" e \"children\" (array de elementos).\n"
-            . "- Para aranha: UM container na raiz com UM filho type aranha2 ou aranha3.\n"
+            . "- Para aranha: UM container na raiz com UM filho type \"aranha\" e settings.layout_mode \"circular\" ou \"grade\".\n"
             . "- Os cards da aranha ficam em settings.items (array), NÃO como blocos separados no layout.\n"
             . "- Gere IDs únicos no formato el_xxxxxxxx_timestamp.\n"
             . "- Use HTML simples em text.content (<p>, <strong>, <ul><li>).\n"
@@ -1314,8 +1306,8 @@ class Vitrine_AI {
             . "- Preencha textos realistas em português conforme o pedido do usuário.\n"
             . "- Para itemgrid/items e itemcarousel/items use objetos com title, description/text, image (URL vazia se não houver).\n"
             . "- Para toggle use settings.items com title e content.\n"
-            . "Exemplo aranha2 com 3 itens:\n"
-            . '{"title":"Minha Aranha","layout":[{"type":"container","id":"el_a1","settings":{"padding":"24"},"children":[{"type":"aranha2","id":"el_a2","settings":{"center_label":"Centro","items":[{"title":"Item 1","text":"Texto 1","icon":"dashicons-star-filled","link":""},{"title":"Item 2","text":"Texto 2","icon":"dashicons-heart","link":""},{"title":"Item 3","text":"Texto 3","icon":"dashicons-yes","link":""}]}}]}]}'
+            . "Exemplo aranha circular com 3 itens:\n"
+            . '{"title":"Minha Aranha","layout":[{"type":"container","id":"el_a1","settings":{"padding":"24"},"children":[{"type":"aranha","id":"el_a2","settings":{"layout_mode":"circular","center_label":"Centro","items":[{"title":"Item 1","text":"Texto 1","icon":"dashicons-star-filled","link":""},{"title":"Item 2","text":"Texto 2","icon":"dashicons-heart","link":""},{"title":"Item 3","text":"Texto 3","icon":"dashicons-yes","link":""}]}}]}]}'
             . "\nSchema resumido dos elementos:\n"
             . $schema;
     }
@@ -1360,30 +1352,15 @@ class Vitrine_AI {
                     ),
                 ),
             ),
-            'aranha2'      => array(
-                'label'    => 'Aranha Circular — cards orbitando imagem/centro',
+            'aranha'       => array(
+                'label'    => 'Aranha — circular (orbital) ou grade (moldura)',
                 'settings' => array(
+                    'layout_mode'  => 'circular|grade',
                     'center_image' => 'url (opcional)',
-                    'center_label' => 'string (rótulo central se sem imagem)',
+                    'center_label' => 'string (circular; rótulo central se sem imagem)',
                     'center_size'  => 'number px',
-                    'radius'       => 'number px orbital',
-                    'bg_color'     => 'hex',
-                    'items'        => array(
-                        array(
-                            'title' => 'string',
-                            'text'  => 'string',
-                            'icon'  => 'dashicons-* (opcional)',
-                            'link'  => 'url (opcional)',
-                        ),
-                    ),
-                ),
-            ),
-            'aranha3'      => array(
-                'label'    => 'Aranha Grade — cards em moldura ao redor da imagem central',
-                'settings' => array(
-                    'center_image' => 'url (opcional)',
-                    'center_size'  => 'number px',
-                    'columns'      => 'number referência',
+                    'radius'       => 'number px orbital (circular)',
+                    'columns'      => 'number referência (grade)',
                     'bg_color'     => 'hex',
                     'items'        => array(
                         array(
@@ -1391,7 +1368,7 @@ class Vitrine_AI {
                             'text'     => 'string',
                             'icon'     => 'dashicons-* (opcional)',
                             'link'     => 'url (opcional)',
-                            'position' => 'auto|top|bottom|left|right',
+                            'position' => 'auto|top|bottom|left|right (grade)',
                         ),
                     ),
                 ),

@@ -521,4 +521,5 @@ class Vitrine_Element_Aranha3 extends Vitrine_Element {
     }
 }
 
-Vitrine_Element_Registry::register( new Vitrine_Element_Aranha3() );
+// Mantido apenas como motor de render do elemento unificado "aranha".
+// Vitrine_Element_Registry::register( new Vitrine_Element_Aranha3() );

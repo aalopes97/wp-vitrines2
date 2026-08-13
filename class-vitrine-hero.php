@@ -11,6 +11,7 @@ class Vitrine_Hero_Meta {
     const META_KEY = '_vitrine_page_settings';
 
     public function __construct() {
+        add_action( 'add_meta_boxes', array( $this, 'add_date_meta_box' ), 15 );
         add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ), 20 );
         add_action( 'save_post_vitrine', array( $this, 'save' ), 10, 2 );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
@@ -150,15 +151,75 @@ class Vitrine_Hero_Meta {
         return date_i18n( get_option( 'date_format' ), $timestamp );
     }
 
+    /**
+     * Metabox da data da vitrine (logo abaixo das opções de header/footer).
+     */
+    public function add_date_meta_box() {
+        add_meta_box(
+            'vitrine_date',
+            Vitrine_I18n::t( 'Vitrine date', 'ui.vitrine_date' ),
+            array( $this, 'render_date_meta_box' ),
+            'vitrine',
+            'normal',
+            'high'
+        );
+    }
+
     public function add_meta_box() {
         add_meta_box(
             'vitrine_hero',
-            'Hero da Vitrine',
+            Vitrine_I18n::t( 'Vitrine Hero', 'ui.hero_title' ),
             array( $this, 'render_meta_box' ),
             'vitrine',
             'normal',
             'low'
         );
+    }
+
+    /**
+     * Imprime o nonce de save uma única vez (data ou hero).
+     */
+    private function maybe_print_save_nonce() {
+        static $printed = false;
+        if ( $printed ) {
+            return;
+        }
+        wp_nonce_field( 'vitrine_hero_save', 'vitrine_hero_nonce' );
+        $printed = true;
+    }
+
+    public function render_date_meta_box( $post ) {
+        $this->maybe_print_save_nonce();
+
+        $s          = self::get_settings( $post->ID );
+        $date_color = ! empty( $s['hero_date_color'] ) ? $s['hero_date_color'] : ( ! empty( $s['hero_text_color'] ) ? $s['hero_text_color'] : '#ffffff' );
+        ?>
+        <div id="vitrine-date-meta-box" class="vitrine-date-metabox">
+            <p class="description vitrine-date-metabox__hint"><?php echo esc_html( Vitrine_I18n::t( 'Shown at the bottom of the hero.', 'ui.vitrine_date_hint' ) ); ?></p>
+            <div class="vitrine-date-metabox__fields">
+                <div class="vitrine-date-metabox__field vitrine-date-metabox__field--date">
+                    <label for="vitrine-hero-date"><?php echo esc_html( Vitrine_I18n::t( 'Vitrine date', 'ui.vitrine_date' ) ); ?></label>
+                    <input type="date" name="vitrine_hero[hero_date]" id="vitrine-hero-date" value="<?php echo esc_attr( $s['hero_date'] ); ?>" />
+                </div>
+                <div class="vitrine-date-metabox__field">
+                    <label for="vitrine-hero-date-size"><?php echo esc_html( Vitrine_I18n::t( 'Size (px)', 'ui.vitrine_date_size' ) ); ?></label>
+                    <input type="number" name="vitrine_hero[hero_date_size]" id="vitrine-hero-date-size" value="<?php echo esc_attr( $s['hero_date_size'] ); ?>" min="10" max="72" step="1" class="small-text" />
+                </div>
+                <div class="vitrine-date-metabox__field">
+                    <label for="vitrine-hero-date-color"><?php echo esc_html( Vitrine_I18n::t( 'Color', 'ui.vitrine_date_color' ) ); ?></label>
+                    <input type="color" name="vitrine_hero[hero_date_color]" id="vitrine-hero-date-color" value="<?php echo esc_attr( $date_color ); ?>" />
+                </div>
+                <div class="vitrine-date-metabox__field">
+                    <label for="vitrine-hero-date-align"><?php echo esc_html( Vitrine_I18n::t( 'Alignment', 'ui.vitrine_date_align' ) ); ?></label>
+                    <select name="vitrine_hero[hero_date_align]" id="vitrine-hero-date-align">
+                        <option value="left"<?php selected( $s['hero_date_align'], 'left' ); ?>><?php echo esc_html( Vitrine_I18n::t( 'Left', 'ui.align_left' ) ); ?></option>
+                        <option value="center"<?php selected( $s['hero_date_align'], 'center' ); ?>><?php echo esc_html( Vitrine_I18n::t( 'Center', 'ui.align_center' ) ); ?></option>
+                        <option value="right"<?php selected( $s['hero_date_align'], 'right' ); ?>><?php echo esc_html( Vitrine_I18n::t( 'Right', 'ui.align_right' ) ); ?></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <?php
     }
 
     public function enqueue( $hook ) {
@@ -190,7 +251,7 @@ class Vitrine_Hero_Meta {
     }
 
     public function render_meta_box( $post ) {
-        wp_nonce_field( 'vitrine_hero_save', 'vitrine_hero_nonce' );
+        $this->maybe_print_save_nonce();
 
         $s = self::get_settings( $post->ID );
         ?>

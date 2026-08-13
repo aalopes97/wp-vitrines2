@@ -25,6 +25,7 @@ class Vitrine_Render {
             return '<p>Nenhum conteúdo na vitrine.</p>';
         }
 
+        $layout   = Vitrine_Layout::migrate_aranha_layout( $layout );
         $elements = Vitrine_Plugin::load_elements();
         $output   = '<div class="vitrine-front">';
         $output  .= $this->render_items( $layout, $elements );
@@ -74,7 +75,10 @@ class Vitrine_Render {
                 $inline_styles[] = $custom_css;
             }
 
-            if ( 'aranha2' === $type ) {
+            $aranha_mode = ( 'aranha' === $type && ! empty( $settings['layout_mode'] ) )
+                ? $settings['layout_mode']
+                : '';
+            if ( 'aranha2' === $type || ( 'aranha' === $type && 'grade' !== $aranha_mode ) ) {
                 $inline_styles[] = 'position:relative';
                 $inline_styles[] = 'z-index:auto';
                 $inline_styles[] = 'overflow:hidden';

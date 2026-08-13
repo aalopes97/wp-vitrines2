@@ -41,7 +41,7 @@ class Vitrine_Element_Container extends Vitrine_Element {
             array( 'name' => 'full_width_bg', 'label' => 'Fundo largura total',             'type' => 'select', 'options' => array( '0' => 'Não', '1' => 'Sim (conteúdo em 1200px)' ) ),
             array( 'name' => 'padding',       'label' => 'Padding (px)',                    'type' => 'number' ),
             array( 'name' => 'max_width',     'label' => 'Largura máx conteúdo (px)',       'type' => 'number' ),
-            array( 'name' => 'direction',     'label' => 'Direção (column/row)',            'type' => 'select', 'options' => array( 'column' => 'Coluna (vertical)', 'row' => 'Linha (horizontal)' ) ),
+            array( 'name' => 'direction',     'label' => 'Direção',                         'type' => 'select', 'options' => array( 'column' => 'Linha (um abaixo do outro)', 'row' => 'Coluna (lado a lado)' ) ),
             array( 'name' => 'gap',           'label' => 'Espaço entre itens (px)',         'type' => 'number' ),
             array( 'name' => 'align_items',   'label' => 'Alinhar itens',                   'type' => 'select', 'options' => array( 'stretch' => 'Esticar', 'flex-start' => 'Topo', 'center' => 'Centro', 'flex-end' => 'Base' ) ),
         );

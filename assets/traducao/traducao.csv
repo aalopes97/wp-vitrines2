@@ -16,12 +16,17 @@ ui.settings_empty,Click an element on the canvas to edit its settings.,Click an 
 ui.content_tab,Content,Content,Contenido,Conteúdo
 ui.style_tab,Styles,Styles,Estilos,Estilos
 ui.canvas_placeholder,Drag elements here,Drag elements here,Arrastre los elementos aquí,Arraste os elementos para cá
+ui.template_picker_title,Initial template,Initial template,Plantilla inicial,Modelo inicial
+ui.template_picker_hint,Or drag containers from the sidebar to start from scratch,Or drag containers from the sidebar to start from scratch,O arrastre contenedores de la barra lateral para empezar de cero,Ou arraste containers da sidebar para começar do zero
+ui.template_complete_name,Complete showcase,Complete Window of Knowledge,Vitrina completa,Vitrine Completa
+ui.template_complete_desc,Highlights + Text + Toggle + Text + Banner,Highlights + Text + Toggle + Text + Banner,Destacados + Texto + Toggle + Texto + Banner,Aranha + Texto + Toggle + Texto + Banner
 ui.collapse_elements_panel,Collapse elements panel,Collapse elements panel,Contraer el panel de elementos,Recolher painel de elementos
 ui.show_elements_panel,Show elements panel,Show elements panel,Mostrar el panel de elementos,Exibir painel de elementos
 ui.collapse_settings_panel,Collapse settings panel,Collapse settings panel,Contraer el panel de configuración,Recolher painel de configurações
 ui.show_settings_panel,Show settings panel,Show settings panel,Mostrar el panel de configuración,Exibir painel de configurações
 ui.close_settings_panel,Close panel,Collapse settings panel,Cerrar el panel de configuración,Fechar painel de configurações
 ui.builder_title,Vitrine Builder,Window of Knowledge Builder,Constructor de Vitrinas del Conocimiento,Construtor de Vitrines do Conhecimento
+ui.hero_title,Vitrine Hero,Window of Knowledge Hero,Hero de la Vitrina del Conocimiento,Hero da Vitrine
 ui.page_custom_css,Custom vitrine CSS,Custom Window of Knowledge CSS,CSS personalizado de la Vitrina del Conocimiento,CSS personalizado da Vitrine do Conhecimento
 ui.clone_to_language,Clone to language,Clone to language,Clonar a otro idioma,Clonar para outro idioma
 ui.clone_to_language_help,Creates or updates the Polylang translation with the same layout and content.,Creates or updates the translation with the same layout and content.,Crea o actualiza la traducción con el mismo diseño y contenido.,Cria ou atualiza a tradução com o mesmo layout e conteúdo.
@@ -49,6 +54,10 @@ ui.translations_export,Export CSV,Export CSV,Exportar CSV,Exportar CSV
 ui.translations_import_mode,Import mode,Import mode,Modo de importación,Modo de importação
 ui.translations_import_merge,"Merge (keep existing, fill/update from CSV)","Merge (keep existing, fill/update from CSV)","Combinar (mantener existentes, completar/actualizar desde el CSV)","Mesclar (manter existentes, completar/atualizar a partir do CSV)"
 ui.translations_import_replace,Replace languages found in the CSV,Replace languages found in the CSV,Reemplazar los idiomas encontrados en el CSV,Substituir os idiomas encontrados no CSV
+element.aranha.label,Aranha,Highlights,Destacados,Destaques
+element.aranha.field.layout_mode,Formato,Layout,Formato,Formato
+element.aranha.field.layout_mode.option.circular,Circular,Circular,Circular,Circular
+element.aranha.field.layout_mode.option.grade,Grade,Grid,Cuadrícula,Grade
 element.aranha2.label,Aranha Circular,Circular Highlights,Destacados formato circular,Destaques formato circular
 element.aranha2.field.center_image,Imagem Central,Central image,Imagen central,Imagem central
 element.aranha2.field.center_size,Tamanho central (px),Central image size (px),Tamaño de la imagen central (px),Tamanho da imagem central (px)

@@ -81,14 +81,21 @@ class Vitrine_Editor {
     }
 
     /**
-     * Garante Builder antes do Hero (mesmo com ordem salva pelo usuário).
+     * Ordem: Data (após topbar header/footer) → Builder → Hero → CSS.
      */
     public function force_meta_box_order( $order ) {
-        $preferred = array( 'vitrine_builder', 'vitrine_hero', 'vitrine_page_css' );
+        $preferred = array( 'vitrine_date', 'vitrine_builder', 'vitrine_hero', 'vitrine_page_css' );
         $others    = array();
 
-        if ( is_string( $order ) && '' !== $order ) {
-            foreach ( explode( ',', $order ) as $id ) {
+        $normal = '';
+        if ( is_array( $order ) && ! empty( $order['normal'] ) ) {
+            $normal = $order['normal'];
+        } elseif ( is_string( $order ) && '' !== $order ) {
+            $normal = $order;
+        }
+
+        if ( $normal ) {
+            foreach ( explode( ',', $normal ) as $id ) {
                 $id = trim( $id );
                 if ( $id && ! in_array( $id, $preferred, true ) ) {
                     $others[] = $id;
@@ -96,7 +103,10 @@ class Vitrine_Editor {
             }
         }
 
-        return implode( ',', array_merge( $preferred, $others ) );
+        $result           = is_array( $order ) ? $order : array();
+        $result['normal'] = implode( ',', array_merge( $preferred, $others ) );
+
+        return $result;
     }
 
     /**
@@ -231,6 +241,9 @@ class Vitrine_Editor {
 
         $post_id = get_the_ID();
         $layout  = get_post_meta( $post_id, '_vitrine_layout', true );
+        if ( is_array( $layout ) ) {
+            $layout = Vitrine_Layout::migrate_aranha_layout( $layout );
+        }
         $all_settings = Vitrine_Hero_Meta::get_settings( $post_id );
         $page_settings = array(
             'show_header'   => $all_settings['show_header'],
@@ -265,8 +278,6 @@ class Vitrine_Editor {
         wp_nonce_field( 'vitrine_save', 'vitrine_nonce' );
 
         $elements = Vitrine_Plugin::load_elements();
-        $hero     = Vitrine_Hero_Meta::get_settings( $post->ID );
-        $date_color = ! empty( $hero['hero_date_color'] ) ? $hero['hero_date_color'] : ( ! empty( $hero['hero_text_color'] ) ? $hero['hero_text_color'] : '#ffffff' );
         ?>
         <div id="vitrine-editor">
             <!-- Área principal: sidebar esquerda + canvas + sidebar direita -->
@@ -329,37 +340,8 @@ class Vitrine_Editor {
 
                 <div class="vitrine-panel-resizer" data-panel="right" title="Arrastar para redimensionar"></div>
 
-                <!-- Sidebar direita: data da vitrine (fixa) + propriedades do elemento -->
+                <!-- Sidebar direita: propriedades do elemento -->
                 <aside id="vitrine-settings-sidebar">
-                    <div id="vitrine-date-panel" class="vitrine-date-panel">
-                        <h4 class="vitrine-date-panel__title"><?php echo esc_html( Vitrine_I18n::t( 'Vitrine date', 'ui.vitrine_date' ) ); ?></h4>
-                        <p class="description vitrine-date-panel__hint"><?php echo esc_html( Vitrine_I18n::t( 'Shown at the bottom of the hero.', 'ui.vitrine_date_hint' ) ); ?></p>
-                        <div class="vitrine-date-panel__fields">
-                            <div class="vitrine-date-panel__field">
-                                <label for="vitrine-hero-date"><?php echo esc_html( Vitrine_I18n::t( 'Vitrine date', 'ui.vitrine_date' ) ); ?></label>
-                                <input type="date" name="vitrine_hero[hero_date]" id="vitrine-hero-date" value="<?php echo esc_attr( $hero['hero_date'] ); ?>" />
-                            </div>
-                            <div class="vitrine-date-panel__row">
-                                <div class="vitrine-date-panel__field">
-                                    <label for="vitrine-hero-date-size"><?php echo esc_html( Vitrine_I18n::t( 'Size (px)', 'ui.vitrine_date_size' ) ); ?></label>
-                                    <input type="number" name="vitrine_hero[hero_date_size]" id="vitrine-hero-date-size" value="<?php echo esc_attr( $hero['hero_date_size'] ); ?>" min="10" max="72" step="1" class="small-text" />
-                                </div>
-                                <div class="vitrine-date-panel__field">
-                                    <label for="vitrine-hero-date-color"><?php echo esc_html( Vitrine_I18n::t( 'Color', 'ui.vitrine_date_color' ) ); ?></label>
-                                    <input type="color" name="vitrine_hero[hero_date_color]" id="vitrine-hero-date-color" value="<?php echo esc_attr( $date_color ); ?>" />
-                                </div>
-                            </div>
-                            <div class="vitrine-date-panel__field">
-                                <label for="vitrine-hero-date-align"><?php echo esc_html( Vitrine_I18n::t( 'Alignment', 'ui.vitrine_date_align' ) ); ?></label>
-                                <select name="vitrine_hero[hero_date_align]" id="vitrine-hero-date-align">
-                                    <option value="left"<?php selected( $hero['hero_date_align'], 'left' ); ?>><?php echo esc_html( Vitrine_I18n::t( 'Left', 'ui.align_left' ) ); ?></option>
-                                    <option value="center"<?php selected( $hero['hero_date_align'], 'center' ); ?>><?php echo esc_html( Vitrine_I18n::t( 'Center', 'ui.align_center' ) ); ?></option>
-                                    <option value="right"<?php selected( $hero['hero_date_align'], 'right' ); ?>><?php echo esc_html( Vitrine_I18n::t( 'Right', 'ui.align_right' ) ); ?></option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="vitrine-element-settings" id="vitrine-element-settings">
                         <div id="vitrine-settings-sidebar-header">
                             <div id="vitrine-settings-el-info">
