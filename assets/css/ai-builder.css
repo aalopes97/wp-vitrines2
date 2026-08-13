@@ -1,0 +1,560 @@
+/* ── BVS Chat — identidade visual ── */
+.vitrine-ai-wrap {
+    --bvs-blue: #1a47a1;
+    --bvs-blue-dark: #123578;
+    --bvs-blue-light: #eef3fb;
+    --bvs-blue-soft: #d9e6f8;
+    --bvs-accent: #2f6fd6;
+    --bvs-radius: 16px;
+    --bvs-shadow: 0 8px 32px rgba(26, 71, 161, 0.12);
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.vitrine-ai-page-head {
+    align-items: center;
+    display: flex;
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.vitrine-ai-page-logo {
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(26, 71, 161, 0.15);
+    flex-shrink: 0;
+    height: auto;
+    max-height: 72px;
+    width: auto;
+}
+
+.vitrine-ai-page-head__text h1 {
+    color: var(--bvs-blue-dark);
+    font-size: 1.65rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 6px;
+    padding: 0;
+}
+
+.vitrine-ai-lead {
+    color: #50575e;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.vitrine-ai-settings {
+    background: #fff;
+    border: 1px solid var(--bvs-blue-soft);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    padding: 12px 16px;
+}
+
+.vitrine-ai-settings summary {
+    color: var(--bvs-blue);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.vitrine-ai-settings-form {
+    margin-top: 16px;
+}
+
+/* ── App container ── */
+.vitrine-ai-app {
+    background: #fff;
+    border: 1px solid var(--bvs-blue-soft);
+    border-radius: var(--bvs-radius);
+    box-shadow: var(--bvs-shadow);
+    display: flex;
+    flex-direction: column;
+    min-height: 560px;
+    overflow: hidden;
+}
+
+.vitrine-ai-header {
+    align-items: center;
+    background: linear-gradient(135deg, var(--bvs-blue) 0%, var(--bvs-blue-dark) 100%);
+    color: #fff;
+    display: flex;
+    gap: 14px;
+    padding: 16px 20px;
+}
+
+.vitrine-ai-header__logo {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    flex-shrink: 0;
+    height: 48px;
+    object-fit: contain;
+    padding: 4px;
+    width: 48px;
+}
+
+.vitrine-ai-header__logo-fallback {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    display: flex;
+    font-size: 28px;
+    height: 48px;
+    justify-content: center;
+    width: 48px;
+}
+
+.vitrine-ai-header__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.vitrine-ai-header__title {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+}
+
+.vitrine-ai-header__subtitle {
+    color: rgba(255, 255, 255, 0.82);
+    display: block;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.vitrine-ai-header__badge {
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 999px;
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 4px 10px;
+    text-transform: uppercase;
+}
+
+.vitrine-ai-header__badge::before {
+    background: #6ee7a0;
+    border-radius: 50%;
+    content: "";
+    display: inline-block;
+    height: 7px;
+    margin-right: 6px;
+    vertical-align: middle;
+    width: 7px;
+}
+
+.vitrine-ai-body {
+    background: linear-gradient(180deg, var(--bvs-blue-light) 0%, #f8fafc 120px);
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    position: relative;
+}
+
+.vitrine-ai-messages {
+    flex: 1;
+    max-height: 440px;
+    min-height: 300px;
+    overflow-y: auto;
+    padding: 20px 20px 8px;
+    scroll-behavior: smooth;
+}
+
+.vitrine-ai-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.vitrine-ai-messages::-webkit-scrollbar-thumb {
+    background: var(--bvs-blue-soft);
+    border-radius: 999px;
+}
+
+/* ── Messages ── */
+.vitrine-ai-msg {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.vitrine-ai-msg--user {
+    flex-direction: row-reverse;
+}
+
+.vitrine-ai-msg__avatar {
+    align-items: center;
+    background: #fff;
+    border: 2px solid var(--bvs-blue-soft);
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(26, 71, 161, 0.08);
+    color: var(--bvs-blue);
+    display: flex;
+    flex-shrink: 0;
+    height: 40px;
+    justify-content: center;
+    overflow: hidden;
+    width: 40px;
+}
+
+.vitrine-ai-msg__avatar .dashicons {
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+}
+
+.vitrine-ai-msg__avatar-img {
+    display: block;
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+}
+
+.vitrine-ai-msg--user .vitrine-ai-msg__avatar {
+    background: var(--bvs-blue);
+    border-color: var(--bvs-blue);
+    color: #fff;
+}
+
+.vitrine-ai-msg__body {
+    background: #fff;
+    border: 1px solid #e8edf5;
+    border-radius: 14px 14px 14px 4px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    max-width: min(100%, 620px);
+    padding: 12px 16px;
+}
+
+.vitrine-ai-msg--user .vitrine-ai-msg__body {
+    background: var(--bvs-blue);
+    border-color: var(--bvs-blue);
+    border-radius: 14px 14px 4px 14px;
+    color: #fff;
+}
+
+.vitrine-ai-msg--welcome .vitrine-ai-msg__body {
+    background: #fff;
+    border-color: var(--bvs-blue-soft);
+    border-radius: 14px;
+}
+
+.vitrine-ai-msg--welcome .vitrine-ai-msg__body strong {
+    color: var(--bvs-blue-dark);
+    display: block;
+    font-size: 15px;
+    margin-bottom: 6px;
+}
+
+.vitrine-ai-msg__label {
+    color: var(--bvs-blue);
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.vitrine-ai-msg--user .vitrine-ai-msg__label {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.vitrine-ai-msg__text,
+.vitrine-ai-msg__body p {
+    color: #1d2327;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.vitrine-ai-msg--user .vitrine-ai-msg__text,
+.vitrine-ai-msg--user .vitrine-ai-msg__body p {
+    color: #fff;
+}
+
+/* ── Examples ── */
+.vitrine-ai-examples {
+    padding: 4px 20px 12px;
+}
+
+.vitrine-ai-examples__title {
+    color: var(--bvs-blue);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin: 0 0 8px;
+    text-transform: uppercase;
+}
+
+.vitrine-ai-examples__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.vitrine-ai-example-chip {
+    background: #fff;
+    border: 1px solid var(--bvs-blue-soft);
+    border-radius: 12px;
+    color: #1d2327;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1.45;
+    padding: 10px 14px;
+    text-align: left;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.vitrine-ai-example-chip:hover {
+    background: #fff;
+    border-color: var(--bvs-blue);
+    box-shadow: 0 4px 12px rgba(26, 71, 161, 0.1);
+    transform: translateY(-1px);
+}
+
+/* ── Composer ── */
+.vitrine-ai-composer {
+    background: #fff;
+    border-top: 1px solid var(--bvs-blue-soft);
+    margin-top: auto;
+    padding: 16px 20px 20px;
+}
+
+.vitrine-ai-composer textarea {
+    background: var(--bvs-blue-light);
+    border: 1px solid var(--bvs-blue-soft);
+    border-radius: 12px;
+    box-shadow: none;
+    display: block;
+    font-size: 14px;
+    line-height: 1.55;
+    margin-bottom: 12px;
+    padding: 14px 16px;
+    resize: vertical;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    width: 100%;
+}
+
+.vitrine-ai-composer textarea:focus {
+    background: #fff;
+    border-color: var(--bvs-blue);
+    box-shadow: 0 0 0 3px rgba(26, 71, 161, 0.12);
+    outline: none;
+}
+
+.vitrine-ai-composer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.vitrine-ai-btn-secondary {
+    border-color: #c3c4c7 !important;
+    color: #50575e !important;
+}
+
+.vitrine-ai-btn-send {
+    background: #fff !important;
+    border-color: var(--bvs-blue) !important;
+    color: var(--bvs-blue) !important;
+}
+
+.vitrine-ai-btn-send:hover {
+    background: var(--bvs-blue-light) !important;
+}
+
+.vitrine-ai-btn-generate {
+    background: var(--bvs-blue) !important;
+    border-color: var(--bvs-blue) !important;
+    box-shadow: 0 4px 12px rgba(26, 71, 161, 0.25);
+}
+
+.vitrine-ai-btn-generate:hover {
+    background: var(--bvs-blue-dark) !important;
+    border-color: var(--bvs-blue-dark) !important;
+}
+
+.vitrine-ai-status {
+    background: var(--bvs-blue-light);
+    border-top: 1px solid var(--bvs-blue-soft);
+    color: var(--bvs-blue);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 20px;
+}
+
+/* ── Loading overlay (gerar vitrine) ── */
+.vitrine-ai-loading {
+    align-items: center;
+    background: rgba(248, 250, 252, 0.88);
+    backdrop-filter: blur(4px);
+    display: flex;
+    inset: 0;
+    justify-content: center;
+    position: absolute;
+    z-index: 20;
+}
+
+.vitrine-ai-loading[hidden] {
+    display: none !important;
+}
+
+.vitrine-ai-loading__panel {
+    align-items: center;
+    background: #fff;
+    border: 1px solid var(--bvs-blue-soft);
+    border-radius: 16px;
+    box-shadow: var(--bvs-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: min(92%, 360px);
+    padding: 28px 24px;
+    text-align: center;
+}
+
+.vitrine-ai-loading__spinner {
+    animation: vitrine-ai-spin 0.75s linear infinite;
+    border: 3px solid var(--bvs-blue-soft);
+    border-radius: 50%;
+    border-top-color: var(--bvs-blue);
+    height: 40px;
+    width: 40px;
+}
+
+.vitrine-ai-loading__text {
+    color: var(--bvs-blue-dark);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.35;
+    margin: 4px 0 0;
+}
+
+.vitrine-ai-loading__hint {
+    color: #50575e;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.vitrine-ai-btn-generate.is-loading {
+    opacity: 0.92;
+    pointer-events: none;
+    position: relative;
+}
+
+.vitrine-ai-btn-generate.is-loading::before {
+    animation: vitrine-ai-spin 0.75s linear infinite;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-radius: 50%;
+    border-top-color: #fff;
+    content: "";
+    display: inline-block;
+    height: 14px;
+    margin-right: 8px;
+    vertical-align: -2px;
+    width: 14px;
+}
+
+@keyframes vitrine-ai-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ── Streaming ── */
+.vitrine-ai-msg--streaming .vitrine-ai-msg__body {
+    border-color: var(--bvs-blue-soft);
+}
+
+.vitrine-ai-stream-cursor {
+    animation: vitrine-ai-blink 1s step-end infinite;
+    background: var(--bvs-blue);
+    border-radius: 1px;
+    display: inline-block;
+    height: 14px;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    width: 2px;
+}
+
+@keyframes vitrine-ai-blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+/* ── Suggestions ── */
+.vitrine-ai-suggestions {
+    border-top: 1px dashed var(--bvs-blue-soft);
+    margin-top: 12px;
+    padding-top: 12px;
+}
+
+.vitrine-ai-suggestions__label {
+    color: var(--bvs-blue);
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.vitrine-ai-suggestions__list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.vitrine-ai-suggestion-chip {
+    background: var(--bvs-blue-light);
+    border: 1px solid var(--bvs-blue-soft);
+    border-radius: 10px;
+    color: var(--bvs-blue-dark);
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1.45;
+    padding: 8px 12px;
+    text-align: left;
+    transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.15s;
+}
+
+.vitrine-ai-suggestion-chip:hover {
+    background: var(--bvs-blue);
+    border-color: var(--bvs-blue);
+    color: #fff;
+    transform: translateX(2px);
+}
+
+.vitrine-ai-suggestions--loading .vitrine-ai-suggestions__label {
+    font-weight: 500;
+    text-transform: none;
+}
+
+@media (max-width: 782px) {
+    .vitrine-ai-page-head {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .vitrine-ai-header {
+        flex-wrap: wrap;
+    }
+
+    .vitrine-ai-header__badge {
+        margin-left: auto;
+    }
+
+    .vitrine-ai-composer-actions {
+        justify-content: stretch;
+    }
+
+    .vitrine-ai-composer-actions .button {
+        flex: 1 1 auto;
+    }
+}

@@ -8,6 +8,31 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Vitrine_Icons {
 
+    const FA_VERSION = '6.7.2';
+
+    /**
+     * URL do CSS local do Font Awesome Free.
+     *
+     * @return string
+     */
+    public static function fontawesome_css_url() {
+        return VITRINE_URL . 'assets/vendor/fontawesome/css/all.min.css';
+    }
+
+    /**
+     * Enfileira Font Awesome Free (bundled no plugin).
+     *
+     * @param string[] $deps Dependências do style handle.
+     */
+    public static function enqueue_fontawesome( $deps = array() ) {
+        wp_enqueue_style(
+            'font-awesome',
+            self::fontawesome_css_url(),
+            $deps,
+            self::FA_VERSION
+        );
+    }
+
     /**
      * Todos os Dashicons registrados no core do WordPress.
      *
@@ -46,7 +71,7 @@ class Vitrine_Icons {
     }
 
     /**
-     * Ícones Font Awesome Free (solid, regular, brands) via metadata oficial.
+     * Ícones Font Awesome Free (solid, regular, brands) — lista bundlada no plugin.
      *
      * @return string[] Ex.: "fas fa-user", "fab fa-github"
      */
@@ -56,59 +81,23 @@ class Vitrine_Icons {
             return $list;
         }
 
+        $bundled = VITRINE_PATH . 'assets/vendor/fontawesome/icons-list.php';
+        if ( is_readable( $bundled ) ) {
+            $icons = include $bundled;
+            if ( is_array( $icons ) && ! empty( $icons ) ) {
+                $list = array_values( $icons );
+                return $list;
+            }
+        }
+
+        // Fallback: tenta transient / CDN (ambientes legados).
         $cached = get_transient( 'vitrine_fa_icons_list' );
         if ( is_array( $cached ) && ! empty( $cached ) ) {
             $list = $cached;
             return $list;
         }
 
-        $url      = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/metadata/icons.json';
-        $response = wp_remote_get(
-            $url,
-            array(
-                'timeout' => 20,
-                'headers' => array(
-                    'Accept' => 'application/json',
-                ),
-            )
-        );
-
-        if ( is_wp_error( $response ) ) {
-            $list = array();
-            return $list;
-        }
-
-        $body = json_decode( wp_remote_retrieve_body( $response ), true );
-        if ( ! is_array( $body ) ) {
-            $list = array();
-            return $list;
-        }
-
-        $style_prefix = array(
-            'solid'   => 'fas',
-            'regular' => 'far',
-            'brands'  => 'fab',
-        );
-
-        $icons = array();
-        foreach ( $body as $name => $data ) {
-            if ( empty( $data['free'] ) || ! is_array( $data['free'] ) ) {
-                continue;
-            }
-            foreach ( $data['free'] as $style ) {
-                if ( ! isset( $style_prefix[ $style ] ) ) {
-                    continue;
-                }
-                $icons[] = $style_prefix[ $style ] . ' fa-' . $name;
-            }
-        }
-
-        $icons = array_values( array_unique( $icons ) );
-        sort( $icons, SORT_STRING );
-
-        set_transient( 'vitrine_fa_icons_list', $icons, WEEK_IN_SECONDS );
-
-        $list = $icons;
+        $list = array();
         return $list;
     }
 

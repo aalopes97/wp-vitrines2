@@ -297,37 +297,6 @@ class Vitrine_Hero_Meta {
                         </div>
                     </section>
 
-                    <section class="vitrine-hero-section">
-                        <h4 class="vitrine-hero-section__title">Data</h4>
-                        <div class="vitrine-hero-section__body">
-                            <p class="description vitrine-hero-section__hint">Exibida na parte inferior do hero.</p>
-                            <div class="vitrine-hero-section__grid vitrine-hero-section__grid--2">
-                                <div class="vitrine-hero-field">
-                                    <label for="vitrine-hero-date">Data da vitrine</label>
-                                    <input type="date" name="vitrine_hero[hero_date]" id="vitrine-hero-date" value="<?php echo esc_attr( $s['hero_date'] ); ?>" />
-                                </div>
-                                <div class="vitrine-hero-field">
-                                    <label for="vitrine-hero-date-size">Tamanho (px)</label>
-                                    <input type="number" name="vitrine_hero[hero_date_size]" id="vitrine-hero-date-size" value="<?php echo esc_attr( $s['hero_date_size'] ); ?>" min="10" max="72" step="1" class="small-text" />
-                                </div>
-                            </div>
-                            <div class="vitrine-hero-section__grid vitrine-hero-section__grid--2">
-                                <div class="vitrine-hero-field">
-                                    <label for="vitrine-hero-date-color">Cor</label>
-                                    <input type="color" name="vitrine_hero[hero_date_color]" id="vitrine-hero-date-color" value="<?php echo esc_attr( ! empty( $s['hero_date_color'] ) ? $s['hero_date_color'] : ( $s['hero_text_color'] ?: '#ffffff' ) ); ?>" />
-                                </div>
-                                <div class="vitrine-hero-field">
-                                    <label for="vitrine-hero-date-align">Alinhamento</label>
-                                    <select name="vitrine_hero[hero_date_align]" id="vitrine-hero-date-align">
-                                        <option value="left"<?php selected( $s['hero_date_align'], 'left' ); ?>>Esquerda</option>
-                                        <option value="center"<?php selected( $s['hero_date_align'], 'center' ); ?>>Centro</option>
-                                        <option value="right"<?php selected( $s['hero_date_align'], 'right' ); ?>>Direita</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
                 </div>
 
                 <aside class="vitrine-hero-metabox__aside">

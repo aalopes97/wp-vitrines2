@@ -10,7 +10,7 @@ class Vitrine_Element_Imagelinks extends Vitrine_Element {
     }
 
     public function label() {
-        return 'Imagem + Texto';
+        return 'Imagem + Links';
     }
 
     public function icon() {

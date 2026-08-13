@@ -160,7 +160,92 @@
     function initScrollAnimations() {
         initContainerReveal();
         initAranha3Animations();
+        initAranha2Compact();
         initItemCarousels();
+    }
+
+    /* ── Aranha Circular: colapsa para ícone + título se encavalar ── */
+
+    function rectsOverlap(a, b, gap) {
+        return !(
+            a.right + gap < b.left ||
+            b.right + gap < a.left ||
+            a.bottom + gap < b.top ||
+            b.bottom + gap < a.top
+        );
+    }
+
+    function aranha2HasOverlap(root, gap) {
+        var cards = root.querySelectorAll('.vitrine-aranha2__card');
+        if (cards.length < 2) return false;
+
+        var rects = [];
+        for (var i = 0; i < cards.length; i++) {
+            rects.push(cards[i].getBoundingClientRect());
+        }
+
+        for (var x = 0; x < rects.length; x++) {
+            for (var y = x + 1; y < rects.length; y++) {
+                if (rectsOverlap(rects[x], rects[y], gap)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    function updateAranha2Compact(root) {
+        if (!root || root.getAttribute('data-a2-compact-auto') !== '1') return;
+
+        // No mobile a aranha já vira coluna — não precisa colapsar.
+        if (window.matchMedia('(max-width: 768px)').matches) {
+            root.classList.remove('is-compact');
+            return;
+        }
+
+        var stage = root.querySelector('.vitrine-aranha2__stage');
+        if (!stage || !stage.querySelector('.vitrine-aranha2__card')) return;
+
+        // Mede no modo expandido.
+        root.classList.remove('is-compact');
+        // Força reflow antes de medir.
+        void root.offsetHeight;
+
+        var gap = 8;
+        var overlaps = aranha2HasOverlap(root, gap);
+        root.classList.toggle('is-compact', overlaps);
+    }
+
+    function initAranha2Compact() {
+        var roots = document.querySelectorAll('.vitrine-el-aranha2[data-a2-compact-auto="1"]');
+        if (!roots.length) return;
+
+        var timer = null;
+        function runAll() {
+            roots.forEach(function (root) {
+                updateAranha2Compact(root);
+            });
+        }
+
+        // Após fontes/imagens carregarem e no resize.
+        runAll();
+        window.addEventListener('load', runAll);
+        window.addEventListener('resize', function () {
+            if (timer) clearTimeout(timer);
+            timer = setTimeout(runAll, 120);
+        });
+
+        if ('ResizeObserver' in window) {
+            roots.forEach(function (root) {
+                var ro = new ResizeObserver(function () {
+                    if (timer) clearTimeout(timer);
+                    timer = setTimeout(function () {
+                        updateAranha2Compact(root);
+                    }, 80);
+                });
+                ro.observe(root);
+            });
+        }
     }
 
     function initItemCarousels() {

@@ -136,22 +136,17 @@
     margin-bottom: 24px;
 }
 
-/* Aranha Circular: cards absolutos não podem ficar atrás dos blocos seguintes */
+/* Aranha Circular: não sobe acima dos irmãos / footer */
 .vitrine-block--aranha2 {
-    z-index: 50;
+    position: relative;
+    z-index: auto;
+    isolation: auto;
     overflow: visible !important;
-    transform: translateZ(0);
+    margin-bottom: 28px;
 }
 
 .vitrine-block--aranha2.vitrine-reveal-child {
-    z-index: 50;
-}
-
-.vitrine-front:has(.vitrine-block--aranha2) > .vitrine-block:not(.vitrine-block--aranha2),
-.vitrine-el-container:has(.vitrine-el-aranha2) > .vitrine-block:not(.vitrine-block--aranha2),
-.vitrine-el-container:has(.vitrine-el-aranha2) .vitrine-container-inner > .vitrine-block:not(.vitrine-block--aranha2) {
-    position: relative;
-    z-index: 1;
+    z-index: auto;
 }
 
 .vitrine-el-container--row > .vitrine-block--aranha2,
@@ -159,7 +154,7 @@
 .vitrine-el-container--row > .vitrine-block--container:has(.vitrine-el-aranha2),
 .vitrine-el-container--row .vitrine-container-inner > .vitrine-block--container:has(.vitrine-el-aranha2) {
     overflow: visible !important;
-    z-index: 50;
+    z-index: auto;
     align-self: flex-start;
     height: auto;
     flex: 0 1 auto;
@@ -168,7 +163,7 @@
 .vitrine-el-container--column > .vitrine-block--aranha2,
 .vitrine-el-container--column .vitrine-container-inner > .vitrine-block--aranha2 {
     overflow: visible !important;
-    z-index: 50;
+    z-index: auto;
 }
 
 .vitrine-el-container:has(.vitrine-el-aranha2) {
@@ -189,8 +184,10 @@
 
 /* Título */
 .vitrine-el-title {
-    margin: 0 0 8px;
-    line-height: 1.3;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.25;
+    font-weight: 700;
 }
 
 /* Texto */
@@ -321,7 +318,7 @@
     }
 }
 
-/* Imagem + Texto */
+/* Imagem + Links */
 .vitrine-el-imagelinks {
     width: 100%;
     max-width: 100%;
@@ -872,6 +869,7 @@
     max-width: 100%;
     margin: 0 auto;
     overflow-x: clip;
+    overflow-y: visible;
 }
 .vitrine-article {
     padding: 0;
@@ -1167,22 +1165,33 @@ a.vitrine-aranha__text:hover {
 
 .vitrine-el-aranha2 {
     position: relative;
-    z-index: 2;
+    z-index: auto;
     padding: 0;
     border-radius: 12px;
-    overflow: visible;
+    overflow: hidden; /* contém o orbital — evita faixa cinza / corte e cobrir irmãos */
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
 }
 
-.vitrine-aranha2__stage {
+/* Wrapper responsivo: stage quadrado com margem interna para os cards. */
+.vitrine-aranha2__fit {
     position: relative;
-    width: min(100%, var(--a2-stage-w, 520px));
-    max-width: var(--a2-stage-w, 520px);
-    height: var(--a2-stage-h, auto);
+    width: min(100%, 760px);
+    max-width: 100%;
     margin: 0 auto;
+    aspect-ratio: 1;
+    overflow: hidden;
+}
+
+.vitrine-aranha2__stage {
+    position: absolute;
+    inset: 4%;
+    width: auto;
+    height: auto;
+    margin: 0;
     overflow: visible;
+    transform: none;
 }
 
 /* Centro */
@@ -1195,7 +1204,7 @@ a.vitrine-aranha__text:hover {
     border-radius: 50%;
     border: 3px solid var(--a2-accent, #2e7d32);
     overflow: hidden;
-    z-index: 3;
+    z-index: 5;
     box-shadow:
         0 8px 32px rgba(15, 23, 42, 0.12),
         0 0 0 8px rgba(255, 255, 255, 0.85),
@@ -1264,9 +1273,15 @@ a.vitrine-aranha__text:hover {
     border: 1px solid color-mix(in srgb, var(--a2-card-border, #2e7d32) 22%, #e2e8f0);
     border-radius: 16px;
     padding: 14px 16px;
-    min-width: 92px;
-    max-width: 156px;
-    width: max-content;
+    min-width: 0;
+    width: var(--a2-card-max-w, 22%);
+    max-width: var(--a2-card-max-w, 22%);
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: 28%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1282,7 +1297,6 @@ a.vitrine-aranha__text:hover {
         transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
         box-shadow 0.28s ease,
         border-color 0.28s ease;
-    will-change: transform, box-shadow;
 }
 
 .vitrine-aranha2__card--linked {
@@ -1331,8 +1345,9 @@ a.vitrine-aranha__text:hover {
 }
 
 .vitrine-aranha2__card:has(.vitrine-aranha2__card-title) {
-    max-width: 220px;
-    min-width: 120px;
+    width: var(--a2-card-max-w, 22%);
+    max-width: var(--a2-card-max-w, 22%);
+    min-width: 0;
 }
 
 .vitrine-aranha2__card-link:hover,
@@ -1374,6 +1389,8 @@ a.vitrine-aranha__text:hover {
     font-weight: 400;
     line-height: 1.45;
     letter-spacing: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .vitrine-aranha2__card-text p {
@@ -1388,6 +1405,77 @@ a.vitrine-aranha__text:hover {
     color: inherit;
     text-decoration: underline;
     text-underline-offset: 2px;
+}
+
+/* Compacto automático: só ícone + título (quando JS detecta encavalamento) */
+.vitrine-el-aranha2.is-compact .vitrine-aranha2__card-text,
+.vitrine-el-aranha2.is-dense .vitrine-aranha2__card-text {
+    display: none !important;
+}
+.vitrine-el-aranha2.is-compact .vitrine-aranha2__card,
+.vitrine-el-aranha2.is-dense .vitrine-aranha2__card {
+    max-height: none;
+    overflow: visible;
+    padding: 10px 12px;
+    gap: 6px;
+}
+.vitrine-el-aranha2.is-compact.vitrine-card-style--dark .vitrine-aranha2__card,
+.vitrine-el-aranha2.is-compact.vitrine-card-style--white .vitrine-aranha2__card,
+.vitrine-el-aranha2.is-compact.vitrine-card-style--border-left .vitrine-aranha2__card,
+.vitrine-el-aranha2.is-dense.vitrine-card-style--dark .vitrine-aranha2__card,
+.vitrine-el-aranha2.is-dense.vitrine-card-style--white .vitrine-aranha2__card,
+.vitrine-el-aranha2.is-dense.vitrine-card-style--border-left .vitrine-aranha2__card {
+    padding: 10px 12px;
+    max-height: none;
+    overflow: visible;
+}
+.vitrine-el-aranha2.is-compact .vitrine-aranha2__card-title,
+.vitrine-el-aranha2.is-dense .vitrine-aranha2__card-title {
+    margin-bottom: 0;
+    font-size: 13px;
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.vitrine-el-aranha2.is-compact.vitrine-card-style--dark .vitrine-aranha2__card-title,
+.vitrine-el-aranha2.is-compact.vitrine-card-style--white .vitrine-aranha2__card-title,
+.vitrine-el-aranha2.is-compact.vitrine-card-style--border-left .vitrine-aranha2__card-title,
+.vitrine-el-aranha2.is-dense.vitrine-card-style--dark .vitrine-aranha2__card-title,
+.vitrine-el-aranha2.is-dense.vitrine-card-style--white .vitrine-aranha2__card-title,
+.vitrine-el-aranha2.is-dense.vitrine-card-style--border-left .vitrine-aranha2__card-title {
+    font-size: clamp(12px, 1.5vw, 14px);
+    margin-bottom: 0;
+}
+.vitrine-el-aranha2.is-compact .vitrine-card-icon,
+.vitrine-el-aranha2.is-compact .vitrine-aranha2__card-icon,
+.vitrine-el-aranha2.is-dense .vitrine-card-icon,
+.vitrine-el-aranha2.is-dense .vitrine-aranha2__card-icon {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    font-size: 18px;
+}
+
+/* Hover: revela o texto sem empurrar os vizinhos (card sobe no z-index) */
+.vitrine-el-aranha2.is-compact .vitrine-aranha2__card:hover,
+.vitrine-el-aranha2.is-compact .vitrine-aranha2__card:focus-within,
+.vitrine-el-aranha2.is-dense .vitrine-aranha2__card:hover,
+.vitrine-el-aranha2.is-dense .vitrine-aranha2__card:focus-within {
+    z-index: 40;
+    max-width: min(42%, 280px);
+    width: max(var(--a2-card-max-w, 22%), 200px);
+    box-shadow:
+        0 8px 24px rgba(15, 23, 42, 0.16),
+        0 0 0 1px color-mix(in srgb, var(--a2-card-border, #2e7d32) 25%, transparent);
+}
+.vitrine-el-aranha2.is-compact .vitrine-aranha2__card:hover .vitrine-aranha2__card-text,
+.vitrine-el-aranha2.is-compact .vitrine-aranha2__card:focus-within .vitrine-aranha2__card-text,
+.vitrine-el-aranha2.is-dense .vitrine-aranha2__card:hover .vitrine-aranha2__card-text,
+.vitrine-el-aranha2.is-dense .vitrine-aranha2__card:focus-within .vitrine-aranha2__card-text {
+    display: block !important;
+    margin-top: 6px;
 }
 
 /* Empty state */
@@ -1433,13 +1521,20 @@ a.vitrine-aranha__text:hover {
 
     .vitrine-block--aranha2 {
         z-index: auto;
-        overflow-x: clip !important;
+        overflow: visible !important;
     }
     .vitrine-el-aranha2 {
         padding: clamp(16px, 4vw, 28px) clamp(12px, 3vw, 20px);
-        overflow-x: clip;
+        overflow: visible;
+    }
+    .vitrine-aranha2__fit {
+        height: auto !important;
+        aspect-ratio: auto;
+        overflow: visible;
     }
     .vitrine-aranha2__stage {
+        position: relative !important;
+        inset: auto;
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 auto;
@@ -1447,6 +1542,7 @@ a.vitrine-aranha__text:hover {
         aspect-ratio: auto;
         height: auto !important;
         min-height: 0 !important;
+        transform: none !important;
         display: flex;
         flex-direction: column;
         align-items: stretch;
@@ -1471,10 +1567,15 @@ a.vitrine-aranha__text:hover {
         width: 100% !important;
         min-width: 0 !important;
         max-width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow: visible !important;
         box-sizing: border-box;
         animation: none;
         opacity: 1;
         align-self: stretch;
+        align-items: flex-start !important;
     }
     .vitrine-aranha2__card:has(.vitrine-aranha2__card-title) {
         min-width: 0;
@@ -1484,15 +1585,41 @@ a.vitrine-aranha__text:hover {
     .vitrine-aranha2__card:focus-within {
         transform: none !important;
     }
+    .vitrine-aranha2__card-link {
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        align-items: flex-start !important;
+        flex-wrap: nowrap;
+    }
+    .vitrine-aranha2__card-content,
+    .vitrine-aranha2__card .vitrine-card-content {
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow: visible !important;
+        flex: 1 1 auto;
+        min-width: 0;
+    }
     .vitrine-aranha2__card-title {
         font-size: clamp(1rem, 4.2vw, 1.35rem);
         line-height: 1.25;
     }
     .vitrine-aranha2__card-text {
         font-size: clamp(0.875rem, 3.6vw, 1.05rem);
+        overflow: visible !important;
+        max-height: none !important;
     }
-    .vitrine-aranha2__empty {
-        position: static;
+    .vitrine-el-aranha2.is-compact .vitrine-aranha2__card-text,
+    .vitrine-el-aranha2.is-dense .vitrine-aranha2__card-text {
+        display: block !important;
+    }
+    .vitrine-el-aranha2.is-compact .vitrine-aranha2__card:hover,
+    .vitrine-el-aranha2.is-compact .vitrine-aranha2__card:focus-within,
+    .vitrine-el-aranha2.is-dense .vitrine-aranha2__card:hover,
+    .vitrine-el-aranha2.is-dense .vitrine-aranha2__card:focus-within {
+        max-width: 100%;
+        width: 100%;
     }
 }
 
@@ -2157,69 +2284,101 @@ a.vitrine-aranha__text:hover {
 .vitrine-el-aranha2.vitrine-card-style--dark .vitrine-aranha2__card,
 .vitrine-el-aranha2.vitrine-card-style--white .vitrine-aranha2__card,
 .vitrine-el-aranha2.vitrine-card-style--border-left .vitrine-aranha2__card {
-    width: min(280px, 100%);
-    min-width: 180px;
-    max-width: 280px;
-    min-height: var(--a2-card-min-h, 190px);
-    height: auto;
-    padding: var(--vp-card-padding, 28px);
+    width: var(--a2-card-max-w, 24%);
+    min-width: 0;
+    max-width: var(--a2-card-max-w, 24%);
+    min-height: 0;
+    height: auto !important;
+    max-height: 22%;
+    overflow: hidden;
+    padding: 10px 12px;
     text-align: left;
     display: flex;
-    gap: var(--vp-body-gap, 20px);
+    gap: 10px;
     box-sizing: border-box;
 }
-.vitrine-el-aranha2.vitrine-card-style--dark .vitrine-aranha2__card {
-    flex-direction: column;
-    align-items: stretch;
-}
-.vitrine-el-aranha2.vitrine-card-style--white .vitrine-aranha2__card,
-.vitrine-el-aranha2.vitrine-card-style--border-left .vitrine-aranha2__card {
-    flex-direction: var(--vp-body-direction, row);
+
+/* Borda esquerda / branco: layout horizontal legível no orbital. */
+.vitrine-el-aranha2.vitrine-card-style--border-left .vitrine-aranha2__card,
+.vitrine-el-aranha2.vitrine-card-style--white .vitrine-aranha2__card {
+    width: var(--a2-card-max-w, 26%);
+    max-width: var(--a2-card-max-w, 26%);
+    max-height: 16%;
+    padding: 8px 10px 8px 12px;
+    gap: 8px;
+    flex-direction: row;
     align-items: center;
     flex-wrap: nowrap;
+}
+.vitrine-el-aranha2.vitrine-card-style--border-left .vitrine-aranha2__card {
+    border-left-width: 6px !important;
+}
+
+/* Escuro (ícone em cima): compacto e centralizado no orbital. */
+.vitrine-el-aranha2.vitrine-card-style--dark .vitrine-aranha2__card {
+    width: var(--a2-card-max-w, 24%);
+    max-width: var(--a2-card-max-w, 24%);
+    max-height: 20%;
+    padding: 10px 12px;
+    gap: 6px;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
 }
 .vitrine-el-aranha2.vitrine-card-style--dark .vitrine-aranha2__card-link,
 .vitrine-el-aranha2.vitrine-card-style--white .vitrine-aranha2__card-link,
 .vitrine-el-aranha2.vitrine-card-style--border-left .vitrine-aranha2__card-link {
-    flex-direction: var(--vp-body-direction, row);
-    align-items: center;
-    gap: var(--vp-body-gap, 20px);
+    display: flex;
     width: 100%;
     min-width: 0;
-    text-align: left;
-    flex-wrap: nowrap;
+    gap: 8px;
+    text-decoration: none;
+    color: inherit;
 }
-.vitrine-el-aranha2.vitrine-card-style--dark .vitrine-aranha2__card-link {
-    flex-direction: var(--vp-body-direction, column);
-    align-items: stretch;
-}
-.vitrine-el-aranha2.vitrine-card-style--border-left .vitrine-aranha2__card:not(:has(.vitrine-aranha2__card-link)) {
-    flex-direction: var(--vp-body-direction, row);
+.vitrine-el-aranha2.vitrine-card-style--white .vitrine-aranha2__card-link,
+.vitrine-el-aranha2.vitrine-card-style--border-left .vitrine-aranha2__card-link {
+    flex-direction: row;
     align-items: center;
 }
+.vitrine-el-aranha2.vitrine-card-style--dark .vitrine-aranha2__card-link {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+}
 .vitrine-card-style-border-left.vitrine-aranha2__card {
-    flex-direction: var(--vp-body-direction, row) !important;
+    flex-direction: row !important;
     align-items: center !important;
     flex-wrap: nowrap !important;
 }
 .vitrine-el-aranha2.vitrine-card-style--dark .vitrine-aranha2__card:hover,
 .vitrine-el-aranha2.vitrine-card-style--white .vitrine-aranha2__card:hover,
 .vitrine-el-aranha2.vitrine-card-style--border-left .vitrine-aranha2__card:hover {
-    transform: translate(-50%, -50%) translateY(-8px);
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.16);
+    transform: translate(-50%, -50%) translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.14);
 }
 .vitrine-el-aranha2.vitrine-card-style--dark .vitrine-aranha2__card-title,
 .vitrine-el-aranha2.vitrine-card-style--white .vitrine-aranha2__card-title,
 .vitrine-el-aranha2.vitrine-card-style--border-left .vitrine-aranha2__card-title {
-    font-size: var(--vp-title-size, 24px);
+    font-size: clamp(12px, 1.55vw, 15px);
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 0;
+    line-height: 1.3;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+.vitrine-el-aranha2.vitrine-card-style--dark .vitrine-aranha2__card-title {
+    text-align: center;
 }
 .vitrine-el-aranha2.vitrine-card-style--dark .vitrine-aranha2__card-text,
 .vitrine-el-aranha2.vitrine-card-style--white .vitrine-aranha2__card-text,
 .vitrine-el-aranha2.vitrine-card-style--border-left .vitrine-aranha2__card-text {
-    font-size: var(--vp-text-size, 17px);
-    line-height: 1.4;
+    font-size: clamp(11px, 1.3vw, 13px);
+    line-height: 1.35;
+}
+.vitrine-el-aranha2.vitrine-card-style--dark .vitrine-aranha2__card-text {
+    text-align: center;
 }
 .vitrine-el-aranha2.vitrine-card-style--dark .vitrine-card-content,
 .vitrine-el-aranha2.vitrine-card-style--white .vitrine-card-content,
@@ -2231,8 +2390,13 @@ a.vitrine-aranha__text:hover {
 .vitrine-el-aranha2.vitrine-card-style--white .vitrine-card-icon,
 .vitrine-el-aranha2.vitrine-card-style--border-left .vitrine-card-icon {
     flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
 }
-
+.vitrine-el-aranha2.vitrine-card-style--dark .vitrine-card-icon {
+    margin: 0 auto;
+}
 /* Aranha Grade — layout dos presets */
 .vitrine-el-aranha3 .vitrine-a3-cell--card.vitrine-card-style-dark,
 .vitrine-el-aranha3 .vitrine-a3-cell--card.vitrine-card-style-white,
@@ -2300,7 +2464,7 @@ a.vitrine-aranha__text:hover {
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.16);
 }
 
-/* Mobile: cards das aranhas em largura total */
+/* Mobile: cards das aranhas em largura total + altura auto */
 @media (max-width: 768px) {
     .vitrine-el-aranha2.vitrine-card-style--dark .vitrine-aranha2__card,
     .vitrine-el-aranha2.vitrine-card-style--white .vitrine-aranha2__card,
@@ -2308,6 +2472,11 @@ a.vitrine-aranha__text:hover {
         width: 100% !important;
         min-width: 0 !important;
         max-width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow: visible !important;
+        align-items: flex-start !important;
         box-sizing: border-box;
         padding: clamp(16px, 4vw, var(--vp-card-padding, 28px));
     }
@@ -2320,6 +2489,8 @@ a.vitrine-aranha__text:hover {
     .vitrine-el-aranha2.vitrine-card-style--white .vitrine-aranha2__card-text,
     .vitrine-el-aranha2.vitrine-card-style--border-left .vitrine-aranha2__card-text {
         font-size: clamp(0.875rem, 3.6vw, var(--vp-text-size, 17px));
+        overflow: visible !important;
+        max-height: none !important;
     }
     .vitrine-el-aranha2.vitrine-card-style--dark .vitrine-aranha2__card:hover,
     .vitrine-el-aranha2.vitrine-card-style--white .vitrine-aranha2__card:hover,
@@ -2331,7 +2502,19 @@ a.vitrine-aranha__text:hover {
     .vitrine-el-aranha2.vitrine-card-style--border-left .vitrine-aranha2__card-link {
         width: 100%;
         min-width: 0;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        align-items: flex-start !important;
         gap: clamp(12px, 3vw, var(--vp-body-gap, 20px));
+    }
+    .vitrine-el-aranha2.vitrine-card-style--dark .vitrine-card-content,
+    .vitrine-el-aranha2.vitrine-card-style--white .vitrine-card-content,
+    .vitrine-el-aranha2.vitrine-card-style--border-left .vitrine-card-content {
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow: visible !important;
     }
     .vitrine-el-aranha3 .vitrine-a3-cell--card.vitrine-card-style-dark,
     .vitrine-el-aranha3 .vitrine-a3-cell--card.vitrine-card-style-white,

@@ -1,0 +1,390 @@
+Key,Default text,Translation English,Translation Español,Translation Português
+ui.elements,Elements,Elements,Elementos,Elementos
+ui.structural,Structural,Structural,Estructurales,Estruturais
+ui.vitrine_date,Vitrine date,Window of Knowledge date,Fecha de la vitrina,Data da vitrine
+ui.vitrine_date_hint,Shown at the bottom of the hero.,Shown at the bottom of the hero.,Se muestra en la parte inferior del hero.,Exibida na parte inferior do hero.
+ui.vitrine_date_size,Size (px),Size (px),Tamaño (px),Tamanho (px)
+ui.vitrine_date_color,Color,Color,Color,Cor
+ui.vitrine_date_align,Alignment,Alignment,Alineación,Alinhamento
+ui.align_left,Left,Left,Izquierda,Esquerda
+ui.align_center,Center,Center,Centro,Centro
+ui.align_right,Right,Right,Derecha,Direita
+ui.search_elements,Search element...,Search elements...,Buscar elementos...,Buscar elementos...
+ui.no_elements_found,No elements found.,No elements found.,No se encontraron elementos.,Nenhum elemento encontrado.
+ui.settings,Settings,Settings,Configuración,Configurações
+ui.settings_empty,Click an element on the canvas to edit its settings.,Click an element to edit its settings,Haga clic en un elemento para editar su configuración,Clique em um elemento para ajustar suas configurações
+ui.content_tab,Content,Content,Contenido,Conteúdo
+ui.style_tab,Styles,Styles,Estilos,Estilos
+ui.canvas_placeholder,Drag elements here,Drag elements here,Arrastre los elementos aquí,Arraste os elementos para cá
+ui.collapse_elements_panel,Collapse elements panel,Collapse elements panel,Contraer el panel de elementos,Recolher painel de elementos
+ui.show_elements_panel,Show elements panel,Show elements panel,Mostrar el panel de elementos,Exibir painel de elementos
+ui.collapse_settings_panel,Collapse settings panel,Collapse settings panel,Contraer el panel de configuración,Recolher painel de configurações
+ui.show_settings_panel,Show settings panel,Show settings panel,Mostrar el panel de configuración,Exibir painel de configurações
+ui.close_settings_panel,Close panel,Collapse settings panel,Cerrar el panel de configuración,Fechar painel de configurações
+ui.builder_title,Vitrine Builder,Window of Knowledge Builder,Constructor de Vitrinas del Conocimiento,Construtor de Vitrines do Conhecimento
+ui.page_custom_css,Custom vitrine CSS,Custom Window of Knowledge CSS,CSS personalizado de la Vitrina del Conocimiento,CSS personalizado da Vitrine do Conhecimento
+ui.clone_to_language,Clone to language,Clone to language,Clonar a otro idioma,Clonar para outro idioma
+ui.clone_to_language_help,Creates or updates the Polylang translation with the same layout and content.,Creates or updates the translation with the same layout and content.,Crea o actualiza la traducción con el mismo diseño y contenido.,Cria ou atualiza a tradução com o mesmo layout e conteúdo.
+ui.clone_success,Vitrine cloned. Opening translation…,Window of Knowledge cloned. Opening translation,Vitrina del Conocimiento clonada. Abriendo la traducción,Vitrine do Conhecimento clonada. Abrindo a tradução
+ui.clone_error,Could not clone vitrine.,Could not clone the Window of Knowledge,No se pudo clonar la Vitrina del Conocimiento,Não foi possível clonar a Vitrine do Conhecimento
+ui.translations_page_title,Builder translations,Builder translations,Traducciones del constructor de Vitrinas del Conocimiento,Traduções do Construtor de Vitrines do Conhecimento
+ui.translations_menu,Translations,Translations,Traducciones,Traduções
+ui.container_default,Container,Container,Contenedor,Contêiner
+ui.translations_page_intro,Override element names and builder interface strings per language. Works with Polylang and standard WordPress translations (.po/.mo).,Override element names and builder interface strings for each language. Works with Polylang and standard WordPress translations (.po/.mo).,Sobrescriba los nombres de los elementos y los textos de la interfaz del constructor para cada idioma. Funciona con Polylang y con las traducciones estándar de WordPress (.po/.mo).,Substitua os nomes dos elementos e os textos da interface do construtor para cada idioma. Funciona com o Polylang e com as traduções padrão do WordPress (.po/.mo).
+ui.translations_save,Save translations,Save translations,Guardar traducciones,Salvar traduções
+ui.translations_saved,Translations saved.,Translations saved,Traducciones guardadas,Traduções salvas
+ui.translations_language,Language,Language,Idioma,Idioma
+ui.translations_key,Key,Translation key,Clave de traducción,Chave de tradução
+ui.translations_default,Default text,Default text,Texto predeterminado,Texto padrão
+ui.translations_value,Translation,Translation,Traducción,Tradução
+ui.translations_filter,Filter strings…,Filter translation strings…,Filtrar textos de traducción…,Filtrar textos de tradução…
+ui.polylang_strings_hint,Strings are also registered in Polylang → String translations (group: Builder Vitrine).,Strings are also registered in Polylang → String translations (group: Window of Knowledge Builder).,Las cadenas también se registran en Polylang → Traducciones de cadenas (grupo: Constructor de Vitrinas del Conocimiento).,Os textos também são registrados em Polylang → Traduções de textos (grupo: Construtor de Vitrines do Conhecimento).
+ui.translations_import_title,Import CSV,Import CSV,Importar CSV,Importar CSV
+ui.translations_import_intro,"Upload a translations CSV (Key, Default text, Translation English, Translation Español, Translation Português) or load the file bundled with the plugin.","Upload a translations CSV (Key, Default text, Translation English, Translation Español, Translation Português) or load the file bundled with the plugin.","Suba un CSV de traducciones (Key, Default text, Translation English, Translation Español, Translation Português) o cargue el archivo incluido en el plugin.","Envie um CSV de traduções (Key, Default text, Translation English, Translation Español, Translation Português) ou carregue o arquivo incluído no plugin."
+ui.translations_import_upload,Upload CSV,Upload CSV,Subir CSV,Enviar CSV
+ui.translations_import_bundled,Load plugin CSV,Load plugin CSV,Cargar CSV del plugin,Carregar CSV do plugin
+ui.translations_import_success,Translations imported from CSV.,Translations imported from CSV.,Traducciones importadas desde el CSV.,Traduções importadas do CSV.
+ui.translations_import_error,Could not import the CSV file.,Could not import the CSV file.,No se pudo importar el archivo CSV.,Não foi possível importar o arquivo CSV.
+ui.translations_export,Export CSV,Export CSV,Exportar CSV,Exportar CSV
+ui.translations_import_mode,Import mode,Import mode,Modo de importación,Modo de importação
+ui.translations_import_merge,"Merge (keep existing, fill/update from CSV)","Merge (keep existing, fill/update from CSV)","Combinar (mantener existentes, completar/actualizar desde el CSV)","Mesclar (manter existentes, completar/atualizar a partir do CSV)"
+ui.translations_import_replace,Replace languages found in the CSV,Replace languages found in the CSV,Reemplazar los idiomas encontrados en el CSV,Substituir os idiomas encontrados no CSV
+element.aranha2.label,Aranha Circular,Circular Highlights,Destacados formato circular,Destaques formato circular
+element.aranha2.field.center_image,Imagem Central,Central image,Imagen central,Imagem central
+element.aranha2.field.center_size,Tamanho central (px),Central image size (px),Tamaño de la imagen central (px),Tamanho da imagem central (px)
+element.aranha2.field.center_label,Rótulo central,Central label,Etiqueta central,Rótulo central
+element.aranha2.field.center_bg_color,Cor de fundo centro,Center background color,Color de fondo del centro,Cor de fundo do centro
+element.aranha2.field.radius,Raio orbital (px),Orbital radius (px),Radio orbital (px),Raio orbital (px)
+element.aranha2.field.icon_size,Tam. ícones (px),Icon size (px),Tamaño del icono (px),Tamanho do ícone (px)
+element.aranha2.field.icon_color,Cor dos ícones,Icon color,Color del icono,Cor do ícone
+element.aranha2.field.card_style,Modelo do card,Card style,Modelo de la tarjeta,Modelo do card
+element.aranha2.field.card_style.option.default,Padrão (orbital),Default (orbital),Predeterminado (orbital),Padrão (orbital)
+element.aranha2.field.card_style.option.dark,Escuro (ícone acima),Dark (icon above),Oscuro (icono arriba),Escuro (ícone acima)
+element.aranha2.field.card_style.option.white,Branco (ícone ao lado),White (icon beside text),Blanco (icono junto al texto),Branco (ícone ao lado do texto)
+element.aranha2.field.card_style.option.border-left,Borda esquerda,Left border,Borde izquierdo,Borda esquerda
+element.aranha2.field.card_min_height,Altura mínima dos cards (px),Minimum card height (px),Altura mínima de las tarjetas (px),Altura mínima dos cards (px)
+element.aranha2.field.card_bg,Cor fundo card,Card background,Fondo de la tarjeta,Fundo do card
+element.aranha2.field.card_border,Cor destaque (bordas),Accent color (borders),Color de destaque (bordes),Cor de destaque (bordas)
+element.aranha2.field.title_color,Cor do título,Title color,Color del título,Cor do título
+element.aranha2.field.text_color,Cor do texto,Text color,Color del texto,Cor do texto
+element.aranha2.field.bg_color,Cor de fundo,Background color,Color de fondo,Cor de fundo
+element.aranha2.field.preset_card_bg,Fundo do card (modelo),Card background (style),Fondo de la tarjeta (modelo),Fundo do card (modelo)
+element.aranha2.field.preset_card_bg_hover,Fundo do card ao passar o mouse,Card background on hover,Fondo de la tarjeta al pasar el cursor,Fundo do card ao passar o mouse
+element.aranha2.field.preset_card_border_style,Borda do card,Card border,Borde de la tarjeta,Borda do card
+element.aranha2.field.preset_card_border_style.option.,Padrão do modelo,Style default,Predeterminado del modelo,Padrão do modelo
+element.aranha2.field.preset_card_border_style.option.none,Nenhuma,None,Ninguno,Nenhuma
+element.aranha2.field.preset_card_border_style.option.solid,Sólida,Solid,Sólido,Sólida
+element.aranha2.field.preset_card_border_width,Largura da borda (px),Border width (px),Ancho del borde (px),Largura da borda (px)
+element.aranha2.field.preset_card_border_color,Cor da borda,Border color,Color del borde,Cor da borda
+element.aranha2.field.preset_icon_bg,Fundo do ícone,Icon background,Fondo del icono,Fundo do ícone
+element.aranha2.field.preset_icon_radius,Arredondamento do ícone (px),Icon border radius (px),Radio de borde del icono (px),Arredondamento do ícone (px)
+element.aranha2.field.preset_title_size,Tam. título do card (px),Card title size (px),Tamaño del título de la tarjeta (px),Tamanho do título do card (px)
+element.aranha2.field.preset_text_size,Tam. texto do card (px),Card text size (px),Tamaño del texto de la tarjeta (px),Tamanho do texto do card (px)
+element.aranha2.field.preset_card_padding,Espaçamento interno do card (px),Card padding (px),Relleno de la tarjeta (px),Espaçamento interno do card (px)
+element.aranha2.field.preset_body_direction,Layout ícone + texto,Icon + text layout,Diseño de icono + texto,Layout de ícone + texto
+element.aranha2.field.preset_body_direction.option.,Padrão do modelo,Style default,Predeterminado del modelo,Padrão do modelo
+element.aranha2.field.preset_body_direction.option.column,Coluna (ícone acima),Column (icon above),Columna (icono arriba),Coluna (ícone acima)
+element.aranha2.field.preset_body_direction.option.row,Linha (ícone ao lado),Row (icon beside text),Fila (icono junto al texto),Linha (ícone ao lado do texto)
+element.aranha2.field.preset_body_gap,Espaço ícone/texto (px),Icon/text spacing (px),Espacio entre icono y texto (px),Espaço entre ícone e texto (px)
+element.aranha2.field.preset_body_padding,Padding do corpo do card (px),Card body padding (px),Relleno del cuerpo de la tarjeta (px),Espaçamento interno do corpo do card (px)
+element.aranha3.label,Aranha Grade,Grid highlights,Destacados formato cuadrícula,Destaques formato grade
+element.aranha3.field.center_image,Imagem Central,Central image,Imagen central,Imagem central
+element.aranha3.field.center_image_fit,Ajuste da imagem central,Central image fit,Ajuste de la imagen central,Ajuste da imagem central
+element.aranha3.field.center_image_fit.option.cover,Cover (preenche),Cover (fill),Cover (rellenar),Cover (preencher)
+element.aranha3.field.center_image_fit.option.contain,Contain (inteira),Contain (fit entire image),Contain (imagen completa),Contain (imagem inteira)
+element.aranha3.field.center_size,Tamanho imagem central (px),Central image size (px),Tamaño de la imagen central (px),Tamanho da imagem central (px)
+element.aranha3.field.columns,Colunas (referência),Columns (reference),Columnas (referencia),Colunas (referência)
+element.aranha3.field.card_bg,Fundo do card,Card background,Fondo de la tarjeta,Fundo do card
+element.aranha3.field.title_color,Cor do título,Title color,Color del título,Cor do título
+element.aranha3.field.text_color,Cor do texto,Text color,Color del texto,Cor do texto
+element.aranha3.field.bg_color,Cor de fundo,Background color,Color de fondo,Cor de fundo
+element.aranha3.field.card_border_radius,Arredondamento cards (px),Cards border radius (px),Radio de borde de las tarjetas (px),Arredondamento dos cards (px)
+element.aranha3.field.card_border_style,Borda dos cards,Cards borders,Bordes de las tarjetas,Bordas dos cards
+element.aranha3.field.card_border_style.option.none,Nenhuma,None,Ninguno,Nenhuma
+element.aranha3.field.card_border_style.option.solid,Sólida,Solid,Sólido,Sólida
+element.aranha3.field.card_border_style.option.dashed,Tracejada,Dashed,Discontinuo,Tracejada
+element.aranha3.field.card_border_style.option.dotted,Pontilhada,Dotted,Punteado,Pontilhada
+element.aranha3.field.card_border_style.option.double,Dupla,Double,Doble,Dupla
+element.aranha3.field.card_border_width,Largura da borda (px),Border width (px),Ancho del borde (px),Largura da borda (px)
+element.aranha3.field.card_border_color,Cor da borda,Border color,Color del borde,Cor da borda
+element.aranha3.field.image_border_radius,Arredondamento imagem (px),Image border radius (px),Radio de borde de la imagen (px),Arredondamento da imagem (px)
+element.aranha3.field.card_shadow,Sombra dos cards,Card shadow,Sombra de la tarjeta,Sombra do card
+element.aranha3.field.center_bg_color,Fundo da imagem central,Center background color,Color de fondo central,Cor de fundo central
+element.aranha3.field.center_bg_opacity,Opacidade do fundo (%),Background opacity (%),Opacidad del fondo (%),Opacidade do fundo (%)
+element.aranha3.field.image_shadow,Sombra da imagem,Image shadow,Sombra de la imagen,Sombra da imagem
+element.aranha3.field.gap,Espaçamento (px),Spacing (px),Espaciado (px),Espaçamento (px)
+element.aranha3.field.icon_size,Tam. ícones (px),Icon size (px),Tamaño del icono (px),Tamanho do ícone (px)
+element.aranha3.field.icon_color,Cor dos ícones,Icon color,Color del icono,Cor do ícone
+element.aranha3.field.card_height,Altura dos cards (px),Card height (px),Altura de las tarjetas (px),Altura dos cards (px)
+element.aranha3.field.card_text_align,Alinhamento do texto,Text alignment,Alineación del texto,Alinhamento do texto
+element.aranha3.field.card_text_align.option.top,Topo,Top,Superior,Topo
+element.aranha3.field.card_text_align.option.center,Meio,Middle,Medio,Meio
+element.aranha3.field.card_text_align.option.bottom,Base,Bottom,Inferior,Base
+element.aranha3.field.card_style,Modelo do card,Card style,Modelo de la tarjeta,Modelo do card
+element.aranha3.field.card_style.option.default,Padrão,Default,Predeterminado,Padrão
+element.aranha3.field.card_style.option.dark,Escuro (ícone acima),Dark (icon above),Oscuro (icono arriba),Escuro (ícone acima)
+element.aranha3.field.card_style.option.white,Branco (ícone ao lado),White (icon beside text),Blanco (icono junto al texto),Branco (ícone ao lado do texto)
+element.aranha3.field.card_style.option.border-left,Borda esquerda,Left border,Borde izquierdo,Borda esquerda
+element.aranha3.field.card_min_height,Altura mínima dos cards (px),Minimum card height (px),Altura mínima de las tarjetas (px),Altura mínima dos cards (px)
+element.aranha3.field.wrapper_padding,Padding do bloco (px),Block padding (px),Relleno del bloque (px),Espaçamento interno do bloco (px)
+element.aranha3.field.wrapper_border_style,Borda do bloco,Block border,Borde del bloque,Borda do bloco
+element.aranha3.field.wrapper_border_style.option.none,Nenhuma,None,Ninguno,Nenhuma
+element.aranha3.field.wrapper_border_style.option.solid,Sólida,Solid,Sólido,Sólida
+element.aranha3.field.preset_card_bg,Fundo do card (modelo),Card background (style),Fondo de la tarjeta (modelo),Fundo do card (modelo)
+element.aranha3.field.preset_card_bg_hover,Fundo do card ao passar o mouse,Card background on hover,Fondo de la tarjeta al pasar el cursor,Fundo do card ao passar o mouse
+element.aranha3.field.preset_card_border_style,Borda do card,Card border,Borde de la tarjeta,Borda do card
+element.aranha3.field.preset_card_border_style.option.,Padrão do modelo,Style default,Predeterminado del modelo,Padrão do modelo
+element.aranha3.field.preset_card_border_style.option.none,Nenhuma,None,Ninguno,Nenhuma
+element.aranha3.field.preset_card_border_style.option.solid,Sólida,Solid,Sólido,Sólida
+element.aranha3.field.preset_card_border_width,Largura da borda (px),Border width (px),Ancho del borde (px),Largura da borda (px)
+element.aranha3.field.preset_card_border_color,Cor da borda,Border color,Color del borde,Cor da borda
+element.aranha3.field.preset_icon_bg,Fundo do ícone,Icon background,Fondo del icono,Fundo do ícone
+element.aranha3.field.preset_icon_radius,Arredondamento do ícone (px),Icon border radius (px),Radio de borde del icono (px),Arredondamento do ícone (px)
+element.aranha3.field.preset_title_size,Tam. título do card (px),Card title size (px),Tamaño del título de la tarjeta (px),Tamanho do título do card (px)
+element.aranha3.field.preset_text_size,Tam. texto do card (px),Card text size (px),Tamaño del texto de la tarjeta (px),Tamanho do texto do card (px)
+element.aranha3.field.preset_card_padding,Espaçamento interno do card (px),Card padding (px),Relleno de la tarjeta (px),Espaçamento interno do card (px)
+element.aranha3.field.preset_body_direction,Layout ícone + texto,Icon + text layout,Diseño de icono + texto,Layout de ícone + texto
+element.aranha3.field.preset_body_direction.option.,Padrão do modelo,Style default,Predeterminado del modelo,Padrão do modelo
+element.aranha3.field.preset_body_direction.option.column,Coluna (ícone acima),Column (icon above),Columna (icono arriba),Coluna (ícone acima)
+element.aranha3.field.preset_body_direction.option.row,Linha (ícone ao lado),Row (icon beside text),Fila (icono junto al texto),Linha (ícone ao lado do texto)
+element.aranha3.field.preset_body_gap,Espaço ícone/texto (px),Icon/text spacing (px),Espacio entre icono y texto (px),Espaço entre ícone e texto (px)
+element.aranha3.field.preset_body_padding,Padding do corpo do card (px),Card body padding (px),Relleno del cuerpo de la tarjeta (px),Espaçamento interno do corpo do card (px)
+element.button.label,Botão,Button,Botón,Botão
+element.button.field.text,Texto,Text,Texto,Texto
+element.button.field.url,Link (URL),Link (URL),Enlace (URL),Link (URL)
+element.button.field.bg_color,Cor de fundo,Background color,Color de fondo,Cor de fundo
+element.button.field.color,Cor do texto,Text color,Color del texto,Cor do texto
+element.button.field.align,Alinhamento,Alignment,Alineación,Alinhamento
+element.container.label,Container,Container,Contenedor,Contêiner
+element.container.field.name,Nome do container,Container name,Nombre del contenedor,Nome do contêiner
+element.container.field.bg_color,Cor de fundo,Background color,Color de fondo,Cor de fundo
+element.container.field.bg_image,Imagem de fundo,Background image,Imagen de fondo,Imagem de fundo
+element.container.field.bg_size,Tamanho do fundo,Background size,Tamaño del fondo,Tamanho do fundo
+element.container.field.bg_size.option.cover,Cobrir (cover),Cover,Cubrir (cover),Cobrir (cover)
+element.container.field.bg_size.option.contain,Conter (contain),Contain,Contener (contain),Conter (contain)
+element.container.field.bg_size.option.auto,Automático,Auto,Automático,Automático
+element.container.field.full_width_bg,Fundo largura total,Full-width background,Fondo de ancho completo,Fundo em largura total
+element.container.field.full_width_bg.option.0,Não,No,No,Não
+element.container.field.full_width_bg.option.1,Sim (conteúdo em 1200px),Yes (content at 1200 px),Sí (contenido a 1200 px),Sim (conteúdo em 1200 px)
+element.container.field.padding,Padding (px),Padding (px),Espaciado interno (px),Espaçamento interno (px)
+element.container.field.max_width,Largura máx conteúdo (px),Maximum content width (px),Ancho máximo del contenido (px),Largura máxima do conteúdo (px)
+element.container.field.direction,Direção (column/row),Direction (column/row),Dirección (columna/fila),Direção (coluna/linha)
+element.container.field.direction.option.column,Coluna (vertical),Column (vertical),Columna (vertical),Coluna (vertical)
+element.container.field.direction.option.row,Linha (horizontal),Row (horizontal),Fila (horizontal),Linha (horizontal)
+element.container.field.gap,Espaço entre itens (px),Gap between items (px),Espacio entre elementos (px),Espaço entre itens (px)
+element.container.field.align_items,Alinhar itens,Align items,Alinear elementos,Alinhar itens
+element.container.field.align_items.option.stretch,Esticar,Stretch,Estirar,Esticar
+element.container.field.align_items.option.flex-start,Topo,Top,Superior,Topo
+element.container.field.align_items.option.center,Centro,Center,Centro,Centro
+element.container.field.align_items.option.flex-end,Base,Bottom,Inferior,Base
+element.html.label,HTML,HTML,HTML,HTML
+element.html.field.content,Código HTML,HTML code,Código HTML,Código HTML
+element.html.field.align,Alinhamento,Alignment,Alineación,Alinhamento
+element.html.field.align.option.left,Esquerda,Left,Izquierda,Esquerda
+element.html.field.align.option.center,Centro,Center,Centro,Centro
+element.html.field.align.option.right,Direita,Right,Derecha,Direita
+element.image.label,Imagem,Image,Imagen,Imagem
+element.image.field.url,Imagem,Image,Imagen,Imagem
+element.image.field.alt,Texto alt,Alt text,Texto alternativo,Texto alternativo
+element.image.field.align,Alinhamento,Alignment,Alineación,Alinhamento
+element.image.field.align.option.left,Esquerda,Left,Izquierda,Esquerda
+element.image.field.align.option.center,Centro,Center,Centro,Centro
+element.image.field.align.option.right,Direita,Right,Derecha,Direita
+element.image.field.width,Largura (%),Width (%),Ancho (%),Largura (%)
+element.imagelinks.label,Imagem + Links,Image + Links,Imagen + Enlaces,Imagem + Links
+element.imagelinks.field.image,Imagem,Image,Imagen,Imagem
+element.imagelinks.field.image_height,Altura da imagem (px),Image height (px),Altura de la imagen (px),Altura da imagem (px)
+element.imagelinks.field.image_fit,Ajuste da imagem,Image fit,Ajuste de la imagen,Ajuste da imagem
+element.imagelinks.field.image_fit.option.cover,Cover (preenche),Cover (fill),Cover (rellenar),Cover (preencher)
+element.imagelinks.field.image_fit.option.contain,Contain (inteira),Contain (fit entire image),Contain (imagen completa),Contain (imagem inteira)
+element.imagelinks.field.caption,Legenda (faixa preta),Caption (black bar),Leyenda (franja negra),Legenda (faixa preta)
+element.imagelinks.field.caption_bg,Fundo da legenda,Caption background,Fondo de la leyenda,Fundo da legenda
+element.imagelinks.field.caption_color,Cor da legenda,Caption color,Color de la leyenda,Cor da legenda
+element.imagelinks.field.caption_font_size,Tam. legenda (px),Caption size (px),Tamaño de la leyenda (px),Tamanho da legenda (px)
+element.imagelinks.field.box_bg,Fundo da caixa de conteúdo,Content box background,Fondo del cuadro de contenido,Fundo da caixa de conteúdo
+element.imagelinks.field.box_title,Título da caixa,Box title,Título del cuadro,Título da caixa
+element.imagelinks.field.box_title_color,Cor do título,Title color,Color del título,Cor do título
+element.imagelinks.field.box_title_font_size,Tam. título (px),Title size (px),Tamaño del título (px),Tamanho do título (px)
+element.imagelinks.field.content,Conteúdo abaixo da imagem,Content below image,Contenido debajo de la imagen,Conteúdo abaixo da imagem
+element.imagelinks.field.content_color,Cor do texto,Content text color,Color del texto del contenido,Cor do texto do conteúdo
+element.imagelinks.field.content_font_size,Tam. texto (px),Content font size (px),Tamaño de la fuente del contenido (px),Tamanho da fonte do conteúdo (px)
+element.imagelinks.field.content_heading_size,Tam. títulos no conteúdo (px),Content heading size (px),Tamaño de los títulos del contenido (px),Tamanho dos títulos no conteúdo (px)
+element.imagelinks.field.content_link_size,Tam. links (px),Link size (px),Tamaño de los enlaces (px),Tamanho dos links (px)
+element.imagelinks.field.content_link_color,Cor dos links,Link color,Color de los enlaces,Cor dos links
+element.imagelinks.field.content_link_underline,Sublinhado dos links,Link underline,Subrayado de los enlaces,Sublinhado dos links
+element.imagelinks.field.content_link_underline.option.inherit,Herdar do texto,Inherit from text,Heredar del texto,Herdar do texto
+element.imagelinks.field.content_link_underline.option.underline,Sublinhado,Underline,Subrayado,Sublinhado
+element.imagelinks.field.content_link_underline.option.none,Sem sublinhado,No underline,Sin subrayado,Sem sublinhado
+element.imagelinks.field.separator_color,Cor do separador,Divider color,Color del separador,Cor do separador
+element.imagelinks.field.box_padding,Espaçamento interno (px),Internal spacing (px),Espaciado interno (px),Espaçamento interno (px)
+element.imagelinks.field.media_radius_top,Arred. superior da imagem (px),Image top border radius (px),Radio superior de la imagen (px),Arredondamento superior da imagem (px)
+element.imagelinks.field.box_radius_bottom,Arred. inferior da caixa (px),Box bottom border radius (px),Radio inferior del cuadro (px),Arredondamento inferior da caixa (px)
+element.itemcarousel.label,Carrossel de Itens,Item Carousel,Carrusel de elementos,Carrossel de itens
+element.itemcarousel.field._section_slides,Slides visíveis por dispositivo,Visible slides by device,Diapositivas visibles por dispositivo,Slides visíveis por dispositivo
+element.itemcarousel.field.slides_per_view_desktop,Desktop (≥901px),Desktop (≥901 px),Escritorio (≥901 px),Desktop (≥901 px)
+element.itemcarousel.field.slides_per_view_tablet,Tablet (562–900px),Tablet (562–900 px),Tableta (562–900 px),Tablet (562–900 px)
+element.itemcarousel.field.slides_per_view_mobile,Mobile (≤561px),Mobile (≤561 px),Móvil (≤561 px),Dispositivo móvel (≤561 px)
+element.itemcarousel.field.gap,Espaçamento (px),Spacing (px),Espaciado (px),Espaçamento (px)
+element.itemcarousel.field.autoplay,Autoplay,Autoplay,Reproducción automática,Reprodução automática
+element.itemcarousel.field.autoplay.option.0,Desligado,Off,Desactivado,Desligado
+element.itemcarousel.field.autoplay.option.1,Ligado,On,Activado,Ligado
+element.itemcarousel.field.autoplay_speed,Intervalo autoplay (ms),Autoplay interval (ms),Intervalo de reproducción automática (ms),Intervalo da reprodução automática (ms)
+element.itemcarousel.field.show_arrows,Setas de navegação,Navigation arrows,Flechas de navegación,Setas de navegação
+element.itemcarousel.field.show_arrows.option.1,Sim,Yes,Sí,Sim
+element.itemcarousel.field.show_arrows.option.0,Não,No,No,Não
+element.itemcarousel.field.show_dots,Indicadores (dots),Indicators (dots),Indicadores (puntos),Indicadores (pontos)
+element.itemcarousel.field.show_dots.option.1,Sim,Yes,Sí,Sim
+element.itemcarousel.field.show_dots.option.0,Não,No,No,Não
+element.itemcarousel.field.card_bg,Fundo do slide,Slide background,Fondo de la diapositiva,Fundo do slide
+element.itemcarousel.field.card_radius,Arredondamento (px),Card border radius (px),Radio de borde de la tarjeta (px),Arredondamento do card (px)
+element.itemcarousel.field.card_padding,Padding interno (px),Card padding (px),Relleno de la tarjeta (px),Espaçamento interno do card (px)
+element.itemcarousel.field.image_height,Altura da imagem (px),Image height (px),Altura de la imagen (px),Altura da imagem (px)
+element.itemcarousel.field.image_fit,Ajuste da imagem,Image fit,Ajuste de la imagen,Ajuste da imagem
+element.itemcarousel.field.image_fit.option.cover,Cover,Cover,Cover,Cover
+element.itemcarousel.field.image_fit.option.contain,Contain,Contain,Contain,Contain
+element.itemcarousel.field.image_radius,Arred. imagem (px),Image border radius (px),Radio de borde de la imagen (px),Arredondamento da imagem (px)
+element.itemcarousel.field.icon_size,Tam. ícone (px),Icon size (px),Tamaño del icono (px),Tamanho do ícone (px)
+element.itemcarousel.field.icon_color,Cor do ícone,Icon color,Color del icono,Cor do ícone
+element.itemcarousel.field.icon_bg,Fundo do ícone,Icon background,Fondo del icono,Fundo do ícone
+element.itemcarousel.field.icon_radius,Arred. ícone (px),Icon border radius (px),Radio de borde del icono (px),Arredondamento do ícone (px)
+element.itemcarousel.field.title_color,Cor do título,Title color,Color del título,Cor do título
+element.itemcarousel.field.title_size,Tam. título (px),Title size (px),Tamaño del título (px),Tamanho do título (px)
+element.itemcarousel.field.title_weight,Peso do título,Title weight,Grosor del título,Peso do título
+element.itemcarousel.field.title_weight.option.300,Leve (300),Light (300),Ligero (300),Leve (300)
+element.itemcarousel.field.title_weight.option.400,Normal (400),Normal (400),Normal (400),Normal (400)
+element.itemcarousel.field.title_weight.option.500,Médio (500),Medium (500),Medio (500),Médio (500)
+element.itemcarousel.field.title_weight.option.600,Semi-negrito (600),Semi-bold (600),Seminegrita (600),Seminegrito (600)
+element.itemcarousel.field.title_weight.option.700,Negrito (700),Bold (700),Negrita (700),Negrito (700)
+element.itemcarousel.field.title_weight.option.800,Extra-negrito (800),Extra-bold (800),Extranegrita (800),Extranegrito (800)
+element.itemcarousel.field.text_color,Cor do texto,Text color,Color del texto,Cor do texto
+element.itemcarousel.field.text_size,Tam. texto (px),Text size (px),Tamaño del texto (px),Tamanho do texto (px)
+element.itemcarousel.field.text_weight,Peso do texto,Text weight,Grosor del texto,Peso do texto
+element.itemcarousel.field.text_weight.option.300,Leve (300),Light (300),Ligero (300),Leve (300)
+element.itemcarousel.field.text_weight.option.400,Normal (400),Normal (400),Normal (400),Normal (400)
+element.itemcarousel.field.text_weight.option.500,Médio (500),Medium (500),Medio (500),Médio (500)
+element.itemcarousel.field.text_weight.option.600,Semi-negrito (600),Semi-bold (600),Seminegrita (600),Seminegrito (600)
+element.itemcarousel.field.text_weight.option.700,Negrito (700),Bold (700),Negrita (700),Negrito (700)
+element.itemcarousel.field.text_weight.option.800,Extra-negrito (800),Extra-bold (800),Extranegrita (800),Extranegrito (800)
+element.itemcarousel.field.text_align,Alinhamento,Text alignment,Alineación del texto,Alinhamento do texto
+element.itemcarousel.field.text_align.option.left,Esquerda,Left,Izquierda,Esquerda
+element.itemcarousel.field.text_align.option.center,Centro,Center,Centro,Centro
+element.itemcarousel.field.text_align.option.right,Direita,Right,Derecha,Direita
+element.itemgrid.label,Grade de Itens,Item Grid,Cuadrícula de elementos,Grade de itens
+element.itemgrid.field.columns,Colunas,Columns,Columnas,Colunas
+element.itemgrid.field.gap,Espaçamento (px),Spacing (px),Espaciado (px),Espaçamento (px)
+element.itemgrid.field.card_bg,Fundo do card,Card background,Fondo de la tarjeta,Fundo do card
+element.itemgrid.field.card_radius,Arredondamento do card (px),Card border radius (px),Radio de borde de la tarjeta (px),Arredondamento do card (px)
+element.itemgrid.field.card_padding,Padding do card (px),Card padding (px),Relleno de la tarjeta (px),Espaçamento interno do card (px)
+element.itemgrid.field.card_shadow,Sombra do card,Card shadow,Sombra de la tarjeta,Sombra do card
+element.itemgrid.field.image_height,Altura da imagem (px),Image height (px),Altura de la imagen (px),Altura da imagem (px)
+element.itemgrid.field.image_fit,Ajuste da imagem,Image fit,Ajuste de la imagen,Ajuste da imagem
+element.itemgrid.field.image_fit.option.cover,Cover,Cover,Cover,Cover
+element.itemgrid.field.image_fit.option.contain,Contain,Contain,Contain,Contain
+element.itemgrid.field.image_radius,Arred. da imagem (px),Image border radius (px),Radio de borde de la imagen (px),Arredondamento da imagem (px)
+element.itemgrid.field.title_color,Cor do título (padrão),Title color (default),Color del título (predeterminado),Cor do título (padrão)
+element.itemgrid.field.title_size,Tam. título padrão (px),Default title size (px),Tamaño predeterminado del título (px),Tamanho padrão do título (px)
+element.itemgrid.field.title_weight,Peso do título (padrão),Title weight (default),Grosor del título (predeterminado),Peso do título (padrão)
+element.itemgrid.field.title_weight.option.300,Leve (300),Light (300),Ligero (300),Leve (300)
+element.itemgrid.field.title_weight.option.400,Normal (400),Normal (400),Normal (400),Normal (400)
+element.itemgrid.field.title_weight.option.500,Médio (500),Medium (500),Medio (500),Médio (500)
+element.itemgrid.field.title_weight.option.600,Semi-negrito (600),Semi-bold (600),Seminegrita (600),Seminegrito (600)
+element.itemgrid.field.title_weight.option.700,Negrito (700),Bold (700),Negrita (700),Negrito (700)
+element.itemgrid.field.title_weight.option.800,Extra-negrito (800),Extra-bold (800),Extranegrita (800),Extranegrito (800)
+element.itemgrid.field.desc_color,Cor da descrição (padrão),Description color (default),Color de la descripción (predeterminado),Cor da descrição (padrão)
+element.itemgrid.field.desc_size,Tam. descrição padrão (px),Default description size (px),Tamaño predeterminado de la descripción (px),Tamanho padrão da descrição (px)
+element.itemgrid.field.desc_weight,Peso da descrição (padrão),Description weight (default),Grosor de la descripción (predeterminado),Peso da descrição (padrão)
+element.itemgrid.field.desc_weight.option.300,Leve (300),Light (300),Ligero (300),Leve (300)
+element.itemgrid.field.desc_weight.option.400,Normal (400),Normal (400),Normal (400),Normal (400)
+element.itemgrid.field.desc_weight.option.500,Médio (500),Medium (500),Medio (500),Médio (500)
+element.itemgrid.field.desc_weight.option.600,Semi-negrito (600),Semi-bold (600),Seminegrita (600),Seminegrito (600)
+element.itemgrid.field.desc_weight.option.700,Negrito (700),Bold (700),Negrita (700),Negrito (700)
+element.itemgrid.field.desc_weight.option.800,Extra-negrito (800),Extra-bold (800),Extranegrita (800),Extranegrito (800)
+element.itemgrid.field.text_align,Alinhamento do texto,Text alignment,Alineación del texto,Alinhamento do texto
+element.itemgrid.field.text_align.option.left,Esquerda,Left,Izquierda,Esquerda
+element.itemgrid.field.text_align.option.center,Centro,Center,Centro,Centro
+element.itemgrid.field.text_align.option.right,Direita,Right,Derecha,Direita
+element.shortcode.label,Shortcode,Shortcode,Shortcode,Shortcode
+element.shortcode.field.content,Shortcode,Shortcode,Shortcode,Shortcode
+element.shortcode.field.align,Alinhamento,Alignment,Alineación,Alinhamento
+element.shortcode.field.align.option.left,Esquerda,Left,Izquierda,Esquerda
+element.shortcode.field.align.option.center,Centro,Center,Centro,Centro
+element.shortcode.field.align.option.right,Direita,Right,Derecha,Direita
+element.text.label,Texto,Text,Texto,Texto
+element.text.field.content,Conteúdo,Content,Contenido,Conteúdo
+element.text.field.align,Alinhamento,Alignment,Alineación,Alinhamento
+element.text.field.color,Cor,Font color,Color de la fuente,Cor da fonte
+element.text.field.bg_color,Cor de fundo,Background color,Color de fondo,Cor de fundo
+element.text.field.font_size,Tamanho (px),Font size (px),Tamaño de la fuente (px),Tamanho da fonte (px)
+element.textimage.label,Texto + Imagem,Text + Image,Texto + Imagen,Texto + Imagem
+element.textimage.field.title,Título,Title,Título,Título
+element.textimage.field.title_tag,Tag do título,Heading tag,Etiqueta del título,Tag do título
+element.textimage.field.title_tag.option.h2,H2,H2,H2,H2
+element.textimage.field.title_tag.option.h3,H3,H3,H3,H3
+element.textimage.field.title_tag.option.h4,H4,H4,H4,H4
+element.textimage.field.title_color,Cor do título,Title color,Color del título,Cor do título
+element.textimage.field.title_font_size,Tam. título (px),Title size (px),Tamaño del título (px),Tamanho do título (px)
+element.textimage.field.content,Texto,Text,Texto,Texto
+element.textimage.field.content_color,Cor do texto,Content text color,Color del texto del contenido,Cor do texto do conteúdo
+element.textimage.field.content_font_size,Tam. texto (px),Content font size (px),Tamaño de la fuente del contenido (px),Tamanho da fonte do conteúdo (px)
+element.textimage.field.image,Imagem,Image,Imagen,Imagem
+element.textimage.field.image_position,Posição da imagem,Image position,Posición de la imagen,Posição da imagem
+element.textimage.field.image_position.option.right,Direita,Right,Derecha,Direita
+element.textimage.field.image_position.option.left,Esquerda,Left,Izquierda,Esquerda
+element.textimage.field.image_width,Largura imagem (%),Image width (%),Ancho de la imagen (%),Largura da imagem (%)
+element.textimage.field.bg_color,Cor de fundo,Background color,Color de fondo,Cor de fundo
+element.textimage.field.padding,Espaçamento interno (px),Internal spacing (px),Espaciado interno (px),Espaçamento interno (px)
+element.textimage.field.border_radius,Arredondamento (px),Border radius (px),Radio de borde (px),Arredondamento (px)
+element.textimage.field.gap,Espaço texto/imagem (px),Text/image spacing (px),Espacio entre texto e imagen (px),Espaço entre texto e imagem (px)
+element.title.label,Título,Title,Título,Título
+element.title.field.text,Texto,Text,Texto,Texto
+element.title.field.tag,Tag HTML,HTML tag,Etiqueta HTML,Tag HTML
+element.title.field.tag.option.h1,H1,H1,H1,H1
+element.title.field.tag.option.h2,H2,H2,H2,H2
+element.title.field.tag.option.h3,H3,H3,H3,H3
+element.title.field.tag.option.h4,H4,H4,H4,H4
+element.title.field.tag.option.h5,H5,H5,H5,H5
+element.title.field.tag.option.h6,H6,H6,H6,H6
+element.title.field.align,Alinhamento,Alignment,Alineación,Alinhamento
+element.title.field.align.option.left,Esquerda,Left,Izquierda,Esquerda
+element.title.field.align.option.center,Centro,Center,Centro,Centro
+element.title.field.align.option.right,Direita,Right,Derecha,Direita
+element.title.field.color,Cor,Color,Color,Cor
+element.title.field.font_size,Tamanho (px),Font size (px),Tamaño de la fuente (px),Tamanho da fonte (px)
+element.toggle.label,Toggle,Toggle (Expandable text),Acordeón (Texto desplegable),Acordeón (Texto expansível)
+element.toggle.field.header_bg,Cor fundo cabeçalho,Header background color,Color de fondo del encabezado,Cor de fundo do cabeçalho
+element.toggle.field.header_color,Cor texto cabeçalho,Header text color,Color del texto del encabezado,Cor do texto do cabeçalho
+element.toggle.field.content_bg,Cor fundo conteúdo,Content background color,Color de fondo del contenido,Cor de fundo do conteúdo
+element.toggle.field.content_color,Cor texto conteúdo,Content text color,Color del texto del contenido,Cor do texto do conteúdo
+element.toggle.field.border_color,Cor da borda,Border color,Color del borde,Cor da borda
+element.toggle.field.icon_color,Cor do ícone +/−,+/− Icon color,Color del icono +/−,Cor do ícone +/−
+element.toggle.field.title_font_size,Tam. título (px),Title size (px),Tamaño del título (px),Tamanho do título (px)
+element.toggle.field.content_font_size,Tam. descrição (px),Content font size (px),Tamaño de la fuente del contenido (px),Tamanho da fonte do conteúdo (px)
+element.video.label,Vídeo,Video,Video,Vídeo
+element.video.field.qty,Quantidade de vídeos,Number of videos,Cantidad de videos,Quantidade de vídeos
+element.video.field.qty.option.1,1 vídeo,1 video,1 video,1 vídeo
+element.video.field.qty.option.2,2 vídeos lado a lado,2 videos side by side,2 videos uno al lado del otro,2 vídeos lado a lado
+element.video.field.qty.option.3,3 vídeos lado a lado,3 videos side by side,3 videos uno al lado del otro,3 vídeos lado a lado
+element.video.field.source_1,Vídeo 1 — origem,Video 1 — source,Video 1 — origen,Vídeo 1 — origem
+element.video.field.source_1.option.youtube,YouTube,YouTube,YouTube,YouTube
+element.video.field.source_1.option.local,Arquivo / biblioteca,File / media library,Archivo / biblioteca de medios,Arquivo / biblioteca de mídia
+element.video.field.url_1,Vídeo 1 — URL,Video 1 — URL,Video 1 — URL,Vídeo 1 — URL
+element.video.field.source_2,Vídeo 2 — origem,Video 2 — source,Video 2 — origen,Vídeo 2 — origem
+element.video.field.source_2.option.youtube,YouTube,YouTube,YouTube,YouTube
+element.video.field.source_2.option.local,Arquivo / biblioteca,File / media library,Archivo / biblioteca de medios,Arquivo / biblioteca de mídia
+element.video.field.url_2,Vídeo 2 — URL,Video 2 — URL,Video 2 — URL,Vídeo 2 — URL
+element.video.field.source_3,Vídeo 3 — origem,Video 3 — source,Video 3 — origen,Vídeo 3 — origem
+element.video.field.source_3.option.youtube,YouTube,YouTube,YouTube,YouTube
+element.video.field.source_3.option.local,Arquivo / biblioteca,File / media library,Archivo / biblioteca de medios,Arquivo / biblioteca de mídia
+element.video.field.url_3,Vídeo 3 — URL,Video 3 — URL,Video 3 — URL,Vídeo 3 — URL
+element.video.field.aspect,Proporção,Aspect ratio,Relación de aspecto,Proporção
+element.video.field.aspect.option.16-9,16:09,16:9,16:9,16:9
+element.video.field.aspect.option.4-3,4:03,4:3,4:3,4:3
+element.video.field.aspect.option.1-1,1:01,1:1,1:1,1:1
+element.video.field.autoplay,Autoplay,Autoplay,Reproducción automática,Reprodução automática
+element.video.field.autoplay.option.0,Não,No,No,Não
+element.video.field.autoplay.option.1,Sim,Yes,Sí,Sim
+element.video.field.controls,Controles,Controls,Controles,Controles
+element.video.field.controls.option.1,Sim,Yes,Sí,Sim
+element.video.field.controls.option.0,Não,No,No,Não
+element.video.field.width_2,Largura do vídeo 2 (%),Video 2 width (%),Ancho del video 2 (%),Largura do vídeo 2 (%)
+element.video.field.width_3,Largura do vídeo 3 (%),Video 3 width (%),Ancho del video 3 (%),Largura do vídeo 3 (%)
