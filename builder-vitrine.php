@@ -3,7 +3,7 @@
  * Plugin Name:  Builder Vitrine
  * Description:  Editor visual de vitrines para WooCommerce/WordPress.
  * Version:      1.3.11
- * Author:       Antonio
+ * Author:       Toni Lopes
  * Text Domain:  builder-vitrine
  */
 
