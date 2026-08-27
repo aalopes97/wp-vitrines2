@@ -23,9 +23,11 @@ class Vitrine_Hero_Meta {
             'show_footer'          => '1',
             'page_bg_color'        => '',
             'hero_image'           => '',
+            'hero_bg_color'        => '#333333',
             'hero_text'            => '',
             'hero_text_color'      => '#ffffff',
             'hero_overlay_opacity' => '50',
+            'hero_text_shadow'     => '1',
             'hero_height'          => '400',
             'hero_font_size'       => '36',
             'hero_text_align'      => 'center',
@@ -64,9 +66,11 @@ class Vitrine_Hero_Meta {
     public static function hero_keys() {
         return array(
             'hero_image',
+            'hero_bg_color',
             'hero_text',
             'hero_text_color',
             'hero_overlay_opacity',
+            'hero_text_shadow',
             'hero_height',
             'hero_font_size',
             'hero_text_align',
@@ -114,9 +118,11 @@ class Vitrine_Hero_Meta {
 
         return array(
             'hero_image'           => isset( $input['hero_image'] ) ? esc_url_raw( $input['hero_image'] ) : '',
+            'hero_bg_color'        => isset( $input['hero_bg_color'] ) ? ( sanitize_hex_color( $input['hero_bg_color'] ) ?: '#333333' ) : '#333333',
             'hero_text'            => isset( $input['hero_text'] ) ? sanitize_text_field( $input['hero_text'] ) : '',
             'hero_text_color'      => isset( $input['hero_text_color'] ) ? sanitize_hex_color( $input['hero_text_color'] ) : '#ffffff',
             'hero_overlay_opacity' => isset( $input['hero_overlay_opacity'] ) ? absint( $input['hero_overlay_opacity'] ) : 50,
+            'hero_text_shadow'     => ! empty( $input['hero_text_shadow'] ) ? '1' : '0',
             'hero_height'          => isset( $input['hero_height'] ) ? absint( $input['hero_height'] ) : 400,
             'hero_font_size'       => isset( $input['hero_font_size'] ) ? absint( $input['hero_font_size'] ) : 36,
             'hero_text_align'      => $align,
@@ -233,13 +239,13 @@ class Vitrine_Hero_Meta {
             'vitrine-hero-admin-css',
             VITRINE_URL . 'assets/css/editor.css',
             array(),
-            filemtime( VITRINE_PATH . 'assets/css/editor.css' )
+            VITRINE_VERSION . '.' . filemtime( VITRINE_PATH . 'assets/css/editor.css' )
         );
         wp_enqueue_script(
             'vitrine-hero-admin-js',
             VITRINE_URL . 'assets/js/hero-admin.js',
             array( 'jquery' ),
-            filemtime( VITRINE_PATH . 'assets/js/hero-admin.js' ),
+            VITRINE_VERSION . '.' . filemtime( VITRINE_PATH . 'assets/js/hero-admin.js' ),
             true
         );
 
@@ -279,7 +285,7 @@ class Vitrine_Hero_Meta {
                                     </div>
                                 </div>
                             </div>
-                            <div class="vitrine-hero-section__grid vitrine-hero-section__grid--2">
+                            <div class="vitrine-hero-section__grid vitrine-hero-section__grid--3">
                                 <div class="vitrine-hero-field">
                                     <label for="vitrine-hero-height">Altura (px)</label>
                                     <input type="number" name="vitrine_hero[hero_height]" id="vitrine-hero-height" value="<?php echo esc_attr( $s['hero_height'] ); ?>" min="100" max="1000" step="10" class="small-text" />
@@ -287,6 +293,10 @@ class Vitrine_Hero_Meta {
                                 <div class="vitrine-hero-field">
                                     <label for="vitrine-hero-opacity">Opacidade do fade <span id="vitrine-hero-opacity-val"><?php echo esc_html( $s['hero_overlay_opacity'] ); ?>%</span></label>
                                     <input type="range" name="vitrine_hero[hero_overlay_opacity]" id="vitrine-hero-opacity" min="0" max="100" value="<?php echo esc_attr( $s['hero_overlay_opacity'] ); ?>" />
+                                </div>
+                                <div class="vitrine-hero-field">
+                                    <label for="vitrine-hero-bg-color">Cor de fundo (sem imagem)</label>
+                                    <input type="color" name="vitrine_hero[hero_bg_color]" id="vitrine-hero-bg-color" value="<?php echo esc_attr( $s['hero_bg_color'] ); ?>" />
                                 </div>
                             </div>
                         </div>
@@ -305,7 +315,7 @@ class Vitrine_Hero_Meta {
                                     <input type="hidden" name="vitrine_hero[hero_text_italic]" id="vitrine-hero-text-italic" value="<?php echo esc_attr( $s['hero_text_italic'] ); ?>" />
                                 </div>
                             </div>
-                            <div class="vitrine-hero-section__grid vitrine-hero-section__grid--3">
+                            <div class="vitrine-hero-section__grid vitrine-hero-section__grid--4">
                                 <div class="vitrine-hero-field">
                                     <label for="vitrine-hero-font-size">Tamanho (px)</label>
                                     <input type="number" name="vitrine_hero[hero_font_size]" id="vitrine-hero-font-size" value="<?php echo esc_attr( $s['hero_font_size'] ); ?>" min="12" max="120" step="2" class="small-text" />
@@ -320,6 +330,13 @@ class Vitrine_Hero_Meta {
                                         <option value="left"<?php selected( $s['hero_text_align'], 'left' ); ?>>Esquerda</option>
                                         <option value="center"<?php selected( $s['hero_text_align'], 'center' ); ?>>Centro</option>
                                         <option value="right"<?php selected( $s['hero_text_align'], 'right' ); ?>>Direita</option>
+                                    </select>
+                                </div>
+                                <div class="vitrine-hero-field">
+                                    <label for="vitrine-hero-text-shadow">Sombra dos textos</label>
+                                    <select name="vitrine_hero[hero_text_shadow]" id="vitrine-hero-text-shadow">
+                                        <option value="1"<?php selected( $s['hero_text_shadow'], '1' ); ?>>Ativada</option>
+                                        <option value="0"<?php selected( $s['hero_text_shadow'], '0' ); ?>>Desativada</option>
                                     </select>
                                 </div>
                             </div>

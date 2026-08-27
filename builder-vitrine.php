@@ -2,7 +2,7 @@
 /**
  * Plugin Name:  Builder Vitrine
  * Description:  Editor visual de vitrines para WooCommerce/WordPress.
- * Version:      1.3.9
+ * Version:      1.3.11
  * Author:       Antonio
  * Text Domain:  builder-vitrine
  */
@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'VITRINE_VERSION', '1.3.9' );
+define( 'VITRINE_VERSION', '1.3.11' );
 define( 'VITRINE_PATH',    plugin_dir_path( __FILE__ ) );
 define( 'VITRINE_URL',     plugin_dir_url( __FILE__ ) );
 

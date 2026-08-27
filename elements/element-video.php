@@ -86,12 +86,32 @@ class Vitrine_Element_Video extends Vitrine_Element {
         $padding = isset( $aspects[ $s['aspect'] ] ) ? $aspects[ $s['aspect'] ] : '56.25';
 
         $gap = $qty > 1 ? 16 : 0;
-        $output = '<div class="vitrine-el-video-group" style="display:flex;gap:' . $gap . 'px;align-items:flex-start;">';
+        $default_widths = array( 1 => 100, 2 => 50, 3 => 34 );
+        $video_widths   = array();
+        $total_width    = 0;
+        for ( $i = 1; $i <= $qty; $i++ ) {
+            $configured_width = isset( $s[ "width_{$i}" ] ) ? intval( $s[ "width_{$i}" ] ) : 0;
+            // width_1=100 é o padrão do modo de 1 vídeo; em 2/3 vídeos,
+            // usa-se a divisão correspondente para evitar overflow horizontal.
+            if ( $i === 1 && $qty > 1 && 100 === $configured_width ) {
+                $configured_width = $default_widths[ $qty ];
+            }
+            if ( 2 === $i && 3 === $qty && 50 === $configured_width ) {
+                $configured_width = $default_widths[ $qty ];
+            }
+            if ( $configured_width <= 0 ) {
+                $configured_width = $default_widths[ $qty ];
+            }
+            $video_widths[ $i ] = max( 10, min( 90, $configured_width ) );
+            $total_width       += $video_widths[ $i ];
+        }
+
+        $output = '<div class="vitrine-el-video-group" style="display:flex;flex-wrap:wrap;width:100%;max-width:100%;gap:' . $gap . 'px;align-items:flex-start;box-sizing:border-box;">';
 
         for ( $i = 1; $i <= $qty; $i++ ) {
             $source = isset( $s[ "source_{$i}" ] ) ? $s[ "source_{$i}" ] : 'youtube';
             $url    = isset( $s[ "url_{$i}" ] )    ? $s[ "url_{$i}" ]    : '';
-            $width  = max( 10, min( 90, intval( isset( $s[ "width_{$i}" ] ) ? $s[ "width_{$i}" ] : ( $qty === 1 ? 100 : ( $qty === 2 ? 50 : 34 ) ) ) ) );
+            $width  = $video_widths[ $i ];
 
             // Retrocompatibilidade: slot 1 pode ter campos antigos
             if ( 1 === $i && empty( $url ) ) {
@@ -104,9 +124,14 @@ class Vitrine_Element_Video extends Vitrine_Element {
                 }
             }
 
-            $flex_style = $qty > 1
-                ? "flex:0 1 {$width}%;max-width:{$width}%;min-width:0;"
-                : 'flex:1 1 100%;';
+            if ( $qty > 1 ) {
+                $share     = number_format( ( $width / $total_width ) * 100, 4, '.', '' );
+                $gap_share = number_format( $gap * ( $width / $total_width ), 4, '.', '' );
+                $basis     = "calc({$share}% - {$gap_share}px)";
+                $flex_style = "flex:0 1 {$basis};width:{$basis};max-width:{$basis};min-width:0;";
+            } else {
+                $flex_style = 'flex:1 1 100%;width:100%;max-width:100%;min-width:0;';
+            }
 
             $output .= '<div class="vitrine-el-video" style="' . $flex_style . '">';
             $output .= '<div class="vitrine-el-video__wrapper" style="position:relative;padding-bottom:' . $padding . '%;height:0;overflow:hidden;">';

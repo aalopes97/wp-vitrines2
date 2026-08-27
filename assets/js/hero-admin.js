@@ -28,6 +28,7 @@
         if (!$prev.length) return;
 
         var img   = $('#vitrine-hero-image').val() || '';
+        var bgColor = $('#vitrine-hero-bg-color').val() || '#333333';
         var text  = $('#vitrine-hero-text').val() || '';
         var color = $('#vitrine-hero-text-color').val() || '#ffffff';
         var opa   = parseInt($('#vitrine-hero-opacity').val() || '50', 10) / 100;
@@ -40,6 +41,7 @@
         var descMw = parseInt($('#vitrine-hero-desc-max-width').val() || '0', 10);
         var textBold = $('#vitrine-hero-text-bold').val() !== '0' ? '700' : '400';
         var textItal = $('#vitrine-hero-text-italic').val() === '1' ? 'italic' : 'normal';
+        var shadow  = $('#vitrine-hero-text-shadow').val() !== '0';
         var heroDate = $('#vitrine-hero-date').val() || '';
         var dateFs = parseInt($('#vitrine-hero-date-size').val() || '16', 10);
         var dateColor = $('#vitrine-hero-date-color').val() || color;
@@ -61,22 +63,27 @@
         var justifyMap = { left: 'flex-start', center: 'center', right: 'flex-end' };
         var justifyContent = justifyMap[align] || 'center';
         var dateJustify = justifyMap[dateAlign] || 'flex-end';
-        var bgStyle = img ? 'background:url(' + escapeAttr(img) + ') center/cover no-repeat;' : 'background:#333;';
+        var bgStyle = img
+            ? 'background:url(' + escapeAttr(img) + ') center/cover no-repeat;background-color:' + escapeAttr(bgColor) + ';'
+            : 'background:' + escapeAttr(bgColor) + ';';
+        var textShadow = shadow ? 'text-shadow:0 2px 8px rgba(0,0,0,.5);' : 'text-shadow:none;';
+        var descShadow = shadow ? 'text-shadow:0 1px 4px rgba(0,0,0,.5);' : 'text-shadow:none;';
+        var dateShadow = shadow ? 'text-shadow:0 2px 10px rgba(0,0,0,.5);' : 'text-shadow:none;';
 
         var html = '<div style="position:relative;' + bgStyle + 'height:' + h + 'px;border-radius:6px;overflow:hidden;display:flex;flex-direction:column;align-items:' + justifyContent + ';justify-content:center;gap:10px;padding:0 20px;">';
         html += '<div style="position:absolute;inset:0;background:rgba(0,0,0,' + opa + ');"></div>';
         if (text) {
-            html += '<span style="position:relative;z-index:1;font-size:' + fs + 'px;font-weight:' + textBold + ';font-style:' + textItal + ';color:' + escapeAttr(color) + ';text-align:' + escapeAttr(align) + ';text-shadow:0 2px 8px rgba(0,0,0,.5);">' + escapeHtml(text) + '</span>';
+            html += '<span style="position:relative;z-index:1;font-size:' + fs + 'px;font-weight:' + textBold + ';font-style:' + textItal + ';color:' + escapeAttr(color) + ';text-align:' + escapeAttr(align) + ';' + textShadow + '">' + escapeHtml(text) + '</span>';
         }
         if (desc) {
-            var descStyle = 'position:relative;z-index:1;font-size:' + dfs + 'px;color:' + escapeAttr(descColor) + ';text-align:' + escapeAttr(align) + ';opacity:0.9;text-shadow:0 1px 4px rgba(0,0,0,.5);';
+            var descStyle = 'position:relative;z-index:1;font-size:' + dfs + 'px;color:' + escapeAttr(descColor) + ';text-align:' + escapeAttr(align) + ';opacity:0.9;' + descShadow;
             if (descMw > 0) {
                 descStyle += 'max-width:' + descMw + 'px;margin-left:auto;margin-right:auto;display:block;width:100%;';
             }
             html += '<span style="' + descStyle + '">' + desc + '</span>';
         }
         if (heroDate) {
-            html += '<span style="position:absolute;z-index:2;left:20px;right:20px;bottom:16px;display:flex;justify-content:' + dateJustify + ';"><time style="font-size:' + dateFs + 'px;color:' + escapeAttr(dateColor) + ';font-weight:600;text-shadow:0 2px 8px rgba(0,0,0,.5);">' + escapeHtml(dateLabel) + '</time></span>';
+            html += '<span style="position:absolute;z-index:2;left:20px;right:20px;bottom:16px;display:flex;justify-content:' + dateJustify + ';"><time style="font-size:' + dateFs + 'px;color:' + escapeAttr(dateColor) + ';font-weight:600;' + dateShadow + '">' + escapeHtml(dateLabel) + '</time></span>';
         }
         html += '</div>';
 
@@ -117,7 +124,7 @@
             renderHeroPreview();
         });
 
-        $('#vitrine-hero-meta-box').on('input change', '#vitrine-hero-text, #vitrine-hero-text-color, #vitrine-hero-opacity, #vitrine-hero-height, #vitrine-hero-font-size, #vitrine-hero-text-align, #vitrine-hero-desc-size, #vitrine-hero-desc-color, #vitrine-hero-desc-max-width', function () {
+        $('#vitrine-hero-meta-box').on('input change', '#vitrine-hero-image, #vitrine-hero-bg-color, #vitrine-hero-text, #vitrine-hero-text-color, #vitrine-hero-opacity, #vitrine-hero-height, #vitrine-hero-font-size, #vitrine-hero-text-align, #vitrine-hero-text-shadow, #vitrine-hero-desc-size, #vitrine-hero-desc-color, #vitrine-hero-desc-max-width', function () {
             if (this.id === 'vitrine-hero-opacity') {
                 $('#vitrine-hero-opacity-val').text($(this).val() + '%');
             }

@@ -475,6 +475,16 @@ class Vitrine_I18n {
                     }
                     $f['options'] = $opts;
                 }
+                // Corrige dados localizados por versões antigas do elemento
+                // Texto que ainda declaravam alinhamento como campo livre.
+                if ( 'text' === $slug && 'align' === $field['name'] ) {
+                    $f['type'] = 'select';
+                    $f['options'] = array(
+                        'left'   => self::field_option_label( $slug, 'align', 'left', 'Esquerda' ),
+                        'center' => self::field_option_label( $slug, 'align', 'center', 'Centro' ),
+                        'right'  => self::field_option_label( $slug, 'align', 'right', 'Direita' ),
+                    );
+                }
                 $fields_data[] = $f;
             }
             $elements_js[ $slug ] = array(

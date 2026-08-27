@@ -15,12 +15,14 @@ $vitrine_show_header   = ! isset( $vitrine_page_settings['show_header'] ) || '1'
 $vitrine_show_footer   = ! isset( $vitrine_page_settings['show_footer'] ) || '1' === $vitrine_page_settings['show_footer'];
 $vitrine_bg_color      = ! empty( $vitrine_page_settings['page_bg_color'] ) ? $vitrine_page_settings['page_bg_color'] : '';
 $vitrine_hero_image    = ! empty( $vitrine_page_settings['hero_image'] ) ? $vitrine_page_settings['hero_image'] : '';
+$vitrine_hero_bg_color = ! empty( $vitrine_page_settings['hero_bg_color'] ) ? $vitrine_page_settings['hero_bg_color'] : '#333333';
 $vitrine_hero_text     = ! empty( $vitrine_page_settings['hero_text'] ) ? $vitrine_page_settings['hero_text'] : '';
 $vitrine_hero_txt_clr  = ! empty( $vitrine_page_settings['hero_text_color'] ) ? $vitrine_page_settings['hero_text_color'] : '#ffffff';
 $vitrine_hero_opacity  = isset( $vitrine_page_settings['hero_overlay_opacity'] ) ? intval( $vitrine_page_settings['hero_overlay_opacity'] ) / 100 : 0.5;
 $vitrine_hero_height   = ! empty( $vitrine_page_settings['hero_height'] ) ? intval( $vitrine_page_settings['hero_height'] ) : 400;
 $vitrine_hero_font_sz  = ! empty( $vitrine_page_settings['hero_font_size'] ) ? intval( $vitrine_page_settings['hero_font_size'] ) : 36;
 $vitrine_hero_align    = ! empty( $vitrine_page_settings['hero_text_align'] ) ? $vitrine_page_settings['hero_text_align'] : 'center';
+$vitrine_hero_shadow   = ! isset( $vitrine_page_settings['hero_text_shadow'] ) || '0' !== (string) $vitrine_page_settings['hero_text_shadow'];
 $vitrine_hero_bold     = isset( $vitrine_page_settings['hero_text_bold'] ) && '0' === $vitrine_page_settings['hero_text_bold'] ? '400' : '700';
 $vitrine_hero_italic   = ! empty( $vitrine_page_settings['hero_text_italic'] ) ? 'italic' : 'normal';
 $vitrine_hero_desc     = ! empty( $vitrine_page_settings['hero_description'] ) ? $vitrine_page_settings['hero_description'] : '';
@@ -56,7 +58,7 @@ if ( 'left' === $vitrine_hero_align ) {
 
 $vitrine_hero_style = $vitrine_hero_image
     ? 'background:url(' . esc_url( $vitrine_hero_image ) . ') center/cover no-repeat;'
-    : 'background:#333;';
+    : 'background:' . esc_attr( $vitrine_hero_bg_color ) . ';';
 $vitrine_hero_style .= '--vitrine-hero-h:' . (int) $vitrine_hero_height . 'px;';
 $vitrine_hero_style .= '--vitrine-hero-title-size:' . (int) $vitrine_hero_font_sz . 'px;';
 $vitrine_hero_style .= '--vitrine-hero-desc-size:' . (int) $vitrine_hero_desc_sz . 'px;';
@@ -85,7 +87,7 @@ $vitrine_body_style = $vitrine_bg_color ? ' style="background-color:' . esc_attr
 
 <main id="vitrine-single" class="vitrine-single-wrap vitrine-single-wrap--<?php echo esc_attr( get_the_ID() ); ?>"<?php echo $vitrine_body_style; ?>>
     <?php if ( $vitrine_hero_image || $vitrine_hero_text || $vitrine_hero_desc || $vitrine_hero_date_label ) : ?>
-    <section class="vitrine-hero" style="<?php echo esc_attr( $vitrine_hero_style ); ?>">
+    <section class="vitrine-hero<?php echo $vitrine_hero_shadow ? '' : ' vitrine-hero--no-text-shadow'; ?>" style="<?php echo esc_attr( $vitrine_hero_style ); ?>">
         <div class="vitrine-hero-overlay" style="background:rgba(0,0,0,<?php echo esc_attr( $vitrine_hero_opacity ); ?>);"></div>
         <div class="vitrine-hero-content" style="text-align:<?php echo esc_attr( $vitrine_hero_align ); ?>;">
             <?php if ( $vitrine_hero_text ) : ?>

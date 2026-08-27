@@ -221,14 +221,14 @@ class Vitrine_Editor {
             'vitrine-editor-css',
             VITRINE_URL . 'assets/css/editor.css',
             array(),
-            filemtime( VITRINE_PATH . 'assets/css/editor.css' )
+            VITRINE_VERSION . '.' . filemtime( VITRINE_PATH . 'assets/css/editor.css' )
         );
 
         wp_enqueue_script(
             'vitrine-editor-js',
             VITRINE_URL . 'assets/js/editor.js',
             array( 'jquery', 'sortablejs', 'wp-util' ),
-            filemtime( VITRINE_PATH . 'assets/js/editor.js' ),
+            VITRINE_VERSION . '.' . filemtime( VITRINE_PATH . 'assets/js/editor.js' ),
             true
         );
 

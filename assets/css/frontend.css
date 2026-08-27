@@ -14,6 +14,7 @@
     max-width: 100%;
     box-sizing: border-box;
 }
+
 .vitrine-hero-overlay {
     position: absolute;
     inset: 0;
@@ -83,6 +84,11 @@
     max-width: 100%;
     overflow-wrap: anywhere;
 }
+.vitrine-hero--no-text-shadow .vitrine-hero-text,
+.vitrine-hero--no-text-shadow .vitrine-hero-desc,
+.vitrine-hero--no-text-shadow .vitrine-hero-date {
+    text-shadow: none !important;
+}
 
 @media (max-width: 768px) {
     .vitrine-hero {
@@ -145,12 +151,22 @@
     margin-bottom: 28px;
 }
 
+.vitrine-block--aranha:has(.vitrine-el-aranha2) {
+    position: relative;
+    z-index: auto;
+    isolation: auto;
+    overflow: visible !important;
+    margin-bottom: 28px;
+}
+
 .vitrine-block--aranha2.vitrine-reveal-child {
     z-index: auto;
 }
 
 .vitrine-el-container--row > .vitrine-block--aranha2,
 .vitrine-el-container--row .vitrine-container-inner > .vitrine-block--aranha2,
+.vitrine-el-container--row > .vitrine-block--aranha:has(.vitrine-el-aranha2),
+.vitrine-el-container--row .vitrine-container-inner > .vitrine-block--aranha:has(.vitrine-el-aranha2),
 .vitrine-el-container--row > .vitrine-block--container:has(.vitrine-el-aranha2),
 .vitrine-el-container--row .vitrine-container-inner > .vitrine-block--container:has(.vitrine-el-aranha2) {
     overflow: visible !important;
@@ -161,7 +177,9 @@
 }
 
 .vitrine-el-container--column > .vitrine-block--aranha2,
-.vitrine-el-container--column .vitrine-container-inner > .vitrine-block--aranha2 {
+.vitrine-el-container--column .vitrine-container-inner > .vitrine-block--aranha2,
+.vitrine-el-container--column > .vitrine-block--aranha:has(.vitrine-el-aranha2),
+.vitrine-el-container--column .vitrine-container-inner > .vitrine-block--aranha:has(.vitrine-el-aranha2) {
     overflow: visible !important;
     z-index: auto;
 }
@@ -721,6 +739,40 @@
     border-radius: 4px;
 }
 
+/* Vídeos: nunca ultrapassam a largura do container ou empurram os irmãos. */
+.vitrine-el-video-group {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+.vitrine-el-video {
+    min-width: 0;
+    box-sizing: border-box;
+}
+.vitrine-el-video__wrapper {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+.vitrine-el-video__wrapper iframe,
+.vitrine-el-video__wrapper video {
+    display: block;
+    max-width: 100%;
+}
+
+@media (max-width: 600px) {
+    .vitrine-el-video-group {
+        flex-direction: column;
+    }
+    .vitrine-el-video-group > .vitrine-el-video {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+
 /* Botão */
 .vitrine-el-button a {
     transition: opacity 0.2s;
@@ -820,8 +872,8 @@
 .vitrine-el-container--row .vitrine-container-inner > .vitrine-block--container {
     overflow: visible;
 }
-.vitrine-el-container--row > .vitrine-block:not(.vitrine-block--container),
-.vitrine-el-container--row .vitrine-container-inner > .vitrine-block:not(.vitrine-block--container) {
+.vitrine-el-container--row > .vitrine-block:not(.vitrine-block--container):not(:has(.vitrine-el-aranha2)),
+.vitrine-el-container--row .vitrine-container-inner > .vitrine-block:not(.vitrine-block--container):not(:has(.vitrine-el-aranha2)) {
     overflow: hidden;
 }
 
@@ -1181,6 +1233,7 @@ a.vitrine-aranha__text:hover {
     max-width: 100%;
     margin: 0 auto;
     aspect-ratio: 1;
+    min-height: 320px;
     overflow: hidden;
 }
 
@@ -1519,7 +1572,8 @@ a.vitrine-aranha__text:hover {
         padding-right: max(12px, env(safe-area-inset-right, 0px));
     }
 
-    .vitrine-block--aranha2 {
+    .vitrine-block--aranha2,
+    .vitrine-block--aranha:has(.vitrine-el-aranha2) {
         z-index: auto;
         overflow: visible !important;
     }
@@ -1530,6 +1584,7 @@ a.vitrine-aranha__text:hover {
     .vitrine-aranha2__fit {
         height: auto !important;
         aspect-ratio: auto;
+        min-height: 0;
         overflow: visible;
     }
     .vitrine-aranha2__stage {
@@ -2536,4 +2591,234 @@ a.vitrine-aranha__text:hover {
     .vitrine-el-aranha3 .vitrine-a3-cell--card:hover {
         transform: none;
     }
+}
+
+/* Aranha circular reconstruída: conteúdo sempre visível e órbita sem clipping. */
+.vitrine-el-aranha2.vitrine-a2-circular {
+    position: relative;
+    z-index: auto;
+    width: 100%;
+    max-width: 100%;
+    padding: clamp(18px, 3vw, 32px);
+    overflow: visible !important;
+    box-sizing: border-box;
+}
+
+.vitrine-a2-circular .vitrine-aranha2__fit {
+    position: relative;
+    width: min(100%, 820px);
+    min-height: 380px;
+    margin: 0 auto;
+    aspect-ratio: 1;
+    overflow: visible !important;
+}
+
+.vitrine-a2-circular .vitrine-aranha2__stage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible !important;
+}
+
+.vitrine-a2-circular .vitrine-aranha2__connectors {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.vitrine-a2-circular .vitrine-aranha2__connectors line {
+    stroke: var(--a2-accent, #2e7d32);
+    stroke-width: 0.35;
+    stroke-linecap: round;
+    stroke-opacity: 0.38;
+    vector-effect: non-scaling-stroke;
+}
+
+.vitrine-a2-circular .vitrine-aranha2__center {
+    z-index: 6;
+}
+
+.vitrine-a2-circular .vitrine-aranha2__card {
+    z-index: 10;
+    height: auto !important;
+    min-height: var(--a2-card-min-h, 0px);
+    max-height: none !important;
+    overflow: visible !important;
+    opacity: 1;
+    animation: none;
+    overflow-wrap: anywhere;
+}
+
+.vitrine-a2-circular .vitrine-aranha2__card:hover,
+.vitrine-a2-circular .vitrine-aranha2__card:focus-within {
+    transform: translate(-50%, -50%) translateY(-4px);
+}
+
+.vitrine-a2-circular .vitrine-aranha2__card-text,
+.vitrine-a2-circular .vitrine-aranha2__card-content,
+.vitrine-a2-circular .vitrine-card-content {
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+.vitrine-a2-circular .vitrine-aranha2__card-text p {
+    margin-top: 0;
+}
+
+.vitrine-a2-circular.is-linear .vitrine-aranha2__fit,
+.vitrine-a2-circular:has(.vitrine-aranha2__empty) .vitrine-aranha2__fit {
+    min-height: 0;
+    aspect-ratio: auto;
+}
+
+.vitrine-a2-circular:has(.vitrine-aranha2__empty) .vitrine-aranha2__stage {
+    position: relative;
+    inset: auto;
+    height: auto;
+    min-height: 220px;
+}
+
+.vitrine-a2-circular.is-linear .vitrine-aranha2__stage {
+    position: relative;
+    inset: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    height: auto;
+}
+
+.vitrine-a2-circular.is-linear .vitrine-aranha2__connectors {
+    display: none;
+}
+
+.vitrine-a2-circular.is-linear .vitrine-aranha2__center {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    grid-column: 1 / -1;
+    width: min(190px, 42vw) !important;
+    margin: 0 auto 8px;
+}
+
+.vitrine-a2-circular.is-linear .vitrine-aranha2__card {
+    position: relative;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    transform: none !important;
+    align-items: flex-start;
+}
+
+.vitrine-a2-circular.is-linear .vitrine-aranha2__card-link {
+    align-items: flex-start;
+    text-align: left;
+}
+
+.vitrine-a2-circular.is-linear .vitrine-aranha2__card-icon {
+    flex: 0 0 auto;
+}
+
+@media (max-width: 768px) {
+    .vitrine-a2-circular {
+        padding: 16px 12px !important;
+    }
+
+    .vitrine-a2-circular .vitrine-aranha2__fit {
+        min-height: 0;
+        aspect-ratio: auto;
+    }
+
+    .vitrine-a2-circular .vitrine-aranha2__stage {
+        position: relative;
+        inset: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        height: auto;
+    }
+
+    .vitrine-a2-circular .vitrine-aranha2__connectors {
+        display: none;
+    }
+
+    .vitrine-a2-circular .vitrine-aranha2__center {
+        position: relative;
+        left: auto;
+        top: auto;
+        transform: none;
+        width: min(170px, 44vw) !important;
+        margin: 0 auto 6px;
+    }
+
+    .vitrine-a2-circular .vitrine-aranha2__card {
+        position: relative;
+        left: auto !important;
+        top: auto !important;
+        width: 100% !important;
+        max-width: none !important;
+        transform: none !important;
+        align-items: flex-start;
+        padding: 16px;
+    }
+
+    .vitrine-a2-circular .vitrine-aranha2__card-link {
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .vitrine-a2-circular .vitrine-aranha2__card-title {
+        font-size: clamp(1rem, 4.2vw, 1.3rem);
+    }
+
+    .vitrine-a2-circular .vitrine-aranha2__card-text {
+        font-size: clamp(.875rem, 3.6vw, 1.05rem);
+    }
+}
+
+/* Isola a altura da Aranha e impede que o vídeo invada o elemento anterior. */
+.vitrine-block--aranha:has(.vitrine-el-aranha2),
+.vitrine-block--video {
+    position: relative;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 0;
+    height: auto !important;
+    flex: 0 1 auto;
+    clear: both;
+    overflow: visible !important;
+    box-sizing: border-box;
+}
+
+.vitrine-block--aranha:has(.vitrine-el-aranha2) .vitrine-el-aranha2 {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    height: auto !important;
+}
+
+.vitrine-block--video .vitrine-el-video-group {
+    position: relative;
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    min-height: 0;
+    clear: both;
+    overflow: visible;
+}
+
+.vitrine-block--video .vitrine-el-video {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
 }
