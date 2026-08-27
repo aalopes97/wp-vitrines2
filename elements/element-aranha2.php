@@ -62,7 +62,9 @@ class Vitrine_Element_Aranha2 extends Vitrine_Element {
     }
 
     public function render( $settings, $children_html = '' ) {
-        $s = wp_parse_args( $settings, $this->defaults() );
+        $s = Vitrine_Layout::normalize_aranha_settings(
+            wp_parse_args( $settings, $this->defaults() )
+        );
 
         $items       = is_array( $s['items'] ) ? array_values( $s['items'] ) : array();
         $n           = count( $items );
@@ -76,33 +78,44 @@ class Vitrine_Element_Aranha2 extends Vitrine_Element {
         $text_color  = esc_attr( $s['text_color'] );
         $bg_color    = esc_attr( $s['bg_color'] );
         $center_bg   = esc_attr( $s['center_bg_color'] );
-        $center_lbl  = esc_html( $s['center_label'] );
-        $card_style      = $this->sanitize_card_style( $s['card_style'] );
-        $use_preset      = 'default' !== $card_style;
-        $layout          = $this->compute_orbit_layout( $radius, $center_size, $card_style, $n );
-
+        $center_lbl  = sanitize_text_field( $s['center_label'] );
+        $card_style = $this->sanitize_card_style( $s['card_style'] );
+        $use_preset = 'default' !== $card_style;
+        $layout     = $this->compute_orbit_layout( $radius, $center_size, $card_style, $n );
         $r_pct      = $layout['r_pct'];
         $cs_pct_w   = $layout['cs_pct'];
         $card_max_w = $layout['card_max_w'];
-        $dense      = ! empty( $layout['dense'] );
+        $is_linear  = ! empty( $layout['linear'] );
+        $card_min_h = $use_preset ? max( 0, min( 420, intval( $s['card_min_height'] ) ) ) : 0;
 
         $wrap_style  = 'background:' . $bg_color
             . ';--a2-accent:' . $accent
             . ';--a2-card-max-w:' . $card_max_w . '%'
-            . ';--a2-card-min-h:0px;';
+            . ';--a2-card-min-h:' . $card_min_h . 'px;';
 
         if ( $use_preset ) {
             $wrap_style .= $this->build_card_preset_style( $s, $icon_color );
         }
 
-        $root_class = 'vitrine-el-aranha2 vitrine-card-style--' . esc_attr( $card_style );
-        if ( $dense ) {
-            $root_class .= ' is-dense';
+        $root_class = 'vitrine-el-aranha2 vitrine-a2-circular vitrine-card-style--' . esc_attr( $card_style );
+        if ( $is_linear ) {
+            $root_class .= ' is-linear';
         }
 
-        $output  = '<div class="' . esc_attr( $root_class ) . '" style="' . esc_attr( $wrap_style ) . '" data-a2-compact-auto="1" data-a2-items="' . (int) $n . '">';
+        $output  = '<div class="' . esc_attr( $root_class ) . '" style="' . esc_attr( $wrap_style ) . '" data-a2-items="' . (int) $n . '">';
         $output .= '<div class="vitrine-aranha2__fit">';
         $output .= '<div class="vitrine-aranha2__stage">';
+
+        if ( ! $is_linear && $n > 0 ) {
+            $output .= '<svg class="vitrine-aranha2__connectors" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">';
+            for ( $i = 0; $i < $n; $i++ ) {
+                $angle = - M_PI / 2 + $i * ( 2 * M_PI / max( 1, $n ) );
+                $x_pct = round( 50 + $r_pct * cos( $angle ), 4 );
+                $y_pct = round( 50 + $r_pct * sin( $angle ), 4 );
+                $output .= '<line x1="50" y1="50" x2="' . $x_pct . '" y2="' . $y_pct . '" />';
+            }
+            $output .= '</svg>';
+        }
 
         $output .= '<div class="vitrine-aranha2__center"'
             . ' style="width:' . $cs_pct_w . '%;'
@@ -110,10 +123,11 @@ class Vitrine_Element_Aranha2 extends Vitrine_Element {
             . 'background-color:' . $center_bg . ';">';
 
         if ( ! empty( $s['center_image'] ) ) {
-            $output .= '<img src="' . esc_url( $s['center_image'] ) . '" alt="' . esc_attr( $center_lbl ) . '" />';
+            $center_fit = isset( $s['center_image_fit'] ) && 'contain' === $s['center_image_fit'] ? 'contain' : 'cover';
+            $output .= '<img src="' . esc_url( $s['center_image'] ) . '" alt="' . esc_attr( $center_lbl ) . '" style="object-fit:' . esc_attr( $center_fit ) . ';" />';
         } elseif ( $center_lbl ) {
             $output .= '<span class="vitrine-aranha2__center-label" style="color:' . $text_color . ';">'
-                . $center_lbl . '</span>';
+                . esc_html( $center_lbl ) . '</span>';
         } else {
             $output .= '<span class="vitrine-aranha2__center-placeholder">'
                 . '<span class="dashicons dashicons-camera"></span></span>';
@@ -128,41 +142,40 @@ class Vitrine_Element_Aranha2 extends Vitrine_Element {
             $x_pct = round( 50 + $r_pct * cos( $angle ), 4 );
             $y_pct = round( 50 + $r_pct * sin( $angle ), 4 );
 
-            $title = isset( $item['title'] ) ? wp_kses_post( $item['title'] ) : '';
-            $text  = isset( $item['text'] )  ? wp_kses_post( $item['text'] )  : '';
-            if ( ! $title && $text ) {
-                $title = $text;
-                $text  = '';
-            }
+            $title = isset( $item['title'] ) ? sanitize_text_field( $item['title'] ) : '';
+            $text  = isset( $item['text'] ) ? wp_kses_post( $item['text'] ) : '';
             $icon  = isset( $item['icon'] ) ? $item['icon'] : '';
             $link  = isset( $item['link'] ) ? esc_url( $item['link'] ) : '';
-            $delay = number_format( $i * 0.08 + 0.15, 2 );
+            $alt   = isset( $item['alt'] ) ? sanitize_text_field( $item['alt'] ) : $title;
             $card_class = 'vitrine-aranha2__card'
                 . ( $link ? ' vitrine-aranha2__card--linked' : '' )
                 . ( $use_preset ? ' vitrine-card-style-' . esc_attr( $card_style ) : '' );
 
-            $card_style_attr = 'left:' . $x_pct . '%;top:' . $y_pct . '%;animation-delay:' . $delay . 's;';
+            $card_style_attr = $is_linear
+                ? ''
+                : 'left:' . $x_pct . '%;top:' . $y_pct . '%;';
+            $card_style_attr .= $card_min_h ? 'min-height:' . $card_min_h . 'px;' : '';
             if ( ! $use_preset ) {
                 $card_style_attr .= '--a2-card-bg:' . $card_bg . ';'
                     . '--a2-card-border:' . $accent . ';'
                     . '--a2-card-text:' . $text_color . ';';
             }
 
-            $output .= '<div class="' . esc_attr( $card_class ) . '" style="' . esc_attr( $card_style_attr ) . '">';
+            $output .= '<article class="' . esc_attr( $card_class ) . '" style="' . esc_attr( $card_style_attr ) . '" data-item-id="' . esc_attr( $item['id'] ) . '">';
 
             $inner = '';
 
             if ( $icon ) {
                 $icon_wrap = $use_preset ? 'vitrine-card-icon' : 'vitrine-aranha2__card-icon';
-                $inner .= '<span class="' . esc_attr( $icon_wrap ) . '">'
-                    . $this->render_icon( $icon, $icon_size, $icon_color ) . '</span>';
+                $inner .= '<span class="' . esc_attr( $icon_wrap ) . '" aria-hidden="' . ( filter_var( $icon, FILTER_VALIDATE_URL ) ? 'false' : 'true' ) . '">'
+                    . $this->render_icon( $icon, $icon_size, $icon_color, $alt ) . '</span>';
             }
 
             if ( $title || $text ) {
                 $content_class = $use_preset ? 'vitrine-card-content' : 'vitrine-aranha2__card-content';
                 $inner .= '<div class="' . esc_attr( $content_class ) . '">';
                 if ( $title ) {
-                    $inner .= '<h3 class="vitrine-aranha2__card-title" style="color:' . $title_color . ';">' . $title . '</h3>';
+                    $inner .= '<h3 class="vitrine-aranha2__card-title" style="color:' . $title_color . ';">' . esc_html( $title ) . '</h3>';
                 }
                 if ( $text ) {
                     $inner .= '<div class="vitrine-aranha2__card-text" style="color:' . $text_color . ';">' . $text . '</div>';
@@ -176,7 +189,7 @@ class Vitrine_Element_Aranha2 extends Vitrine_Element {
                 $output .= $inner;
             }
 
-            $output .= '</div>'; // card
+            $output .= '</article>'; // card
         }
 
         // Empty state
@@ -195,87 +208,34 @@ class Vitrine_Element_Aranha2 extends Vitrine_Element {
     }
 
     /**
-     * Layout orbital em % do stage — um único círculo limpo.
-     * A largura do card é limitada pelo número de itens para não encavalar.
-     * Com muitos itens, marca dense (só ícone + título; texto no hover).
+     * Calcula um orbital previsível. Acima de seis cards o layout linear
+     * preserva a leitura em vez de comprimir ou esconder o conteúdo.
      *
      * @param string $card_style default|dark|white|border-left
-     * @return array{r_pct:float,cs_pct:float,card_max_w:float,dense:bool}
+     * @return array{r_pct:float,cs_pct:float,card_max_w:float,linear:bool}
      */
     private function compute_orbit_layout( $radius_px, $center_size_px, $card_style, $n_items ) {
         $n_items    = max( 0, intval( $n_items ) );
-        $ref        = 720;
         $card_style = $this->sanitize_card_style( $card_style );
-        $preset     = 'default' !== $card_style;
-        $dense      = $n_items >= 6;
-
-        // Alvos de largura (serão reduzidos se não couberem no círculo).
-        if ( 'border-left' === $card_style || 'white' === $card_style ) {
-            $want_w = 26.0;
-            $card_h = $dense ? 10.0 : 12.0;
-        } elseif ( 'dark' === $card_style ) {
-            $want_w = 24.0;
-            $card_h = $dense ? 14.0 : 18.0;
-        } else {
-            $want_w = 18.0;
-            $card_h = $dense ? 12.0 : 16.0;
-        }
-
-        // Com densos, cards mais compactos permitem um pouco mais de largura.
-        if ( $dense && $preset ) {
-            $want_w = min( 28.0, $want_w + 2.0 );
-        }
-
-        $gap    = 2.0 + min( 3.0, $n_items * 0.2 );
-        $cs_pct = max( 10.0, min( 22.0, ( max( 60, intval( $center_size_px ) ) / $ref ) * 100 ) );
-        // Centro menor quando há muitos itens — sobra espaço para o anel.
-        if ( $n_items >= 8 ) {
-            $cs_pct = min( $cs_pct, 18.0 );
-        }
-
-        $r_user = max( 12.0, min( 42.0, ( max( 80, intval( $radius_px ) ) / $ref ) * 100 ) );
-        $card_w = $want_w;
+        $linear     = $n_items > 6;
+        $cs_pct     = max( 14.0, min( 24.0, ( max( 80, intval( $center_size_px ) ) / 720 ) * 100 ) );
+        $r_user     = max( 28.0, min( 38.0, ( max( 100, intval( $radius_px ) ) / 720 ) * 100 ) );
+        $card_w     = 'border-left' === $card_style || 'white' === $card_style ? 22.0 : 20.0;
 
         if ( $n_items > 1 ) {
-            $sin_half = sin( M_PI / $n_items );
-            // Raio máximo para o card caber no stage (centro do card).
-            $max_r = 47.0 - ( $card_w / 2 );
-
-            // Largura máxima que ainda cabe no círculo com esse max_r.
-            if ( $sin_half > 0.001 ) {
-                $fit_w = max( 12.0, ( 2 * $sin_half * $max_r ) - $gap );
-                $card_w = min( $card_w, $fit_w );
-                // Recalcula max_r com a largura final.
-                $max_r = 47.0 - ( $card_w / 2 );
-
-                $need_r = ( $card_w + $gap ) / ( 2 * $sin_half );
-                $need_r = max( $need_r, ( $card_h + $gap ) / ( 2 * $sin_half ) );
-            } else {
-                $need_r = $r_user;
-                $max_r  = 47.0 - ( $card_w / 2 );
-            }
-        } else {
-            $need_r = $r_user;
-            $max_r  = 47.0 - ( $card_w / 2 );
+            $card_w = min( $card_w, max( 13.0, ( 100 / $n_items ) * 1.35 ) );
         }
 
-        // Folga do centro (imagem principal livre).
+        $card_h       = 12.0;
         $clear_center = ( $cs_pct / 2 ) + ( $card_h / 2 ) + 5.0;
-        $r_pct        = max( $r_user, $need_r, $clear_center );
-        $r_pct        = min( $r_pct, $max_r );
-
-        // Se ainda encavalaria no centro, reduz centro.
-        if ( $r_pct < $clear_center ) {
-            $cs_pct = max( 10.0, 2 * ( $r_pct - ( $card_h / 2 ) - 5.0 ) );
-            $clear_center = ( $cs_pct / 2 ) + ( $card_h / 2 ) + 5.0;
-            $r_pct = max( $r_pct, min( $max_r, $clear_center ) );
-        }
+        $r_pct        = max( $r_user, $clear_center );
+        $r_pct        = min( $r_pct, 47.0 - ( $card_w / 2 ) );
 
         return array(
             'r_pct'      => round( $r_pct, 4 ),
             'cs_pct'     => round( $cs_pct, 4 ),
             'card_max_w' => round( $card_w, 2 ),
-            'dense'      => $dense,
+            'linear'     => $linear,
         );
     }
 
@@ -285,7 +245,7 @@ class Vitrine_Element_Aranha2 extends Vitrine_Element {
         return in_array( $style, $allowed, true ) ? $style : 'default';
     }
 
-    private function render_icon( $icon, $icon_size, $icon_color = '' ) {
+    private function render_icon( $icon, $icon_size, $icon_color = '', $alt = '' ) {
         if ( ! $icon ) {
             return '';
         }
@@ -297,10 +257,13 @@ class Vitrine_Element_Aranha2 extends Vitrine_Element {
         if ( preg_match( '/^fa[srlbd]?\s/', $icon ) ) {
             return '<i class="' . esc_attr( $icon ) . '" style="font-size:' . $icon_size . 'px;' . $color_style . '"></i>';
         }
-        return '<img src="' . esc_url( $icon ) . '" alt=""'
+        return '<img src="' . esc_url( $icon ) . '" alt="' . esc_attr( $alt ) . '"'
             . ' style="width:' . $icon_size . 'px;height:' . $icon_size . 'px;object-fit:contain;border-radius:4px;" />';
     }
 }
 
-// Mantido apenas como motor de render do elemento unificado "aranha".
-// Vitrine_Element_Registry::register( new Vitrine_Element_Aranha2() );
+// Fallback para instalações que ainda não carregaram o elemento unificado.
+// Em instalações atuais, o adapter não aparece duplicado na paleta.
+if ( ! Vitrine_Element_Registry::get( 'aranha' ) ) {
+    Vitrine_Element_Registry::register( new Vitrine_Element_Aranha2() );
+}

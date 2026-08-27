@@ -37,6 +37,9 @@ class Vitrine_Layout {
             } else {
                 $clean_item['settings'] = array();
             }
+            if ( 'aranha' === $clean_item['type'] ) {
+                $clean_item['settings'] = self::normalize_aranha_settings( $clean_item['settings'] );
+            }
 
             if ( isset( $item['height'] ) ) {
                 $clean_item['height'] = absint( $item['height'] );
@@ -83,6 +86,10 @@ class Vitrine_Layout {
             $item['settings']['layout_mode'] = ( 'grade' === $mode ) ? 'grade' : 'circular';
         }
 
+        if ( 'aranha' === $item['type'] ) {
+            $item['settings'] = self::normalize_aranha_settings( $item['settings'] );
+        }
+
         if ( ! empty( $item['children'] ) && is_array( $item['children'] ) ) {
             foreach ( $item['children'] as $i => $child ) {
                 $item['children'][ $i ] = self::migrate_aranha_item( $child );
@@ -107,6 +114,74 @@ class Vitrine_Layout {
             $out[] = self::migrate_aranha_item( $item );
         }
         return $out;
+    }
+
+    /**
+     * Normaliza o contrato dos itens da Aranha, preservando rich text apenas
+     * na descrição e atribuindo um ID estável para itens legados.
+     *
+     * @param array $settings Configurações da Aranha.
+     * @return array
+     */
+    public static function normalize_aranha_settings( $settings ) {
+        if ( ! is_array( $settings ) ) {
+            $settings = array();
+        }
+
+        $items = isset( $settings['items'] ) && is_array( $settings['items'] )
+            ? $settings['items']
+            : array();
+        $normalized_items = array();
+
+        foreach ( $items as $index => $raw_item ) {
+            if ( ! is_array( $raw_item ) ) {
+                continue;
+            }
+
+            $title = isset( $raw_item['title'] )
+                ? sanitize_text_field( wp_strip_all_tags( (string) $raw_item['title'] ) )
+                : '';
+            $text = isset( $raw_item['text'] )
+                ? wp_kses_post( (string) $raw_item['text'] )
+                : '';
+            $icon = isset( $raw_item['icon'] )
+                ? sanitize_text_field( (string) $raw_item['icon'] )
+                : '';
+            $link = isset( $raw_item['link'] )
+                ? esc_url_raw( (string) $raw_item['link'] )
+                : '';
+            $alt = isset( $raw_item['alt'] )
+                ? sanitize_text_field( (string) $raw_item['alt'] )
+                : '';
+            $id = isset( $raw_item['id'] ) ? sanitize_key( $raw_item['id'] ) : '';
+
+            if ( ! $id ) {
+                $id = 'a2_' . substr( md5( $index . '|' . $title . '|' . $icon . '|' . $link ), 0, 12 );
+            }
+
+            $normalized_item = array(
+                'id'    => $id,
+                'title' => $title,
+                'text'  => $text,
+                'icon'  => $icon,
+                'link'  => $link,
+                'alt'   => $alt,
+            );
+            if ( isset( $raw_item['position'] ) ) {
+                $position = sanitize_key( $raw_item['position'] );
+                $normalized_item['position'] = in_array( $position, array( 'auto', 'top', 'bottom', 'left', 'right' ), true )
+                    ? $position
+                    : 'auto';
+            }
+            $normalized_items[] = $normalized_item;
+        }
+
+        $settings['layout_mode'] = isset( $settings['layout_mode'] ) && 'grade' === sanitize_key( $settings['layout_mode'] )
+            ? 'grade'
+            : 'circular';
+        $settings['items'] = $normalized_items;
+
+        return $settings;
     }
 
     /**

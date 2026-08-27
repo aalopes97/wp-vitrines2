@@ -323,11 +323,50 @@
             } else if (copy.type === 'aranha') {
                 copy.settings.layout_mode = getAranhaLayoutMode(copy);
             }
+            if (isAranhaType(copy.type)) {
+                copy.settings = normalizeAranhaSettings(copy.settings, getAranhaLayoutMode(copy));
+            }
             if (Array.isArray(copy.children)) {
                 copy.children = migrateAranhaLayout(copy.children);
             }
             return copy;
         });
+    }
+
+    var aranhaItemIdSeed = 0;
+
+    function createAranhaItemId() {
+        aranhaItemIdSeed += 1;
+        return 'a2_' + Date.now().toString(36) + '_' + aranhaItemIdSeed.toString(36);
+    }
+
+    function normalizeAranhaSettings(settings, mode) {
+        var normalized = $.extend(true, {}, settings || {});
+        var rawItems = Array.isArray(normalized.items) ? normalized.items : [];
+        normalized.items = rawItems.reduce(function (result, rawItem) {
+            if (!rawItem || typeof rawItem !== 'object') return result;
+            var item = $.extend({
+                id: createAranhaItemId(),
+                title: '',
+                text: '',
+                icon: '',
+                link: '',
+                alt: ''
+            }, rawItem);
+            if (mode === 'grade') {
+                item.position = item.position || 'auto';
+            }
+            item.id = String(item.id || createAranhaItemId());
+            item.title = stripHtmlPreview(item.title || '');
+            item.text = String(item.text || '');
+            item.icon = String(item.icon || '');
+            item.link = String(item.link || '');
+            item.alt = stripHtmlPreview(item.alt || '');
+            result.push(item);
+            return result;
+        }, []);
+        normalized.layout_mode = mode === 'grade' ? 'grade' : 'circular';
+        return normalized;
     }
 
     var layout = migrateAranhaLayout(vitrineData.layout || []);
@@ -642,6 +681,52 @@
         return isWhiteTextColor(settings.color) ? 'background:#000;' : '';
     }
 
+    function buildAranhaEditorPreview(settings) {
+        var items = Array.isArray(settings.items) ? settings.items : [];
+        var centerSize = Math.max(72, Math.min(220, parseInt(settings.center_size || 160, 10)));
+        var accent = escapeAttr(settings.card_border || '#2e7d32');
+        var centerImage = settings.center_image || '';
+        var centerLabel = stripHtmlPreview(settings.center_label || '');
+        var isLinear = items.length > 6;
+        var html = '<div class="vitrine-editor-aranha-preview" style="background:' + escapeAttr(settings.bg_color || '#f8f9fa') + ';padding:18px;overflow:visible;">';
+        html += '<div style="position:relative;width:100%;max-width:620px;margin:0 auto;' + (isLinear ? '' : 'aspect-ratio:1;') + '">';
+        html += '<div style="position:' + (isLinear ? 'relative' : 'absolute') + ';left:' + (isLinear ? 'auto' : '50%') + ';top:' + (isLinear ? 'auto' : '50%') + ';transform:' + (isLinear ? 'none' : 'translate(-50%,-50%)') + ';width:' + (isLinear ? '116px' : Math.min(24, Math.max(14, centerSize / 720 * 100)) + '%') + ';aspect-ratio:1;border:3px solid ' + accent + ';border-radius:50%;overflow:hidden;background:' + escapeAttr(settings.center_bg_color || '#fff') + ';display:flex;align-items:center;justify-content:center;margin:' + (isLinear ? '0 auto 14px' : '0') + ';">';
+        if (centerImage) {
+            html += '<img src="' + escapeAttr(centerImage) + '" style="display:block;width:100%;height:100%;object-fit:cover;" alt="" />';
+        } else {
+            html += '<span style="padding:8px;text-align:center;color:#555;font-size:11px;">' + escapeHtml(centerLabel || 'Imagem central') + '</span>';
+        }
+        html += '</div>';
+        if (!items.length) {
+            html += '<div style="padding:18px;text-align:center;color:#777;font-size:12px;">Adicione itens orbitais</div>';
+        } else if (isLinear) {
+            html += '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">';
+        }
+        items.forEach(function (ai, idx) {
+            var title = stripHtmlPreview(ai.title || '');
+            var text = stripHtmlPreview(ai.text || '');
+            var card = '<div style="background:#fff;border:1px solid ' + accent + ';border-radius:9px;padding:10px;min-width:0;color:#333;font-size:11px;line-height:1.35;">';
+            if (ai.icon) {
+                card += '<div style="margin-bottom:5px;">' + renderIconPreviewHtml(ai.icon) + '</div>';
+            }
+            if (title) card += '<strong style="display:block;margin-bottom:4px;">' + escapeHtml(title) + '</strong>';
+            if (text) card += '<span>' + escapeHtml(text) + '</span>';
+            if (!title && !text) card += '<span style="color:#999;">Item ' + (idx + 1) + '</span>';
+            card += '</div>';
+            if (isLinear) {
+                html += card;
+            } else {
+                var angle = -Math.PI / 2 + idx * (2 * Math.PI / items.length);
+                var x = 50 + 36 * Math.cos(angle);
+                var y = 50 + 36 * Math.sin(angle);
+                html += '<div style="position:absolute;left:' + x + '%;top:' + y + '%;transform:translate(-50%,-50%);width:18%;max-width:130px;">' + card + '</div>';
+            }
+        });
+        if (isLinear && items.length) html += '</div>';
+        html += '</div></div>';
+        return html;
+    }
+
     function refreshBlockPreview($block, type, settings) {
         $block.html(buildPreview(type, settings));
         var bgStyle = getTextBlockPreviewBgStyle(type, settings);
@@ -842,7 +927,10 @@
             }
             case 'image':
                 if (settings.url) {
-                    return '<div style="text-align:' + escapeAttr(settings.align || 'center') + '"><img src="' + escapeAttr(settings.url) + '" style="max-width:' + parseInt(settings.width || 100, 10) + '%;height:auto;" alt="" /></div>';
+                    var imageAlign = settings.align === 'left'
+                        ? 'flex-start'
+                        : (settings.align === 'right' ? 'flex-end' : 'center');
+                    return '<div style="display:flex;justify-content:' + imageAlign + ';"><img src="' + escapeAttr(settings.url) + '" style="display:block;max-width:' + parseInt(settings.width || 100, 10) + '%;height:auto;" alt="" /></div>';
                 }
                 return '<p style="text-align:center;color:#999;">Nenhuma imagem selecionada</p>';
             case 'button':
@@ -940,7 +1028,7 @@
                     return '<div style="text-align:center;padding:16px;color:#999;font-size:12px;"><span class="dashicons dashicons-video-alt3" style="font-size:28px;display:block;margin:0 auto 4px;"></span>Nenhum v\u00eddeo selecionado</div>';
                 }
 
-                return '<div style="display:flex;gap:10px;align-items:flex-start;">' + videoHtml + '</div>';
+                return '<div style="display:flex;flex-wrap:wrap;width:100%;box-sizing:border-box;gap:10px;align-items:flex-start;">' + videoHtml + '</div>';
             }
 
             default:
@@ -1690,6 +1778,19 @@
             return '<div class="vitrine-settings-section-title">' + escapeHtml(field.label) + '</div>';
         }
 
+        // Compatibilidade com instalações que ainda enviam o schema antigo
+        // do Texto (align como input text) no objeto localizado pelo PHP.
+        if (item.type === 'text' && field.name === 'align') {
+            field = $.extend({}, field, {
+                type: 'select',
+                options: {
+                    left: 'Esquerda',
+                    center: 'Centro',
+                    right: 'Direita'
+                }
+            });
+        }
+
         var val = item.settings[field.name] !== undefined ? item.settings[field.name] : (elDef.defaults[field.name] || '');
         var inputHtml = '';
 
@@ -2211,9 +2312,9 @@
     function defaultAranhaItem(typeOrMode) {
         var mode = (typeOrMode === 'grade' || typeOrMode === 'aranha3') ? 'grade' : 'circular';
         if (mode === 'grade') {
-            return { title: '', text: '', icon: '', link: '', position: 'auto' };
+            return { id: createAranhaItemId(), title: '', text: '', icon: '', link: '', alt: '', position: 'auto' };
         }
-        return { title: '', text: '', icon: '', link: '' };
+        return { id: createAranhaItemId(), title: '', text: '', icon: '', link: '', alt: '' };
     }
 
     function syncAllAranhaMCE() {
@@ -2436,13 +2537,6 @@
         }
         var items = item.settings.items;
 
-        items.forEach(function (ai) {
-            if (!stripHtmlPreview(ai.title) && stripHtmlPreview(ai.text)) {
-                ai.title = ai.text;
-                ai.text = '';
-            }
-        });
-
         // Cabeçalho da seção
         var html = '<div class="vitrine-aranha-section vitrine-a2-section" data-aranha-key="items">';
         html += '<hr style="border:none;border-top:1px solid #dcdcde;margin:14px 0 12px;" />';
@@ -2540,12 +2634,14 @@
 
         html += '<div class="vitrine-field-group vitrine-field-group--full">';
         html += '<label>Título</label>';
-        html += '<textarea id="' + aranhaMceId('items', idx, 'title') + '" class="vitrine-aranha-mce" data-aranha-prop="title" rows="3">' + (ai.title || '') + '</textarea>';
+        html += '<input type="text" class="vitrine-aranha-field" data-aranha-prop="title" value="' + escapeAttr(stripHtmlPreview(ai.title || '')) + '" placeholder="Título do item" />';
+        html += '<p class="vitrine-field-hint">Texto simples usado como título do card.</p>';
         html += '</div>';
 
         html += '<div class="vitrine-field-group vitrine-field-group--full">';
         html += '<label>Descrição</label>';
-        html += '<textarea id="' + aranhaMceId('items', idx, 'text') + '" class="vitrine-aranha-mce" data-aranha-prop="text" rows="5">' + (ai.text || '') + '</textarea>';
+        html += '<textarea id="' + aranhaMceId('items', idx, 'text') + '" class="vitrine-aranha-mce" data-aranha-prop="text" rows="5">' + escapeHtml(ai.text || '') + '</textarea>';
+        html += '<p class="vitrine-field-hint">A descrição aceita formatação, links e listas.</p>';
         html += '</div>';
 
         html += '<div class="vitrine-field-group vitrine-field-group--full">';
