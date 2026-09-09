@@ -33,7 +33,7 @@ class Vitrine_Element_Button extends Vitrine_Element {
             array( 'name' => 'url',      'label' => 'Link (URL)',      'type' => 'text' ),
             array( 'name' => 'bg_color', 'label' => 'Cor de fundo',   'type' => 'color' ),
             array( 'name' => 'color',    'label' => 'Cor do texto',   'type' => 'color' ),
-            array( 'name' => 'align',    'label' => 'Alinhamento',    'type' => 'text' ),
+            array( 'name' => 'align',    'label' => 'Alinhamento',    'type' => 'select', 'options' => array( 'left' => 'Esquerda', 'center' => 'Centro', 'right' => 'Direita' ) ),
         );
     }
 
@@ -41,7 +41,10 @@ class Vitrine_Element_Button extends Vitrine_Element {
         $defaults = $this->defaults();
         $s        = wp_parse_args( $settings, $defaults );
 
-        $wrapper_style = sprintf( 'text-align:%s;', esc_attr( $s['align'] ) );
+        $align = in_array( $s['align'], array( 'left', 'center', 'right' ), true )
+            ? $s['align']
+            : 'center';
+        $wrapper_style = sprintf( 'text-align:%s;', esc_attr( $align ) );
         $btn_style     = sprintf(
             'background:%s;color:%s;padding:12px 28px;border:none;border-radius:4px;font-size:16px;cursor:pointer;display:inline-block;text-decoration:none;',
             esc_attr( $s['bg_color'] ),
