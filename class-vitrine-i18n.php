@@ -475,9 +475,9 @@ class Vitrine_I18n {
                     }
                     $f['options'] = $opts;
                 }
-                // Corrige dados localizados por versões antigas do elemento
-                // Texto que ainda declaravam alinhamento como campo livre.
-                if ( 'text' === $slug && 'align' === $field['name'] ) {
+                // Corrige dados localizados por versões antigas que ainda
+                // declaravam alinhamento como campo livre.
+                if ( in_array( $slug, array( 'text', 'button', 'image' ), true ) && 'align' === $field['name'] ) {
                     $f['type'] = 'select';
                     $f['options'] = array(
                         'left'   => self::field_option_label( $slug, 'align', 'left', 'Esquerda' ),

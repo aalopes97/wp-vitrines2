@@ -29,7 +29,7 @@ $vitrine_hero_desc     = ! empty( $vitrine_page_settings['hero_description'] ) ?
 $vitrine_hero_desc_sz  = ! empty( $vitrine_page_settings['hero_desc_size'] ) ? intval( $vitrine_page_settings['hero_desc_size'] ) : 18;
 $vitrine_hero_desc_clr = ! empty( $vitrine_page_settings['hero_desc_color'] ) ? $vitrine_page_settings['hero_desc_color'] : $vitrine_hero_txt_clr;
 $vitrine_hero_desc_mw  = ! empty( $vitrine_page_settings['hero_desc_max_width'] ) ? intval( $vitrine_page_settings['hero_desc_max_width'] ) : 0;
-$vitrine_hero_desc_style = 'color:' . esc_attr( $vitrine_hero_desc_clr ) . ';';
+$vitrine_hero_desc_style = 'color:' . esc_attr( $vitrine_hero_desc_clr ) . ';--vitrine-hero-desc-color:' . esc_attr( $vitrine_hero_desc_clr ) . ';';
 if ( $vitrine_hero_desc_mw > 0 ) {
     $vitrine_hero_desc_style .= '--vitrine-hero-desc-max-w:' . esc_attr( $vitrine_hero_desc_mw ) . 'px;';
 }

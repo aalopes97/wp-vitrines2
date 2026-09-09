@@ -66,9 +66,23 @@ class Vitrine_Element_Aranha2 extends Vitrine_Element {
             wp_parse_args( $settings, $this->defaults() )
         );
 
-        $items       = is_array( $s['items'] ) ? array_values( $s['items'] ) : array();
+        $items = is_array( $s['items'] ) ? array_values( $s['items'] ) : array();
+        $items = array_values(
+            array_filter(
+                $items,
+                function ( $item ) {
+                    if ( ! is_array( $item ) ) {
+                        return false;
+                    }
+                    $title = isset( $item['title'] ) ? trim( wp_strip_all_tags( (string) $item['title'] ) ) : '';
+                    $text  = isset( $item['text'] ) ? trim( wp_strip_all_tags( (string) $item['text'] ) ) : '';
+                    $icon  = isset( $item['icon'] ) ? trim( (string) $item['icon'] ) : '';
+                    return ( '' !== $title || '' !== $text || '' !== $icon );
+                }
+            )
+        );
         $n           = count( $items );
-        $center_size = max( 60, intval( $s['center_size'] ) );
+        $center_size = max( 60, min( 560, intval( $s['center_size'] ) ) );
         $radius      = max( 80, intval( $s['radius'] ) );
         $icon_size   = max( 16, intval( $s['icon_size'] ) );
         $icon_color  = esc_attr( $s['icon_color'] );
@@ -90,6 +104,7 @@ class Vitrine_Element_Aranha2 extends Vitrine_Element {
 
         $wrap_style  = 'background:' . $bg_color
             . ';--a2-accent:' . $accent
+            . ';--a2-center-size:' . $center_size . 'px'
             . ';--a2-card-max-w:' . $card_max_w . '%'
             . ';--a2-card-min-h:' . $card_min_h . 'px;';
 
@@ -118,7 +133,8 @@ class Vitrine_Element_Aranha2 extends Vitrine_Element {
         }
 
         $output .= '<div class="vitrine-aranha2__center"'
-            . ' style="width:' . $cs_pct_w . '%;'
+            . ' style="width:' . $center_size . 'px;'
+            . 'max-width:' . $cs_pct_w . '%;'
             . 'border-color:' . $accent . ';'
             . 'background-color:' . $center_bg . ';">';
 
@@ -208,8 +224,8 @@ class Vitrine_Element_Aranha2 extends Vitrine_Element {
     }
 
     /**
-     * Calcula um orbital previsível. Acima de seis cards o layout linear
-     * preserva a leitura em vez de comprimir ou esconder o conteúdo.
+     * Calcula um orbital previsível. No desktop a órbita é mantida;
+     * o empilhamento linear fica apenas no CSS mobile.
      *
      * @param string $card_style default|dark|white|border-left
      * @return array{r_pct:float,cs_pct:float,card_max_w:float,linear:bool}
@@ -217,17 +233,23 @@ class Vitrine_Element_Aranha2 extends Vitrine_Element {
     private function compute_orbit_layout( $radius_px, $center_size_px, $card_style, $n_items ) {
         $n_items    = max( 0, intval( $n_items ) );
         $card_style = $this->sanitize_card_style( $card_style );
-        $linear     = $n_items > 6;
-        $cs_pct     = max( 14.0, min( 24.0, ( max( 80, intval( $center_size_px ) ) / 720 ) * 100 ) );
-        $r_user     = max( 28.0, min( 38.0, ( max( 100, intval( $radius_px ) ) / 720 ) * 100 ) );
+        $linear     = false;
+        $center_px  = max( 60, min( 560, intval( $center_size_px ) ) );
+        // Espelho proporcional do tamanho em px (ref 720), até ~55% do stage.
+        $cs_pct     = max( 10.0, min( 55.0, ( $center_px / 720 ) * 100 ) );
+        $r_user     = max( 28.0, min( 42.0, ( max( 100, intval( $radius_px ) ) / 720 ) * 100 ) );
         $card_w     = 'border-left' === $card_style || 'white' === $card_style ? 22.0 : 20.0;
 
         if ( $n_items > 1 ) {
-            $card_w = min( $card_w, max( 13.0, ( 100 / $n_items ) * 1.35 ) );
+            $card_w = min( $card_w, max( 11.0, ( 100 / $n_items ) * 1.15 ) );
+        }
+        if ( $n_items >= 7 ) {
+            $card_w = min( $card_w, 14.0 );
+            $r_user = max( $r_user, 34.0 );
         }
 
-        $card_h       = 12.0;
-        $clear_center = ( $cs_pct / 2 ) + ( $card_h / 2 ) + 5.0;
+        $card_h       = $n_items >= 7 ? 10.0 : 12.0;
+        $clear_center = ( $cs_pct / 2 ) + ( $card_h / 2 ) + 4.0;
         $r_pct        = max( $r_user, $clear_center );
         $r_pct        = min( $r_pct, 47.0 - ( $card_w / 2 ) );
 

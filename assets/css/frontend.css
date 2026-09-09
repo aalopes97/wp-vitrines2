@@ -48,8 +48,25 @@
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
     max-width: min(100%, var(--vitrine-hero-desc-max-w, none));
     font-size: var(--vitrine-hero-desc-size, 18px);
+    color: var(--vitrine-hero-desc-color, inherit);
     overflow-wrap: anywhere;
     word-wrap: break-word;
+}
+.vitrine-hero-desc p,
+.vitrine-hero-desc li,
+.vitrine-hero-desc ul,
+.vitrine-hero-desc ol,
+.vitrine-hero-desc span,
+.vitrine-hero-desc div,
+.vitrine-hero-desc strong,
+.vitrine-hero-desc em,
+.vitrine-hero-desc b,
+.vitrine-hero-desc i {
+    color: inherit !important;
+}
+.vitrine-hero-desc a {
+    color: inherit !important;
+    text-decoration: underline;
 }
 .vitrine-hero-desc p {
     margin: 0 0 0.5em;
@@ -319,16 +336,17 @@
 
 @media (max-width: 768px) {
     .vitrine-textimage-inner {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: column !important;
+        align-items: stretch !important;
     }
     .vitrine-textimage-inner--image-left {
-        flex-direction: column-reverse;
+        flex-direction: column-reverse !important;
     }
     .vitrine-textimage-content,
     .vitrine-textimage-media {
-        flex: none;
-        width: 100%;
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
     .vitrine-textimage-img {
         height: auto;
@@ -875,6 +893,43 @@
 .vitrine-el-container--row > .vitrine-block:not(.vitrine-block--container):not(:has(.vitrine-el-aranha2)),
 .vitrine-el-container--row .vitrine-container-inner > .vitrine-block:not(.vitrine-block--container):not(:has(.vitrine-el-aranha2)) {
     overflow: hidden;
+}
+
+/* Mobile: containers em coluna (lado a lado) empilham em linha. */
+@media (max-width: 768px) {
+    .vitrine-el-container--row,
+    .vitrine-el-container--row .vitrine-container-inner {
+        flex-direction: column !important;
+        flex-wrap: nowrap !important;
+        align-items: stretch !important;
+    }
+
+    .vitrine-el-container--row > .vitrine-block,
+    .vitrine-el-container--row .vitrine-container-inner > .vitrine-block {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin-bottom: 0;
+        box-sizing: border-box;
+        overflow: visible !important;
+    }
+
+    /* Containers aninhados (linha dentro de coluna) também empilham. */
+    .vitrine-el-container--column .vitrine-el-container--row,
+    .vitrine-el-container--column .vitrine-el-container--row .vitrine-container-inner {
+        flex-direction: column !important;
+        flex-wrap: nowrap !important;
+        align-items: stretch !important;
+    }
+
+    .vitrine-el-container--column .vitrine-el-container--row > .vitrine-block,
+    .vitrine-el-container--column .vitrine-el-container--row .vitrine-container-inner > .vitrine-block {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+    }
 }
 
 /* Container: animação ao rolar */
@@ -1607,7 +1662,8 @@ a.vitrine-aranha__text:hover {
     .vitrine-aranha2__center {
         position: static;
         transform: none;
-        width: min(148px, 42vw) !important;
+        width: min(var(--a2-center-size, 160px), 70vw) !important;
+        max-width: 100%;
         height: auto !important;
         aspect-ratio: 1;
         margin: 0 auto 4px;
@@ -2641,6 +2697,10 @@ a.vitrine-aranha__text:hover {
 
 .vitrine-a2-circular .vitrine-aranha2__center {
     z-index: 6;
+    width: var(--a2-center-size, 160px);
+    max-width: 55%;
+    height: auto;
+    aspect-ratio: 1;
 }
 
 .vitrine-a2-circular .vitrine-aranha2__card {
@@ -2702,7 +2762,8 @@ a.vitrine-aranha__text:hover {
     top: auto;
     transform: none;
     grid-column: 1 / -1;
-    width: min(190px, 42vw) !important;
+    width: min(var(--a2-center-size, 160px), 70vw) !important;
+    max-width: 100%;
     margin: 0 auto 8px;
 }
 
@@ -2753,7 +2814,8 @@ a.vitrine-aranha__text:hover {
         left: auto;
         top: auto;
         transform: none;
-        width: min(170px, 44vw) !important;
+        width: min(var(--a2-center-size, 160px), 70vw) !important;
+        max-width: 100%;
         margin: 0 auto 6px;
     }
 

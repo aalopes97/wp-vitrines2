@@ -2185,6 +2185,15 @@ body.vitrine-resizing-sidebar .vitrine-panel-resizer.is-dragging::before {
 .vitrine-hero-preview {
     min-height: 0;
 }
+.vitrine-hero-preview .vitrine-hero-desc,
+.vitrine-hero-preview .vitrine-hero-desc p,
+.vitrine-hero-preview .vitrine-hero-desc span,
+.vitrine-hero-preview .vitrine-hero-desc strong,
+.vitrine-hero-preview .vitrine-hero-desc em,
+.vitrine-hero-preview .vitrine-hero-desc a,
+.vitrine-hero-preview .vitrine-hero-desc li {
+    color: inherit !important;
+}
 .vitrine-hero-preview:not(:empty) + .vitrine-hero-preview__empty {
     display: none;
 }
