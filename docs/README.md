@@ -1,6 +1,6 @@
 # Manuais do wp-vitrines2
 
-Estes PDFs são a cópia dos manuais que estavam no Google Drive. Atualize os arquivos nesta pasta para publicar uma nova versão; o menu **Manuais** do plugin abre esta página.
+Cópia dos manuais publicados no Google Drive. O menu **Manuais** do plugin abre a pasta do Drive.
 
 | Arquivo | Idioma |
 | --- | --- |

@@ -6,9 +6,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Vitrine_Plugin {
 
     /**
-     * Pasta dos manuais no GitHub (espelho dos PDFs de docs/).
+     * Pasta dos manuais no Google Drive.
      */
-    const DOCS_URL = 'https://github.com/aalopes97/wp-vitrines2/tree/main/docs';
+    const DOCS_URL = 'https://drive.google.com/drive/folders/1hMVXp0xaE4TdfrTzx4Xon1OmAT1_6CgZ';
 
     private static $instance = null;
 
@@ -112,7 +112,7 @@ class Vitrine_Plugin {
     }
 
     /**
-     * Submenu Vitrines → Manuais, apontando para a pasta docs no GitHub.
+     * Submenu Vitrines → Manuais, apontando para a pasta no Google Drive.
      */
     public function register_docs_menu() {
         global $submenu;
