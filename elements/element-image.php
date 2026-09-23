@@ -43,10 +43,15 @@ class Vitrine_Element_Image extends Vitrine_Element {
             return '<p class="vitrine-el-image--empty">Nenhuma imagem selecionada.</p>';
         }
 
-        $style = sprintf(
-            'text-align:%s;',
-            esc_attr( $s['align'] )
+        $align = in_array( $s['align'], array( 'left', 'center', 'right' ), true )
+            ? $s['align']
+            : 'center';
+        $justify = array(
+            'left'   => 'flex-start',
+            'center' => 'center',
+            'right'  => 'flex-end',
         );
+        $style = 'display:flex;justify-content:' . $justify[ $align ] . ';';
 
         $img_style = sprintf( 'max-width:%s%%;height:auto;', intval( $s['width'] ) );
 

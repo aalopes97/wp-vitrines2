@@ -41,6 +41,12 @@ class Vitrine_Render {
 
         foreach ( $items as $item ) {
             $type = isset( $item['type'] ) ? $item['type'] : '';
+            if ( ! isset( $elements[ $type ] ) && 'aranha2' === $type && class_exists( 'Vitrine_Element_Aranha2' ) ) {
+                $elements[ $type ] = new Vitrine_Element_Aranha2();
+            }
+            if ( ! isset( $elements[ $type ] ) && 'aranha3' === $type && class_exists( 'Vitrine_Element_Aranha3' ) ) {
+                $elements[ $type ] = new Vitrine_Element_Aranha3();
+            }
             if ( ! isset( $elements[ $type ] ) ) {
                 continue;
             }
@@ -81,7 +87,9 @@ class Vitrine_Render {
             if ( 'aranha2' === $type || ( 'aranha' === $type && 'grade' !== $aranha_mode ) ) {
                 $inline_styles[] = 'position:relative';
                 $inline_styles[] = 'z-index:auto';
-                $inline_styles[] = 'overflow:hidden';
+                // O próprio elemento controla o overflow; o wrapper precisa
+                // permanecer visível para não cortar o anel orbital.
+                $inline_styles[] = 'overflow:visible';
             }
 
             $style = $inline_styles ? ' style="' . esc_attr( implode( ';', $inline_styles ) ) . '"' : '';
@@ -116,7 +124,7 @@ class Vitrine_Render {
             VITRINE_URL . 'assets/css/frontend.css',
             array( 'font-awesome', 'dashicons' ),
             file_exists( VITRINE_PATH . 'assets/css/frontend.css' )
-                ? filemtime( VITRINE_PATH . 'assets/css/frontend.css' )
+                ? VITRINE_VERSION . '.' . filemtime( VITRINE_PATH . 'assets/css/frontend.css' )
                 : VITRINE_VERSION
         );
 
@@ -125,7 +133,7 @@ class Vitrine_Render {
             VITRINE_URL . 'assets/js/frontend.js',
             array(),
             file_exists( VITRINE_PATH . 'assets/js/frontend.js' )
-                ? filemtime( VITRINE_PATH . 'assets/js/frontend.js' )
+                ? VITRINE_VERSION . '.' . filemtime( VITRINE_PATH . 'assets/js/frontend.js' )
                 : VITRINE_VERSION,
             true
         );

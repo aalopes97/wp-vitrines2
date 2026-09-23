@@ -164,6 +164,9 @@ element.button.field.url,Link (URL),Link (URL),Enlace (URL),Link (URL)
 element.button.field.bg_color,Cor de fundo,Background color,Color de fondo,Cor de fundo
 element.button.field.color,Cor do texto,Text color,Color del texto,Cor do texto
 element.button.field.align,Alinhamento,Alignment,Alineación,Alinhamento
+element.button.field.align.option.left,Esquerda,Left,Izquierda,Esquerda
+element.button.field.align.option.center,Centro,Center,Centro,Centro
+element.button.field.align.option.right,Direita,Right,Derecha,Direita
 element.container.label,Container,Container,Contenedor,Contêiner
 element.container.field.name,Nome do container,Container name,Nombre del contenedor,Nome do contêiner
 element.container.field.bg_color,Cor de fundo,Background color,Color de fondo,Cor de fundo
@@ -321,6 +324,9 @@ element.shortcode.field.align.option.right,Direita,Right,Derecha,Direita
 element.text.label,Texto,Text,Texto,Texto
 element.text.field.content,Conteúdo,Content,Contenido,Conteúdo
 element.text.field.align,Alinhamento,Alignment,Alineación,Alinhamento
+element.text.field.align.option.left,Esquerda,Left,Izquierda,Esquerda
+element.text.field.align.option.center,Centro,Center,Centro,Centro
+element.text.field.align.option.right,Direita,Right,Derecha,Direita
 element.text.field.color,Cor,Font color,Color de la fuente,Cor da fonte
 element.text.field.bg_color,Cor de fundo,Background color,Color de fondo,Cor de fundo
 element.text.field.font_size,Tamanho (px),Font size (px),Tamaño de la fuente (px),Tamanho da fonte (px)

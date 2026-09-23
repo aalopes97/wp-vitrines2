@@ -30,7 +30,7 @@ class Vitrine_Element_Text extends Vitrine_Element {
     public function fields() {
         return array(
             array( 'name' => 'content',   'label' => 'Conteúdo',       'type' => 'textarea' ),
-            array( 'name' => 'align',     'label' => 'Alinhamento',    'type' => 'text' ),
+            array( 'name' => 'align',     'label' => 'Alinhamento',    'type' => 'select', 'options' => array( 'left' => 'Esquerda', 'center' => 'Centro', 'right' => 'Direita' ) ),
             array( 'name' => 'color',     'label' => 'Cor',            'type' => 'color' ),
             array( 'name' => 'bg_color',  'label' => 'Cor de fundo',   'type' => 'color' ),
             array( 'name' => 'font_size', 'label' => 'Tamanho (px)',   'type' => 'number' ),
@@ -43,7 +43,9 @@ class Vitrine_Element_Text extends Vitrine_Element {
 
         $color     = esc_attr( $s['color'] );
         $font_size = max( 8, intval( $s['font_size'] ) );
-        $align     = esc_attr( $s['align'] );
+        $align     = in_array( $s['align'], array( 'left', 'center', 'right', 'justify' ), true )
+            ? $s['align']
+            : 'left';
 
         $style = 'text-align:' . $align
             . ';--vitrine-text-color:' . $color
