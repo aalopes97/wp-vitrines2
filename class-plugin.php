@@ -5,6 +5,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Vitrine_Plugin {
 
+    /**
+     * Pasta dos manuais no GitHub (espelho dos PDFs de docs/).
+     */
+    const DOCS_URL = 'https://github.com/aalopes97/wp-vitrines2/tree/main/docs';
+
     private static $instance = null;
 
     public static function init() {
@@ -25,6 +30,8 @@ class Vitrine_Plugin {
         add_action( 'init', array( $this, 'register_post_type' ) );
         add_filter( 'use_block_editor_for_post_type', array( $this, 'disable_gutenberg' ), 10, 2 );
         add_filter( 'single_template', array( $this, 'load_single_template' ) );
+        add_action( 'admin_menu', array( $this, 'register_docs_menu' ), 20 );
+        add_action( 'admin_footer', array( $this, 'open_docs_menu_in_new_tab' ) );
 
         if ( is_admin() ) {
             new Vitrine_Editor();
@@ -102,6 +109,40 @@ class Vitrine_Plugin {
         }
 
         return $template;
+    }
+
+    /**
+     * Submenu Vitrines → Manuais, apontando para a pasta docs no GitHub.
+     */
+    public function register_docs_menu() {
+        global $submenu;
+
+        $parent = 'edit.php?post_type=vitrine';
+        if ( ! isset( $submenu[ $parent ] ) || ! is_array( $submenu[ $parent ] ) ) {
+            return;
+        }
+
+        $labels = array(
+            'en' => 'Manuals',
+            'es' => 'Manuales',
+            'pt' => 'Manuais',
+        );
+        $lang    = strtolower( substr( (string) Vitrine_I18n::get_admin_language(), 0, 2 ) );
+        $default = isset( $labels[ $lang ] ) ? $labels[ $lang ] : 'Manuais';
+
+        $submenu[ $parent ][] = array(
+            Vitrine_I18n::t( $default, 'ui.docs_menu' ),
+            'edit_posts',
+            self::DOCS_URL,
+        );
+    }
+
+    /**
+     * Abre o item Manuais em uma nova aba.
+     */
+    public function open_docs_menu_in_new_tab() {
+        $url = esc_url( self::DOCS_URL );
+        echo '<script>document.querySelectorAll("#adminmenu a[href=\'' . $url . '\']").forEach(function(link){link.target="_blank";link.rel="noopener noreferrer";});</script>';
     }
 
     /**
