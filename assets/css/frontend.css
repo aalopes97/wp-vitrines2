@@ -42,7 +42,7 @@
     word-wrap: break-word;
 }
 .vitrine-hero-desc {
-    margin: 0 auto;
+    margin: 0;
     line-height: 1.6;
     opacity: 0.9;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
@@ -50,9 +50,30 @@
     font-size: var(--vitrine-hero-desc-size, 18px);
     overflow-wrap: anywhere;
     word-wrap: break-word;
+    width: 100%;
+    box-sizing: border-box;
+}
+.vitrine-hero-desc--left {
+    text-align: left;
+    margin-left: 0;
+    margin-right: auto;
+    align-self: flex-start;
+}
+.vitrine-hero-desc--center {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    align-self: center;
+}
+.vitrine-hero-desc--right {
+    text-align: right;
+    margin-left: auto;
+    margin-right: 0;
+    align-self: flex-end;
 }
 .vitrine-hero-desc p {
     margin: 0 0 0.5em;
+    text-align: inherit;
 }
 .vitrine-hero-desc p:last-child {
     margin-bottom: 0;
@@ -84,6 +105,14 @@
     max-width: 100%;
     overflow-wrap: anywhere;
 }
+.vitrine-hero-date__prefix {
+    margin-right: 0.35em;
+}
+.vitrine-hero-date time {
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+}
 .vitrine-hero--no-text-shadow .vitrine-hero-text,
 .vitrine-hero--no-text-shadow .vitrine-hero-desc,
 .vitrine-hero--no-text-shadow .vitrine-hero-date {
@@ -106,8 +135,6 @@
     .vitrine-hero-desc {
         font-size: clamp(0.875rem, 3.6vw, var(--vitrine-hero-desc-size, 1.125rem));
         max-width: 100% !important;
-        margin-left: 0;
-        margin-right: 0;
     }
     .vitrine-hero-date-wrap {
         padding: 8px 16px 16px;
@@ -317,6 +344,40 @@
     color: #aaa;
 }
 
+.vitrine-tib-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--tib-btn-gap, 12px);
+    margin-top: 20px;
+    justify-content: var(--tib-btn-align, flex-start);
+}
+.vitrine-tib-actions--left {
+    justify-content: flex-start;
+}
+.vitrine-tib-actions--center {
+    justify-content: center;
+}
+.vitrine-tib-actions--right {
+    justify-content: flex-end;
+}
+.vitrine-tib-btn {
+    display: inline-block;
+    padding: 10px 22px;
+    border-radius: var(--tib-btn-radius, 4px);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.3;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+.vitrine-tib-btn:hover {
+    opacity: 0.85;
+    text-decoration: none;
+}
+
 @media (max-width: 768px) {
     .vitrine-textimage-inner {
         flex-direction: column;
@@ -333,6 +394,13 @@
     .vitrine-textimage-img {
         height: auto;
         max-height: 320px;
+    }
+    .vitrine-tib-actions {
+        justify-content: stretch;
+    }
+    .vitrine-tib-btn {
+        flex: 1 1 auto;
+        text-align: center;
     }
 }
 
@@ -1686,7 +1754,7 @@ a.vitrine-aranha__text:hover {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    overflow-x: clip;
+    overflow: visible;
     --a3-card-h: 140px;
 }
 
@@ -2014,6 +2082,24 @@ a.vitrine-aranha__text:hover {
     to {
         opacity: 1;
         transform: translateX(0);
+    }
+}
+
+@keyframes a3-band-card-hop {
+    0% {
+        transform: translateY(0);
+    }
+    28% {
+        transform: translateY(-14px);
+    }
+    50% {
+        transform: translateY(-4px);
+    }
+    72% {
+        transform: translateY(-9px);
+    }
+    100% {
+        transform: translateY(-6px);
     }
 }
 
@@ -2517,6 +2603,39 @@ a.vitrine-aranha__text:hover {
 .vitrine-el-aranha3.vitrine-card-style--border-left .vitrine-a3-cell--card:hover {
     transform: translateY(-8px);
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.16);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .vitrine-el-aranha3 .vitrine-a3-frame,
+    .vitrine-el-aranha3 .vitrine-a3-side,
+    .vitrine-el-aranha3 .vitrine-a3-band {
+        overflow: visible;
+    }
+    .vitrine-el-aranha3 .vitrine-a3-cell--card {
+        position: relative;
+        transform-origin: center bottom;
+    }
+    .vitrine-el-aranha3 .vitrine-a3-cell--card:hover,
+    .vitrine-el-aranha3 .vitrine-a3-cell--card.is-a3-in:hover,
+    .vitrine-el-aranha3 .vitrine-a3-cell--card.is-a3-in[data-a3-from]:hover {
+        z-index: 4;
+        animation-name: a3-band-card-hop;
+        animation-duration: 0.55s;
+        animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+        animation-delay: 0s;
+        animation-iteration-count: 1;
+        animation-fill-mode: forwards;
+        transform: translateY(-6px);
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.16);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vitrine-el-aranha3 .vitrine-a3-cell--card:hover,
+    .vitrine-el-aranha3 .vitrine-a3-cell--card.is-a3-in:hover {
+        animation: none;
+        transform: translateY(-4px);
+    }
 }
 
 /* Mobile: cards das aranhas em largura total + altura auto */

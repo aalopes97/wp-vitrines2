@@ -215,7 +215,8 @@ class Vitrine_Element_Aranha3 extends Vitrine_Element {
         $title = isset( $it['title'] ) ? wp_kses_post( $it['title'] ) : '';
         $text  = isset( $it['text'] )  ? wp_kses_post( $it['text'] )  : '';
         $icon  = isset( $it['icon'] )  ? $it['icon']                   : '';
-        $link  = isset( $it['link'] )  ? esc_url( $it['link'] )        : '';
+        $link    = isset( $it['link'] ) ? esc_url( $it['link'] ) : '';
+        $new_tab = ! empty( $it['link_new_tab'] ) && '1' === (string) $it['link_new_tab'];
 
         $cell_style = 'border-radius:' . $border_radius . 'px;'
             . 'box-sizing:border-box;display:flex;flex-direction:column'
@@ -265,7 +266,8 @@ class Vitrine_Element_Aranha3 extends Vitrine_Element {
         }
 
         if ( $link ) {
-            $output .= '<a href="' . $link . '" class="vitrine-a3-card-link">' . $inner . '</a>';
+            $target = $new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
+            $output .= '<a href="' . $link . '" class="vitrine-a3-card-link"' . $target . '>' . $inner . '</a>';
         } else {
             $output .= $inner;
         }

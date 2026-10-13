@@ -28,13 +28,20 @@ $vitrine_hero_italic   = ! empty( $vitrine_page_settings['hero_text_italic'] ) ?
 $vitrine_hero_desc     = ! empty( $vitrine_page_settings['hero_description'] ) ? $vitrine_page_settings['hero_description'] : '';
 $vitrine_hero_desc_sz  = ! empty( $vitrine_page_settings['hero_desc_size'] ) ? intval( $vitrine_page_settings['hero_desc_size'] ) : 18;
 $vitrine_hero_desc_clr = ! empty( $vitrine_page_settings['hero_desc_color'] ) ? $vitrine_page_settings['hero_desc_color'] : $vitrine_hero_txt_clr;
+$vitrine_hero_desc_align = ! empty( $vitrine_page_settings['hero_desc_align'] ) ? $vitrine_page_settings['hero_desc_align'] : $vitrine_hero_align;
+if ( ! in_array( $vitrine_hero_desc_align, array( 'left', 'center', 'right' ), true ) ) {
+    $vitrine_hero_desc_align = $vitrine_hero_align;
+}
 $vitrine_hero_desc_mw  = ! empty( $vitrine_page_settings['hero_desc_max_width'] ) ? intval( $vitrine_page_settings['hero_desc_max_width'] ) : 0;
-$vitrine_hero_desc_style = 'color:' . esc_attr( $vitrine_hero_desc_clr ) . ';';
+$vitrine_hero_desc_style = 'color:' . esc_attr( $vitrine_hero_desc_clr ) . ';text-align:' . esc_attr( $vitrine_hero_desc_align ) . ';';
 if ( $vitrine_hero_desc_mw > 0 ) {
     $vitrine_hero_desc_style .= '--vitrine-hero-desc-max-w:' . esc_attr( $vitrine_hero_desc_mw ) . 'px;';
 }
-$vitrine_hero_date       = ! empty( $vitrine_page_settings['hero_date'] ) ? $vitrine_page_settings['hero_date'] : '';
-$vitrine_hero_date_label = $vitrine_hero_date ? Vitrine_Hero_Meta::format_hero_date( $vitrine_hero_date ) : '';
+$vitrine_hero_date_display = Vitrine_Hero_Meta::get_hero_date_display( $vitrine_page_settings );
+$vitrine_hero_date         = $vitrine_hero_date_display['iso'];
+$vitrine_hero_date_label   = $vitrine_hero_date_display['label'];
+$vitrine_hero_date_num     = $vitrine_hero_date_display['formatted'];
+$vitrine_hero_date_prefix  = $vitrine_hero_date_display['prefix'];
 $vitrine_hero_date_sz    = ! empty( $vitrine_page_settings['hero_date_size'] ) ? intval( $vitrine_page_settings['hero_date_size'] ) : 16;
 $vitrine_hero_date_clr   = ! empty( $vitrine_page_settings['hero_date_color'] ) ? $vitrine_page_settings['hero_date_color'] : $vitrine_hero_txt_clr;
 $vitrine_hero_date_align = ! empty( $vitrine_page_settings['hero_date_align'] ) ? $vitrine_page_settings['hero_date_align'] : 'right';
@@ -91,15 +98,20 @@ $vitrine_body_style = $vitrine_bg_color ? ' style="background-color:' . esc_attr
         <div class="vitrine-hero-overlay" style="background:rgba(0,0,0,<?php echo esc_attr( $vitrine_hero_opacity ); ?>);"></div>
         <div class="vitrine-hero-content" style="text-align:<?php echo esc_attr( $vitrine_hero_align ); ?>;">
             <?php if ( $vitrine_hero_text ) : ?>
-                <h1 class="vitrine-hero-text" style="color:<?php echo esc_attr( $vitrine_hero_txt_clr ); ?>;font-weight:<?php echo esc_attr( $vitrine_hero_bold ); ?>;font-style:<?php echo esc_attr( $vitrine_hero_italic ); ?>;"><?php echo esc_html( $vitrine_hero_text ); ?></h1>
+                <h1 class="vitrine-hero-text" style="color:<?php echo esc_attr( $vitrine_hero_txt_clr ); ?>;font-weight:<?php echo esc_attr( $vitrine_hero_bold ); ?>;font-style:<?php echo esc_attr( $vitrine_hero_italic ); ?>;text-align:<?php echo esc_attr( $vitrine_hero_align ); ?>;"><?php echo esc_html( $vitrine_hero_text ); ?></h1>
             <?php endif; ?>
             <?php if ( $vitrine_hero_desc ) : ?>
-                <div class="vitrine-hero-desc" style="<?php echo esc_attr( $vitrine_hero_desc_style ); ?>"><?php echo wp_kses_post( $vitrine_hero_desc ); ?></div>
+                <div class="vitrine-hero-desc vitrine-hero-desc--<?php echo esc_attr( $vitrine_hero_desc_align ); ?>" style="<?php echo esc_attr( $vitrine_hero_desc_style ); ?>"><?php echo wp_kses_post( $vitrine_hero_desc ); ?></div>
             <?php endif; ?>
         </div>
         <?php if ( $vitrine_hero_date_label ) : ?>
         <div class="vitrine-hero-date-wrap vitrine-hero-date-wrap--<?php echo esc_attr( $vitrine_hero_date_align ); ?>">
-            <time class="vitrine-hero-date" datetime="<?php echo esc_attr( $vitrine_hero_date ); ?>" style="<?php echo esc_attr( $vitrine_hero_date_style ); ?>"><?php echo esc_html( $vitrine_hero_date_label ); ?></time>
+            <span class="vitrine-hero-date" style="<?php echo esc_attr( $vitrine_hero_date_style ); ?>">
+                <?php if ( $vitrine_hero_date_prefix ) : ?>
+                    <span class="vitrine-hero-date__prefix"><?php echo esc_html( $vitrine_hero_date_prefix ); ?></span>
+                <?php endif; ?>
+                <time datetime="<?php echo esc_attr( $vitrine_hero_date ); ?>"><?php echo esc_html( $vitrine_hero_date_num ); ?></time>
+            </span>
         </div>
         <?php endif; ?>
     </section>

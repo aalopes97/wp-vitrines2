@@ -983,7 +983,7 @@ class Vitrine_AI {
     private static function build_chat_system_prompt() {
         return 'Você é o Assistente BVS do Builder Vitrine (WordPress). Ajude o usuário a planejar vitrines em português (até ~8 frases). '
             . self::get_aranha_vocabulary_prompt()
-            . 'Elementos também disponíveis: container, title, text, button, image, itemgrid, itemcarousel, toggle; hero opcional. '
+            . 'Elementos também disponíveis: container, title, text, button, image, textimage, textimagebuttons, itemgrid, itemcarousel, toggle; hero opcional. '
             . 'Não gere JSON nesta conversa. Quando o plano estiver claro, peça para clicar em "Gerar vitrine e editar".';
     }
 
@@ -1326,6 +1326,22 @@ class Vitrine_AI {
             'title'        => array( 'settings' => array( 'text' => 'string', 'tag' => 'h1-h3', 'align' => 'left|center', 'color' => 'hex', 'font_size' => 'number' ) ),
             'text'         => array( 'settings' => array( 'content' => 'html', 'align' => 'left|center' ) ),
             'button'       => array( 'settings' => array( 'text' => 'string', 'url' => 'string', 'align' => 'center', 'bg_color' => 'hex', 'color' => 'hex' ) ),
+            'textimage'    => array( 'settings' => array( 'title' => 'string', 'content' => 'html', 'image' => 'url', 'image_position' => 'left|right' ) ),
+            'textimagebuttons' => array(
+                'label'    => 'Texto + Imagem + até 3 botões com links abaixo do texto',
+                'settings' => array(
+                    'title'     => 'string',
+                    'content'   => 'html',
+                    'image'     => 'url',
+                    'image_position' => 'left|right',
+                    'btn1_text' => 'string',
+                    'btn1_url'  => 'url',
+                    'btn2_text' => 'string (opcional)',
+                    'btn2_url'  => 'url',
+                    'btn3_text' => 'string (opcional)',
+                    'btn3_url'  => 'url',
+                ),
+            ),
             'image'        => array( 'settings' => array( 'url' => 'string', 'align' => 'center', 'width' => 'percent' ) ),
             'itemgrid'     => array(
                 'settings' => array(
@@ -1367,7 +1383,8 @@ class Vitrine_AI {
                             'title'    => 'string',
                             'text'     => 'string',
                             'icon'     => 'dashicons-* (opcional)',
-                            'link'     => 'url (opcional)',
+                            'link'         => 'url (opcional)',
+                            'link_new_tab' => '0|1 (abrir em nova aba)',
                             'position' => 'auto|top|bottom|left|right (grade)',
                         ),
                     ),

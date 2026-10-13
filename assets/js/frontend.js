@@ -119,6 +119,15 @@
         cards.forEach(function (card, index) {
             card.setAttribute('data-a3-from', getA3CardZone(card));
             card.style.setProperty('--a3-delay', (baseDelay + index * step) + 'ms');
+            card.addEventListener('animationend', function onA3In(ev) {
+                if (!ev.animationName || ev.animationName.indexOf('a3-card-in-') !== 0) {
+                    return;
+                }
+                card.removeEventListener('animationend', onA3In);
+                card.classList.remove('is-a3-in');
+                card.style.opacity = '1';
+                card.style.removeProperty('--a3-delay');
+            });
             card.classList.add('is-a3-in');
         });
     }

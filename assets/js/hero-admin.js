@@ -23,8 +23,62 @@
         $('#vitrine-hero-description-input').val(html);
     }
 
+    function langFamily(lang) {
+        return String(lang || '').toLowerCase().replace(/-/g, '_').replace(/[^a-z].*$/, '').slice(0, 2);
+    }
+
+    function formatHeroDate(iso, format) {
+        if (!iso || iso.indexOf('-') === -1) {
+            return iso || '';
+        }
+        var p = iso.split('-');
+        if (p.length !== 3) {
+            return iso;
+        }
+        var y = p[0];
+        var m = p[1];
+        var d = p[2];
+        var mode = format || 'auto';
+        var i18n = (window.vitrineHeroData && vitrineHeroData.dateI18n) ? vitrineHeroData.dateI18n : {};
+        if (mode === 'auto') {
+            mode = langFamily(i18n.lang) === 'en' ? 'en' : 'br';
+        }
+        if (mode === 'en') {
+            return m + '/' + d + '/' + y;
+        }
+        return d + '/' + m + '/' + y;
+    }
+
+    function buildHeroDateLabel() {
+        var iso = $('#vitrine-hero-date').val() || '';
+        if (!iso) {
+            return '';
+        }
+        var formatted = formatHeroDate(iso, $('#vitrine-hero-date-format').val() || 'auto');
+        var custom = $.trim($('#vitrine-hero-date-prefix').val() || '');
+        var showDefault = $('#vitrine-hero-date-show-prefix').is(':checked');
+        var i18n = (window.vitrineHeroData && vitrineHeroData.dateI18n) ? vitrineHeroData.dateI18n : {};
+        var prefix = custom;
+        if (!prefix && showDefault) {
+            prefix = i18n.defaultPrefix || '';
+        }
+        prefix = String(prefix || '').replace(/\s+$/, '');
+        return prefix ? (prefix + ' ' + formatted) : formatted;
+    }
+
+    function updateDateLivePreview() {
+        var $live = $('#vitrine-date-live-preview');
+        if (!$live.length) {
+            return;
+        }
+        var label = buildHeroDateLabel();
+        $live.text(label);
+        $live.toggle(!!label);
+    }
+
     function renderHeroPreview() {
         var $prev = $('#vitrine-hero-preview');
+        updateDateLivePreview();
         if (!$prev.length) return;
 
         var img   = $('#vitrine-hero-image').val() || '';
@@ -38,6 +92,7 @@
         var desc  = $('#vitrine-hero-description').html() || '';
         var dfs   = parseInt($('#vitrine-hero-desc-size').val() || '18', 10);
         var descColor = $('#vitrine-hero-desc-color').val() || color;
+        var descAlign = $('#vitrine-hero-desc-align').val() || align;
         var descMw = parseInt($('#vitrine-hero-desc-max-width').val() || '0', 10);
         var textBold = $('#vitrine-hero-text-bold').val() !== '0' ? '700' : '400';
         var textItal = $('#vitrine-hero-text-italic').val() === '1' ? 'italic' : 'normal';
@@ -46,23 +101,20 @@
         var dateFs = parseInt($('#vitrine-hero-date-size').val() || '16', 10);
         var dateColor = $('#vitrine-hero-date-color').val() || color;
         var dateAlign = $('#vitrine-hero-date-align').val() || 'right';
+        var dateLabel = buildHeroDateLabel();
 
         if (!img && !text && !desc && !heroDate) {
             $prev.empty();
             return;
         }
 
-        var dateLabel = heroDate;
-        if (heroDate && heroDate.indexOf('-') !== -1) {
-            var p = heroDate.split('-');
-            if (p.length === 3) {
-                dateLabel = p[2] + '/' + p[1] + '/' + p[0];
-            }
-        }
-
         var justifyMap = { left: 'flex-start', center: 'center', right: 'flex-end' };
-        var justifyContent = justifyMap[align] || 'center';
         var dateJustify = justifyMap[dateAlign] || 'flex-end';
+        var descMarginMap = {
+            left: 'margin-left:0;margin-right:auto;align-self:flex-start;',
+            center: 'margin-left:auto;margin-right:auto;align-self:center;',
+            right: 'margin-left:auto;margin-right:0;align-self:flex-end;'
+        };
         var bgStyle = img
             ? 'background:url(' + escapeAttr(img) + ') center/cover no-repeat;background-color:' + escapeAttr(bgColor) + ';'
             : 'background:' + escapeAttr(bgColor) + ';';
@@ -70,15 +122,16 @@
         var descShadow = shadow ? 'text-shadow:0 1px 4px rgba(0,0,0,.5);' : 'text-shadow:none;';
         var dateShadow = shadow ? 'text-shadow:0 2px 10px rgba(0,0,0,.5);' : 'text-shadow:none;';
 
-        var html = '<div style="position:relative;' + bgStyle + 'height:' + h + 'px;border-radius:6px;overflow:hidden;display:flex;flex-direction:column;align-items:' + justifyContent + ';justify-content:center;gap:10px;padding:0 20px;">';
+        var html = '<div style="position:relative;' + bgStyle + 'height:' + h + 'px;border-radius:6px;overflow:hidden;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:10px;padding:0 20px;">';
         html += '<div style="position:absolute;inset:0;background:rgba(0,0,0,' + opa + ');"></div>';
         if (text) {
-            html += '<span style="position:relative;z-index:1;font-size:' + fs + 'px;font-weight:' + textBold + ';font-style:' + textItal + ';color:' + escapeAttr(color) + ';text-align:' + escapeAttr(align) + ';' + textShadow + '">' + escapeHtml(text) + '</span>';
+            html += '<span style="position:relative;z-index:1;display:block;width:100%;font-size:' + fs + 'px;font-weight:' + textBold + ';font-style:' + textItal + ';color:' + escapeAttr(color) + ';text-align:' + escapeAttr(align) + ';' + textShadow + '">' + escapeHtml(text) + '</span>';
         }
         if (desc) {
-            var descStyle = 'position:relative;z-index:1;font-size:' + dfs + 'px;color:' + escapeAttr(descColor) + ';text-align:' + escapeAttr(align) + ';opacity:0.9;' + descShadow;
+            var descStyle = 'position:relative;z-index:1;display:block;width:100%;box-sizing:border-box;font-size:' + dfs + 'px;color:' + escapeAttr(descColor) + ';text-align:' + escapeAttr(descAlign) + ';opacity:0.9;' + descShadow;
+            descStyle += descMarginMap[descAlign] || descMarginMap.center;
             if (descMw > 0) {
-                descStyle += 'max-width:' + descMw + 'px;margin-left:auto;margin-right:auto;display:block;width:100%;';
+                descStyle += 'max-width:' + descMw + 'px;';
             }
             html += '<span style="' + descStyle + '">' + desc + '</span>';
         }
@@ -124,7 +177,7 @@
             renderHeroPreview();
         });
 
-        $('#vitrine-hero-meta-box').on('input change', '#vitrine-hero-image, #vitrine-hero-bg-color, #vitrine-hero-text, #vitrine-hero-text-color, #vitrine-hero-opacity, #vitrine-hero-height, #vitrine-hero-font-size, #vitrine-hero-text-align, #vitrine-hero-text-shadow, #vitrine-hero-desc-size, #vitrine-hero-desc-color, #vitrine-hero-desc-max-width', function () {
+        $('#vitrine-hero-meta-box').on('input change', '#vitrine-hero-image, #vitrine-hero-bg-color, #vitrine-hero-text, #vitrine-hero-text-color, #vitrine-hero-opacity, #vitrine-hero-height, #vitrine-hero-font-size, #vitrine-hero-text-align, #vitrine-hero-text-shadow, #vitrine-hero-desc-size, #vitrine-hero-desc-color, #vitrine-hero-desc-align, #vitrine-hero-desc-max-width', function () {
             if (this.id === 'vitrine-hero-opacity') {
                 $('#vitrine-hero-opacity-val').text($(this).val() + '%');
             }
@@ -132,7 +185,7 @@
         });
 
         // Date fields live in the builder right sidebar (outside the hero meta box).
-        $(document).on('input change', '#vitrine-hero-date, #vitrine-hero-date-size, #vitrine-hero-date-color, #vitrine-hero-date-align', function () {
+        $(document).on('input change', '#vitrine-hero-date, #vitrine-hero-date-size, #vitrine-hero-date-color, #vitrine-hero-date-align, #vitrine-hero-date-format, #vitrine-hero-date-prefix, #vitrine-hero-date-show-prefix', function () {
             renderHeroPreview();
         });
 

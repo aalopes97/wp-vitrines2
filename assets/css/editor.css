@@ -441,7 +441,7 @@
 }
 .vitrine-date-metabox__fields {
     display: grid;
-    grid-template-columns: minmax(160px, 220px) 100px 90px minmax(120px, 160px);
+    grid-template-columns: minmax(150px, 190px) minmax(160px, 210px) 90px 90px minmax(110px, 150px);
     gap: 12px 16px;
     align-items: end;
 }
@@ -466,11 +466,44 @@
     box-sizing: border-box;
     cursor: pointer;
 }
+.vitrine-date-metabox__prefix {
+    margin-top: 16px;
+    display: grid;
+    gap: 10px;
+}
+.vitrine-date-metabox__check {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1d2327;
+}
+.vitrine-date-metabox__check input {
+    margin-top: 2px;
+}
+.vitrine-date-metabox__field--prefix input[type="text"] {
+    max-width: 420px;
+}
+.vitrine-date-metabox__live {
+    margin: 10px 0 0;
+    font-weight: 600;
+    color: #1d2327;
+}
+.vitrine-date-metabox__live:empty {
+    display: none;
+}
+@media screen and (max-width: 1100px) {
+    .vitrine-date-metabox__fields {
+        grid-template-columns: minmax(150px, 1fr) minmax(160px, 1fr) 90px 90px minmax(110px, 160px);
+    }
+}
 @media screen and (max-width: 782px) {
     .vitrine-date-metabox__fields {
         grid-template-columns: 1fr 1fr;
     }
-    .vitrine-date-metabox__field--date {
+    .vitrine-date-metabox__field--date,
+    .vitrine-date-metabox__field--prefix {
         grid-column: 1 / -1;
     }
 }
@@ -2184,6 +2217,13 @@ body.vitrine-resizing-sidebar .vitrine-panel-resizer.is-dragging::before {
 }
 .vitrine-hero-preview {
     min-height: 0;
+}
+.vitrine-hero-preview p {
+    margin: 0 0 0.5em;
+    text-align: inherit;
+}
+.vitrine-hero-preview p:last-child {
+    margin-bottom: 0;
 }
 .vitrine-hero-preview:not(:empty) + .vitrine-hero-preview__empty {
     display: none;

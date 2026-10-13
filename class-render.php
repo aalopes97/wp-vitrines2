@@ -84,11 +84,11 @@ class Vitrine_Render {
             $aranha_mode = ( 'aranha' === $type && ! empty( $settings['layout_mode'] ) )
                 ? $settings['layout_mode']
                 : '';
-            if ( 'aranha2' === $type || ( 'aranha' === $type && 'grade' !== $aranha_mode ) ) {
+            if ( 'aranha2' === $type || 'aranha3' === $type || ( 'aranha' === $type && 'grade' !== $aranha_mode ) ) {
                 $inline_styles[] = 'position:relative';
                 $inline_styles[] = 'z-index:auto';
                 // O próprio elemento controla o overflow; o wrapper precisa
-                // permanecer visível para não cortar o anel orbital.
+                // permanecer visível para não cortar o anel orbital nem o hover.
                 $inline_styles[] = 'overflow:visible';
             }
 

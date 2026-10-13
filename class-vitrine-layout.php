@@ -150,6 +150,7 @@ class Vitrine_Layout {
             $link = isset( $raw_item['link'] )
                 ? esc_url_raw( (string) $raw_item['link'] )
                 : '';
+            $link_new_tab = ( ! empty( $raw_item['link_new_tab'] ) && '1' === (string) $raw_item['link_new_tab'] ) ? '1' : '0';
             $alt = isset( $raw_item['alt'] )
                 ? sanitize_text_field( (string) $raw_item['alt'] )
                 : '';
@@ -160,12 +161,13 @@ class Vitrine_Layout {
             }
 
             $normalized_item = array(
-                'id'    => $id,
-                'title' => $title,
-                'text'  => $text,
-                'icon'  => $icon,
-                'link'  => $link,
-                'alt'   => $alt,
+                'id'           => $id,
+                'title'        => $title,
+                'text'         => $text,
+                'icon'         => $icon,
+                'link'         => $link,
+                'link_new_tab' => $link_new_tab,
+                'alt'          => $alt,
             );
             if ( isset( $raw_item['position'] ) ) {
                 $position = sanitize_key( $raw_item['position'] );

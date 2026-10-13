@@ -34,6 +34,7 @@ class Vitrine_Hero_Meta {
             'hero_description'     => '',
             'hero_desc_size'       => '18',
             'hero_desc_color'      => '',
+            'hero_desc_align'      => 'center',
             'hero_desc_max_width'  => '',
             'hero_text_bold'       => '1',
             'hero_text_italic'     => '0',
@@ -43,6 +44,9 @@ class Vitrine_Hero_Meta {
             'hero_date_size'       => '16',
             'hero_date_color'      => '',
             'hero_date_align'      => 'right',
+            'hero_date_format'     => 'auto',
+            'hero_date_prefix'     => '',
+            'hero_date_show_prefix' => '0',
             'custom_css'           => '',
         );
     }
@@ -52,7 +56,11 @@ class Vitrine_Hero_Meta {
         if ( ! is_array( $settings ) ) {
             return self::default_page_settings();
         }
-        return wp_parse_args( $settings, self::default_page_settings() );
+        $merged = wp_parse_args( $settings, self::default_page_settings() );
+        if ( ! array_key_exists( 'hero_desc_align', $settings ) || '' === (string) $settings['hero_desc_align'] ) {
+            $merged['hero_desc_align'] = $merged['hero_text_align'];
+        }
+        return $merged;
     }
 
     /**
@@ -77,6 +85,7 @@ class Vitrine_Hero_Meta {
             'hero_description',
             'hero_desc_size',
             'hero_desc_color',
+            'hero_desc_align',
             'hero_desc_max_width',
             'hero_text_bold',
             'hero_text_italic',
@@ -86,6 +95,9 @@ class Vitrine_Hero_Meta {
             'hero_date_size',
             'hero_date_color',
             'hero_date_align',
+            'hero_date_format',
+            'hero_date_prefix',
+            'hero_date_show_prefix',
         );
     }
 
@@ -104,9 +116,19 @@ class Vitrine_Hero_Meta {
             $align = 'center';
         }
 
+        $desc_align = isset( $input['hero_desc_align'] ) ? $input['hero_desc_align'] : $align;
+        if ( ! in_array( $desc_align, array( 'left', 'center', 'right' ), true ) ) {
+            $desc_align = $align;
+        }
+
         $date_align = isset( $input['hero_date_align'] ) ? sanitize_key( $input['hero_date_align'] ) : 'right';
         if ( ! in_array( $date_align, array( 'left', 'center', 'right' ), true ) ) {
             $date_align = 'right';
+        }
+
+        $date_format = isset( $input['hero_date_format'] ) ? sanitize_key( $input['hero_date_format'] ) : 'auto';
+        if ( ! in_array( $date_format, array( 'auto', 'br', 'en' ), true ) ) {
+            $date_format = 'auto';
         }
 
         $hero_date = isset( $input['hero_date'] ) ? sanitize_text_field( $input['hero_date'] ) : '';
@@ -115,6 +137,12 @@ class Vitrine_Hero_Meta {
         }
 
         $hero_date_color = isset( $input['hero_date_color'] ) ? sanitize_hex_color( $input['hero_date_color'] ) : '';
+        $hero_date_prefix = isset( $input['hero_date_prefix'] ) ? sanitize_text_field( $input['hero_date_prefix'] ) : '';
+        if ( function_exists( 'mb_substr' ) ) {
+            $hero_date_prefix = mb_substr( $hero_date_prefix, 0, 80 );
+        } else {
+            $hero_date_prefix = substr( $hero_date_prefix, 0, 80 );
+        }
 
         return array(
             'hero_image'           => isset( $input['hero_image'] ) ? esc_url_raw( $input['hero_image'] ) : '',
@@ -129,22 +157,88 @@ class Vitrine_Hero_Meta {
             'hero_description'     => isset( $input['hero_description'] ) ? wp_kses_post( $input['hero_description'] ) : '',
             'hero_desc_size'       => isset( $input['hero_desc_size'] ) ? absint( $input['hero_desc_size'] ) : 18,
             'hero_desc_color'      => isset( $input['hero_desc_color'] ) ? sanitize_hex_color( $input['hero_desc_color'] ) : '',
+            'hero_desc_align'      => $desc_align,
             'hero_desc_max_width'  => isset( $input['hero_desc_max_width'] ) ? absint( $input['hero_desc_max_width'] ) : 0,
             'hero_text_bold'       => ! empty( $input['hero_text_bold'] ) ? '1' : '0',
             'hero_text_italic'     => ! empty( $input['hero_text_italic'] ) ? '1' : '0',
             'hero_desc_bold'       => ! empty( $input['hero_desc_bold'] ) ? '1' : '0',
             'hero_desc_italic'     => ! empty( $input['hero_desc_italic'] ) ? '1' : '0',
-            'hero_date'            => $hero_date,
-            'hero_date_size'       => isset( $input['hero_date_size'] ) ? max( 10, min( 72, absint( $input['hero_date_size'] ) ) ) : 16,
-            'hero_date_color'      => $hero_date_color ? $hero_date_color : '',
-            'hero_date_align'      => $date_align,
+            'hero_date'             => $hero_date,
+            'hero_date_size'        => isset( $input['hero_date_size'] ) ? max( 10, min( 72, absint( $input['hero_date_size'] ) ) ) : 16,
+            'hero_date_color'       => $hero_date_color ? $hero_date_color : '',
+            'hero_date_align'       => $date_align,
+            'hero_date_format'      => $date_format,
+            'hero_date_prefix'      => $hero_date_prefix,
+            'hero_date_show_prefix' => ! empty( $input['hero_date_show_prefix'] ) ? '1' : '0',
+        );
+    }
+
+    /**
+     * Formato PHP da data do hero (br = d/m/Y, en = m/d/Y, auto = idioma).
+     */
+    public static function get_date_php_format( $format = 'auto' ) {
+        $format = sanitize_key( (string) $format );
+        if ( 'br' === $format ) {
+            return 'd/m/Y';
+        }
+        if ( 'en' === $format ) {
+            return 'm/d/Y';
+        }
+
+        $lang = class_exists( 'Vitrine_I18n' ) ? Vitrine_I18n::get_display_language() : get_locale();
+        $family = strtolower( preg_replace( '/[^a-z].*$/', '', strtolower( str_replace( '-', '_', (string) $lang ) ) ) );
+        if ( 'en' === $family ) {
+            return 'm/d/Y';
+        }
+
+        return 'd/m/Y';
+    }
+
+    /**
+     * Prefixo exibido antes da data (customizado ou padrão do idioma).
+     */
+    public static function get_hero_date_prefix( $settings = array() ) {
+        $custom = isset( $settings['hero_date_prefix'] ) ? trim( (string) $settings['hero_date_prefix'] ) : '';
+        if ( '' !== $custom ) {
+            return $custom;
+        }
+        if ( empty( $settings['hero_date_show_prefix'] ) || '1' !== (string) $settings['hero_date_show_prefix'] ) {
+            return '';
+        }
+        $lang = class_exists( 'Vitrine_I18n' ) ? Vitrine_I18n::get_display_language() : null;
+        return class_exists( 'Vitrine_I18n' )
+            ? Vitrine_I18n::translate( 'Updated on:', 'ui.vitrine_date_updated', $lang )
+            : 'Updated on:';
+    }
+
+    /**
+     * Partes da data do hero para o front (iso, número, prefixo, rótulo completo).
+     */
+    public static function get_hero_date_display( $settings = array() ) {
+        $date_str = isset( $settings['hero_date'] ) ? (string) $settings['hero_date'] : '';
+        $format   = isset( $settings['hero_date_format'] ) ? $settings['hero_date_format'] : 'auto';
+        $formatted = self::format_hero_date( $date_str, $format );
+        $prefix    = $formatted ? self::get_hero_date_prefix( $settings ) : '';
+        $label     = $formatted;
+        if ( $prefix && $formatted ) {
+            $label = rtrim( $prefix ) . ' ' . $formatted;
+        }
+
+        return array(
+            'iso'       => $date_str,
+            'formatted' => $formatted,
+            'prefix'    => $prefix,
+            'label'     => $label,
         );
     }
 
     /**
      * Formata a data do hero para exibição no front.
+     *
+     * @param string $date_str YYYY-MM-DD
+     * @param string $format   auto|br|en
      */
-    public static function format_hero_date( $date_str ) {
+    public static function format_hero_date( $date_str, $format = 'auto' ) {
         if ( empty( $date_str ) ) {
             return '';
         }
@@ -154,7 +248,7 @@ class Vitrine_Hero_Meta {
             return sanitize_text_field( $date_str );
         }
 
-        return date_i18n( get_option( 'date_format' ), $timestamp );
+        return date_i18n( self::get_date_php_format( $format ), $timestamp );
     }
 
     /**
@@ -199,13 +293,23 @@ class Vitrine_Hero_Meta {
 
         $s          = self::get_settings( $post->ID );
         $date_color = ! empty( $s['hero_date_color'] ) ? $s['hero_date_color'] : ( ! empty( $s['hero_text_color'] ) ? $s['hero_text_color'] : '#ffffff' );
+        $date_fmt   = ! empty( $s['hero_date_format'] ) ? $s['hero_date_format'] : 'auto';
+        $prefix_ph  = Vitrine_I18n::t( 'Updated on:', 'ui.vitrine_date_updated' );
         ?>
         <div id="vitrine-date-meta-box" class="vitrine-date-metabox">
-            <p class="description vitrine-date-metabox__hint"><?php echo esc_html( Vitrine_I18n::t( 'Shown at the bottom of the hero.', 'ui.vitrine_date_hint' ) ); ?></p>
+            <p class="description vitrine-date-metabox__hint"><?php echo esc_html( Vitrine_I18n::t( 'Shown at the bottom of the hero. Format follows the vitrine language unless overridden.', 'ui.vitrine_date_hint' ) ); ?></p>
             <div class="vitrine-date-metabox__fields">
                 <div class="vitrine-date-metabox__field vitrine-date-metabox__field--date">
                     <label for="vitrine-hero-date"><?php echo esc_html( Vitrine_I18n::t( 'Vitrine date', 'ui.vitrine_date' ) ); ?></label>
                     <input type="date" name="vitrine_hero[hero_date]" id="vitrine-hero-date" value="<?php echo esc_attr( $s['hero_date'] ); ?>" />
+                </div>
+                <div class="vitrine-date-metabox__field">
+                    <label for="vitrine-hero-date-format"><?php echo esc_html( Vitrine_I18n::t( 'Date format', 'ui.vitrine_date_format' ) ); ?></label>
+                    <select name="vitrine_hero[hero_date_format]" id="vitrine-hero-date-format">
+                        <option value="auto"<?php selected( $date_fmt, 'auto' ); ?>><?php echo esc_html( Vitrine_I18n::t( 'Auto (language)', 'ui.vitrine_date_format_auto' ) ); ?></option>
+                        <option value="br"<?php selected( $date_fmt, 'br' ); ?>><?php echo esc_html( Vitrine_I18n::t( 'Brazil (13/10/2026)', 'ui.vitrine_date_format_br' ) ); ?></option>
+                        <option value="en"<?php selected( $date_fmt, 'en' ); ?>><?php echo esc_html( Vitrine_I18n::t( 'English (10/13/2026)', 'ui.vitrine_date_format_en' ) ); ?></option>
+                    </select>
                 </div>
                 <div class="vitrine-date-metabox__field">
                     <label for="vitrine-hero-date-size"><?php echo esc_html( Vitrine_I18n::t( 'Size (px)', 'ui.vitrine_date_size' ) ); ?></label>
@@ -224,6 +328,18 @@ class Vitrine_Hero_Meta {
                     </select>
                 </div>
             </div>
+            <div class="vitrine-date-metabox__prefix">
+                <label class="vitrine-date-metabox__check" for="vitrine-hero-date-show-prefix">
+                    <input type="checkbox" name="vitrine_hero[hero_date_show_prefix]" id="vitrine-hero-date-show-prefix" value="1"<?php checked( $s['hero_date_show_prefix'], '1' ); ?> />
+                    <?php echo esc_html( Vitrine_I18n::t( 'Show language prefix (“Updated on:” / “Atualizado em:”)', 'ui.vitrine_date_show_prefix' ) ); ?>
+                </label>
+                <div class="vitrine-date-metabox__field vitrine-date-metabox__field--prefix">
+                    <label for="vitrine-hero-date-prefix"><?php echo esc_html( Vitrine_I18n::t( 'Prefix (optional)', 'ui.vitrine_date_prefix' ) ); ?></label>
+                    <input type="text" name="vitrine_hero[hero_date_prefix]" id="vitrine-hero-date-prefix" value="<?php echo esc_attr( $s['hero_date_prefix'] ); ?>" maxlength="80" class="widefat" placeholder="<?php echo esc_attr( $prefix_ph ); ?>" />
+                    <p class="description"><?php echo esc_html( Vitrine_I18n::t( 'Text shown before the date, e.g. “Updated on: 13/10/2026”. Leave empty to show the date only, or to use the language default when enabled.', 'ui.vitrine_date_prefix_hint' ) ); ?></p>
+                </div>
+            </div>
+            <p class="description vitrine-date-metabox__live" id="vitrine-date-live-preview"></p>
         </div>
         <?php
     }
@@ -253,6 +369,10 @@ class Vitrine_Hero_Meta {
         $settings = self::get_settings( $post_id );
         wp_localize_script( 'vitrine-hero-admin-js', 'vitrineHeroData', array(
             'settings' => $settings,
+            'dateI18n' => array(
+                'lang'          => Vitrine_I18n::get_display_language(),
+                'defaultPrefix' => Vitrine_I18n::t( 'Updated on:', 'ui.vitrine_date_updated' ),
+            ),
         ) );
     }
 
@@ -357,7 +477,7 @@ class Vitrine_Hero_Meta {
                                 <div id="vitrine-hero-description" class="vitrine-aranha-wysiwyg" contenteditable="true"><?php echo wp_kses_post( $s['hero_description'] ); ?></div>
                                 <textarea name="vitrine_hero[hero_description]" id="vitrine-hero-description-input" class="hidden" style="display:none;"><?php echo esc_textarea( $s['hero_description'] ); ?></textarea>
                             </div>
-                            <div class="vitrine-hero-section__grid vitrine-hero-section__grid--3">
+                            <div class="vitrine-hero-section__grid vitrine-hero-section__grid--4">
                                 <div class="vitrine-hero-field">
                                     <label for="vitrine-hero-desc-size">Tamanho (px)</label>
                                     <input type="number" name="vitrine_hero[hero_desc_size]" id="vitrine-hero-desc-size" value="<?php echo esc_attr( $s['hero_desc_size'] ); ?>" min="10" max="60" step="1" class="small-text" />
@@ -365,6 +485,14 @@ class Vitrine_Hero_Meta {
                                 <div class="vitrine-hero-field">
                                     <label for="vitrine-hero-desc-color">Cor</label>
                                     <input type="color" name="vitrine_hero[hero_desc_color]" id="vitrine-hero-desc-color" value="<?php echo esc_attr( ! empty( $s['hero_desc_color'] ) ? $s['hero_desc_color'] : ( $s['hero_text_color'] ?: '#ffffff' ) ); ?>" />
+                                </div>
+                                <div class="vitrine-hero-field">
+                                    <label for="vitrine-hero-desc-align">Alinhamento</label>
+                                    <select name="vitrine_hero[hero_desc_align]" id="vitrine-hero-desc-align">
+                                        <option value="left"<?php selected( $s['hero_desc_align'], 'left' ); ?>>Esquerda</option>
+                                        <option value="center"<?php selected( $s['hero_desc_align'], 'center' ); ?>>Centro</option>
+                                        <option value="right"<?php selected( $s['hero_desc_align'], 'right' ); ?>>Direita</option>
+                                    </select>
                                 </div>
                                 <div class="vitrine-hero-field">
                                     <label for="vitrine-hero-desc-max-width">Largura máx. (px)</label>

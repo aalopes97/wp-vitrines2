@@ -25,7 +25,7 @@ class Vitrine_I18n {
      * Importa o CSV empacotado uma vez, preenchendo apenas chaves vazias/faltantes.
      */
     public static function maybe_seed_bundled_translations() {
-        $flag = 'vitrine_seeded_bundled_translations_v3';
+        $flag = 'vitrine_seeded_bundled_translations_v5';
         if ( get_option( $flag ) ) {
             return;
         }
@@ -148,6 +148,38 @@ class Vitrine_I18n {
             }
         }
 
+        return self::normalize_language_slug( $locale, $available );
+    }
+
+    /**
+     * Idioma de exibição: no admin usa o do builder; no front usa Polylang/locale da página.
+     */
+    public static function get_display_language() {
+        if ( is_admin() ) {
+            return self::get_admin_language();
+        }
+
+        $available = self::get_available_languages();
+
+        if ( function_exists( 'pll_current_language' ) ) {
+            $lang = pll_current_language( 'slug' );
+            if ( $lang ) {
+                return self::normalize_language_slug( $lang, $available );
+            }
+        }
+
+        $post_id = get_queried_object_id();
+        if ( ! $post_id && function_exists( 'get_the_ID' ) ) {
+            $post_id = (int) get_the_ID();
+        }
+        if ( $post_id && function_exists( 'pll_get_post_language' ) ) {
+            $post_lang = pll_get_post_language( $post_id, 'slug' );
+            if ( $post_lang ) {
+                return self::normalize_language_slug( $post_lang, $available );
+            }
+        }
+
+        $locale = function_exists( 'determine_locale' ) ? determine_locale() : get_locale();
         return self::normalize_language_slug( $locale, $available );
     }
 
@@ -415,10 +447,18 @@ class Vitrine_I18n {
             'ui.translations_menu'             => 'Translations',
             'ui.container_default'             => 'Container',
             'ui.vitrine_date'                  => 'Vitrine date',
-            'ui.vitrine_date_hint'             => 'Shown at the bottom of the hero.',
+            'ui.vitrine_date_hint'             => 'Shown at the bottom of the hero. Format follows the vitrine language unless overridden.',
             'ui.vitrine_date_size'             => 'Size (px)',
             'ui.vitrine_date_color'            => 'Color',
             'ui.vitrine_date_align'            => 'Alignment',
+            'ui.vitrine_date_format'           => 'Date format',
+            'ui.vitrine_date_format_auto'      => 'Auto (language)',
+            'ui.vitrine_date_format_br'        => 'Brazil (13/10/2026)',
+            'ui.vitrine_date_format_en'        => 'English (10/13/2026)',
+            'ui.vitrine_date_prefix'           => 'Prefix (optional)',
+            'ui.vitrine_date_prefix_hint'      => 'Text shown before the date, e.g. “Updated on: 13/10/2026”. Leave empty to show the date only, or to use the language default when enabled.',
+            'ui.vitrine_date_show_prefix'      => 'Show language prefix (“Updated on:” / “Atualizado em:”)',
+            'ui.vitrine_date_updated'          => 'Updated on:',
             'ui.align_left'                    => 'Left',
             'ui.align_center'                  => 'Center',
             'ui.align_right'                   => 'Right',

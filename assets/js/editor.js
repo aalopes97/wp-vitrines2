@@ -785,6 +785,54 @@
                 tiHtml += '</div></div></div>';
                 return tiHtml;
             }
+            case 'textimagebuttons': {
+                var tibTag   = settings.title_tag || 'h2';
+                var tibTitle = settings.title || '';
+                var tibCont  = settings.content || '';
+                var tibBg    = escapeAttr(settings.bg_color || '#f8f8f6');
+                var tibPad   = parseInt(settings.padding || 32, 10);
+                var tibRad   = parseInt(settings.border_radius || 8, 10);
+                var tibGap   = parseInt(settings.gap || 24, 10);
+                var tibTitCl = escapeAttr(settings.title_color || '#1a1a1a');
+                var tibTitSz = parseInt(settings.title_font_size || 28, 10);
+                var tibTxtCl = escapeAttr(settings.content_color || '#555555');
+                var tibTxtSz = parseInt(settings.content_font_size || 16, 10);
+                var tibImgW  = Math.max(20, Math.min(60, parseInt(settings.image_width || 42, 10)));
+                var tibTxtW  = 100 - tibImgW;
+                var tibImgPos = settings.image_position === 'left' ? 'row-reverse' : 'row';
+                var tibBtnAlign = settings.buttons_align === 'center' ? 'center' : (settings.buttons_align === 'right' ? 'flex-end' : 'flex-start');
+                var tibBtnGap = parseInt(settings.buttons_gap || 12, 10);
+                var tibBtnRad = parseInt(settings.buttons_radius || 4, 10);
+                var tibHtml  = '<div style="background:' + tibBg + ';padding:' + tibPad + 'px;border-radius:' + tibRad + 'px;">';
+                tibHtml += '<div style="display:flex;flex-direction:' + tibImgPos + ';align-items:center;gap:' + tibGap + 'px;">';
+                tibHtml += '<div style="flex:1 1 ' + tibTxtW + '%;min-width:0;">';
+                if (tibTitle) {
+                    tibHtml += '<' + tibTag + ' style="margin:0 0 8px;color:' + tibTitCl + ';font-size:' + tibTitSz + 'px;line-height:1.25;">' + escapeHtml(tibTitle) + '</' + tibTag + '>';
+                }
+                if (tibCont) {
+                    tibHtml += '<div style="color:' + tibTxtCl + ';font-size:' + tibTxtSz + 'px;line-height:1.6;">' + tibCont + '</div>';
+                }
+                var tibBtns = '';
+                for (var tibI = 1; tibI <= 3; tibI++) {
+                    var tibLabel = String(settings['btn' + tibI + '_text'] || '').trim();
+                    if (!tibLabel) continue;
+                    var tibBtnBg = escapeAttr(settings['btn' + tibI + '_bg'] || '#0073aa');
+                    var tibBtnCl = escapeAttr(settings['btn' + tibI + '_color'] || '#ffffff');
+                    tibBtns += '<span style="display:inline-block;padding:8px 16px;background:' + tibBtnBg + ';color:' + tibBtnCl + ';border-radius:' + tibBtnRad + 'px;font-size:13px;font-weight:600;line-height:1.3;">' + escapeHtml(tibLabel) + '</span>';
+                }
+                if (tibBtns) {
+                    tibHtml += '<div style="display:flex;flex-wrap:wrap;gap:' + tibBtnGap + 'px;margin-top:14px;justify-content:' + tibBtnAlign + ';">' + tibBtns + '</div>';
+                }
+                tibHtml += '</div>';
+                tibHtml += '<div style="flex:0 0 ' + tibImgW + '%;min-width:0;">';
+                if (settings.image) {
+                    tibHtml += '<img src="' + escapeAttr(settings.image) + '" style="width:100%;height:auto;border-radius:6px;display:block;" alt="" />';
+                } else {
+                    tibHtml += '<div style="background:#e8e8e4;border-radius:6px;min-height:80px;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:10px;">Imagem</div>';
+                }
+                tibHtml += '</div></div></div>';
+                return tibHtml;
+            }
             case 'imagelinks': {
                 var ilImgH    = Math.max(0, Math.min(280, parseInt(settings.image_height || 220, 10)));
                 var ilImgFit  = settings.image_fit === 'contain' ? 'contain' : 'cover';
@@ -1741,6 +1789,9 @@
         if (/^(text|title|content|url|caption|box_title|center_label|name|alt)$/.test(name)) {
             return 'content';
         }
+        if (/^btn\d+_/.test(name) || /^_section_btn/.test(name)) {
+            return 'content';
+        }
         if (name === 'center_image' || name === 'image' || name === 'bg_image') {
             return 'content';
         }
@@ -2312,9 +2363,9 @@
     function defaultAranhaItem(typeOrMode) {
         var mode = (typeOrMode === 'grade' || typeOrMode === 'aranha3') ? 'grade' : 'circular';
         if (mode === 'grade') {
-            return { id: createAranhaItemId(), title: '', text: '', icon: '', link: '', alt: '', position: 'auto' };
+            return { id: createAranhaItemId(), title: '', text: '', icon: '', link: '', link_new_tab: '0', alt: '', position: 'auto' };
         }
-        return { id: createAranhaItemId(), title: '', text: '', icon: '', link: '', alt: '' };
+        return { id: createAranhaItemId(), title: '', text: '', icon: '', link: '', link_new_tab: '0', alt: '' };
     }
 
     function syncAllAranhaMCE() {
@@ -2649,6 +2700,9 @@
         html += '<input type="text" class="vitrine-aranha-field" data-aranha-prop="link"'
             + ' value="' + escapeAttr(ai.link || '') + '"'
             + ' placeholder="https://..." />';
+        html += '<label style="display:flex;align-items:center;gap:6px;font-size:12px;margin-top:8px;">';
+        html += '<input type="checkbox" class="vitrine-aranha-field" data-aranha-prop="link_new_tab" value="1"' + (ai.link_new_tab === '1' ? ' checked' : '') + ' />';
+        html += ' Abrir em nova aba</label>';
         html += '<p class="vitrine-field-hint">Torna o card clicável.</p>';
         html += '</div>';
 
@@ -3591,7 +3645,9 @@
         if (!item.settings[key][idx]) {
             item.settings[key][idx] = defaultAranhaItem(getAranhaLayoutMode(item));
         }
-        item.settings[key][idx][prop] = $(this).val();
+        item.settings[key][idx][prop] = $(this).is(':checkbox')
+            ? ($(this).is(':checked') ? '1' : '0')
+            : $(this).val();
 
         if (getAranhaLayoutMode(item) === 'grade' && prop === 'position') {
             renderSettings();

@@ -2,10 +2,18 @@ Key,Default text,Translation English,Translation Español,Translation Português
 ui.elements,Elements,Elements,Elementos,Elementos
 ui.structural,Structural,Structural,Estructurales,Estruturais
 ui.vitrine_date,Vitrine date,Window of Knowledge date,Fecha de la vitrina,Data da vitrine
-ui.vitrine_date_hint,Shown at the bottom of the hero.,Shown at the bottom of the hero.,Se muestra en la parte inferior del hero.,Exibida na parte inferior do hero.
+ui.vitrine_date_hint,"Shown at the bottom of the hero. Format follows the vitrine language unless overridden.","Shown at the bottom of the hero. Format follows the vitrine language unless overridden.","Se muestra en la parte inferior del hero. El formato sigue el idioma de la vitrina salvo que se anule.","Exibida na parte inferior do hero. O formato segue o idioma da vitrine, salvo se for definido manualmente."
 ui.vitrine_date_size,Size (px),Size (px),Tamaño (px),Tamanho (px)
 ui.vitrine_date_color,Color,Color,Color,Cor
 ui.vitrine_date_align,Alignment,Alignment,Alineación,Alinhamento
+ui.vitrine_date_format,Date format,Date format,Formato de fecha,Formato da data
+ui.vitrine_date_format_auto,Auto (language),Auto (language),Automático (idioma),Automático (idioma)
+ui.vitrine_date_format_br,Brazil (13/10/2026),Brazil (13/10/2026),Brasil (13/10/2026),Brasil (13/10/2026)
+ui.vitrine_date_format_en,English (10/13/2026),English (10/13/2026),Inglés (10/13/2026),Inglês (10/13/2026)
+ui.vitrine_date_prefix,Prefix (optional),Prefix (optional),Prefijo (opcional),Prefixo (opcional)
+ui.vitrine_date_prefix_hint,"Text shown before the date, e.g. “Updated on: 13/10/2026”. Leave empty to show the date only, or to use the language default when enabled.","Text shown before the date, e.g. “Updated on: 13/10/2026”. Leave empty to show the date only, or to use the language default when enabled.","Texto mostrado antes de la fecha, p. ej. “Actualizado el: 13/10/2026”. Déjelo vacío para mostrar solo la fecha, o para usar el texto del idioma si está activado.","Texto exibido antes da data, ex.: “Atualizado em: 13/10/2026”. Deixe vazio para mostrar só a data, ou o texto padrão do idioma se estiver ativado."
+ui.vitrine_date_show_prefix,"Show language prefix (“Updated on:” / “Atualizado em:”)","Show language prefix (“Updated on:” / “Atualizado em:”)","Mostrar prefijo del idioma (“Actualizado el:” / “Atualizado em:”)","Mostrar prefixo do idioma (“Updated on:” / “Atualizado em:”)"
+ui.vitrine_date_updated,Updated on:,Updated on:,Actualizado el:,Atualizado em:
 ui.align_left,Left,Left,Izquierda,Esquerda
 ui.align_center,Center,Center,Centro,Centro
 ui.align_right,Right,Right,Derecha,Direita
@@ -347,6 +355,56 @@ element.textimage.field.bg_color,Cor de fundo,Background color,Color de fondo,Co
 element.textimage.field.padding,Espaçamento interno (px),Internal spacing (px),Espaciado interno (px),Espaçamento interno (px)
 element.textimage.field.border_radius,Arredondamento (px),Border radius (px),Radio de borde (px),Arredondamento (px)
 element.textimage.field.gap,Espaço texto/imagem (px),Text/image spacing (px),Espacio entre texto e imagen (px),Espaço entre texto e imagem (px)
+element.textimagebuttons.label,Texto + Imagem + Botões,Text + Image + Buttons,Texto + Imagen + Botones,Texto + Imagem + Botões
+element.textimagebuttons.field.title,Título,Title,Título,Título
+element.textimagebuttons.field.title_tag,Tag do título,Heading tag,Etiqueta del título,Tag do título
+element.textimagebuttons.field.title_tag.option.h2,H2,H2,H2,H2
+element.textimagebuttons.field.title_tag.option.h3,H3,H3,H3,H3
+element.textimagebuttons.field.title_tag.option.h4,H4,H4,H4,H4
+element.textimagebuttons.field.title_color,Cor do título,Title color,Color del título,Cor do título
+element.textimagebuttons.field.title_font_size,Tam. título (px),Title size (px),Tamaño del título (px),Tamanho do título (px)
+element.textimagebuttons.field.content,Texto,Text,Texto,Texto
+element.textimagebuttons.field.content_color,Cor do texto,Content text color,Color del texto del contenido,Cor do texto do conteúdo
+element.textimagebuttons.field.content_font_size,Tam. texto (px),Content font size (px),Tamaño de la fuente del contenido (px),Tamanho da fonte do conteúdo (px)
+element.textimagebuttons.field.image,Imagem,Image,Imagen,Imagem
+element.textimagebuttons.field.image_position,Posição da imagem,Image position,Posición de la imagen,Posição da imagem
+element.textimagebuttons.field.image_position.option.right,Direita,Right,Derecha,Direita
+element.textimagebuttons.field.image_position.option.left,Esquerda,Left,Izquierda,Esquerda
+element.textimagebuttons.field.image_width,Largura imagem (%),Image width (%),Ancho de la imagen (%),Largura da imagem (%)
+element.textimagebuttons.field.bg_color,Cor de fundo,Background color,Color de fondo,Cor de fundo
+element.textimagebuttons.field.padding,Espaçamento interno (px),Internal spacing (px),Espaciado interno (px),Espaçamento interno (px)
+element.textimagebuttons.field.border_radius,Arredondamento (px),Border radius (px),Radio de borde (px),Arredondamento (px)
+element.textimagebuttons.field.gap,Espaço texto/imagem (px),Text/image spacing (px),Espacio entre texto e imagen (px),Espaço entre texto e imagem (px)
+element.textimagebuttons.field.buttons_align,Alinhamento dos botões,Buttons alignment,Alineación de los botones,Alinhamento dos botões
+element.textimagebuttons.field.buttons_align.option.left,Esquerda,Left,Izquierda,Esquerda
+element.textimagebuttons.field.buttons_align.option.center,Centro,Center,Centro,Centro
+element.textimagebuttons.field.buttons_align.option.right,Direita,Right,Derecha,Direita
+element.textimagebuttons.field.buttons_gap,Espaço entre botões (px),Space between buttons (px),Espacio entre botones (px),Espaço entre botões (px)
+element.textimagebuttons.field.buttons_radius,Arred. dos botões (px),Buttons border radius (px),Radio de los botones (px),Arredondamento dos botões (px)
+element.textimagebuttons.field._section_btn1,Botão 1,Button 1,Botón 1,Botão 1
+element.textimagebuttons.field.btn1_text,Texto do botão 1,Button 1 text,Texto del botón 1,Texto do botão 1
+element.textimagebuttons.field.btn1_url,Link do botão 1,Button 1 link,Enlace del botón 1,Link do botão 1
+element.textimagebuttons.field.btn1_target,Abrir botão 1,Open button 1,Abrir botón 1,Abrir botão 1
+element.textimagebuttons.field.btn1_target.option._self,Mesma aba,Same tab,Misma pestaña,Mesma aba
+element.textimagebuttons.field.btn1_target.option._blank,Nova aba,New tab,Nueva pestaña,Nova aba
+element.textimagebuttons.field.btn1_bg,Fundo do botão 1,Button 1 background,Fondo del botón 1,Fundo do botão 1
+element.textimagebuttons.field.btn1_color,Texto do botão 1 (cor),Button 1 text color,Color del texto del botón 1,Cor do texto do botão 1
+element.textimagebuttons.field._section_btn2,Botão 2 (opcional),Button 2 (optional),Botón 2 (opcional),Botão 2 (opcional)
+element.textimagebuttons.field.btn2_text,Texto do botão 2,Button 2 text,Texto del botón 2,Texto do botão 2
+element.textimagebuttons.field.btn2_url,Link do botão 2,Button 2 link,Enlace del botón 2,Link do botão 2
+element.textimagebuttons.field.btn2_target,Abrir botão 2,Open button 2,Abrir botón 2,Abrir botão 2
+element.textimagebuttons.field.btn2_target.option._self,Mesma aba,Same tab,Misma pestaña,Mesma aba
+element.textimagebuttons.field.btn2_target.option._blank,Nova aba,New tab,Nueva pestaña,Nova aba
+element.textimagebuttons.field.btn2_bg,Fundo do botão 2,Button 2 background,Fondo del botón 2,Fundo do botão 2
+element.textimagebuttons.field.btn2_color,Texto do botão 2 (cor),Button 2 text color,Color del texto del botón 2,Cor do texto do botão 2
+element.textimagebuttons.field._section_btn3,Botão 3 (opcional),Button 3 (optional),Botón 3 (opcional),Botão 3 (opcional)
+element.textimagebuttons.field.btn3_text,Texto do botão 3,Button 3 text,Texto del botón 3,Texto do botão 3
+element.textimagebuttons.field.btn3_url,Link do botão 3,Button 3 link,Enlace del botón 3,Link do botão 3
+element.textimagebuttons.field.btn3_target,Abrir botão 3,Open button 3,Abrir botón 3,Abrir botão 3
+element.textimagebuttons.field.btn3_target.option._self,Mesma aba,Same tab,Misma pestaña,Mesma aba
+element.textimagebuttons.field.btn3_target.option._blank,Nova aba,New tab,Nueva pestaña,Nova aba
+element.textimagebuttons.field.btn3_bg,Fundo do botão 3,Button 3 background,Fondo del botón 3,Fundo do botão 3
+element.textimagebuttons.field.btn3_color,Texto do botão 3 (cor),Button 3 text color,Color del texto del botón 3,Cor do texto do botão 3
 element.title.label,Título,Title,Título,Título
 element.title.field.text,Texto,Text,Texto,Texto
 element.title.field.tag,Tag HTML,HTML tag,Etiqueta HTML,Tag HTML

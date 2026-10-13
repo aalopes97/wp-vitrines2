@@ -4,6 +4,8 @@
  * Description:  Editor visual de vitrines para WooCommerce/WordPress.
  * Version:      1.3.11
  * Author:       Antonio
+ * Author URI:   https://tonilopes.com.br
+ * Plugin URI:   https://tonilopes.com.br
  * Text Domain:  builder-vitrine
  */
 

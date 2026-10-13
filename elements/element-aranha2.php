@@ -145,7 +145,8 @@ class Vitrine_Element_Aranha2 extends Vitrine_Element {
             $title = isset( $item['title'] ) ? sanitize_text_field( $item['title'] ) : '';
             $text  = isset( $item['text'] ) ? wp_kses_post( $item['text'] ) : '';
             $icon  = isset( $item['icon'] ) ? $item['icon'] : '';
-            $link  = isset( $item['link'] ) ? esc_url( $item['link'] ) : '';
+            $link    = isset( $item['link'] ) ? esc_url( $item['link'] ) : '';
+            $new_tab = ! empty( $item['link_new_tab'] ) && '1' === (string) $item['link_new_tab'];
             $alt   = isset( $item['alt'] ) ? sanitize_text_field( $item['alt'] ) : $title;
             $card_class = 'vitrine-aranha2__card'
                 . ( $link ? ' vitrine-aranha2__card--linked' : '' )
@@ -184,7 +185,8 @@ class Vitrine_Element_Aranha2 extends Vitrine_Element {
             }
 
             if ( $link ) {
-                $output .= '<a href="' . $link . '" class="vitrine-aranha2__card-link">' . $inner . '</a>';
+                $target = $new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
+                $output .= '<a href="' . $link . '" class="vitrine-aranha2__card-link"' . $target . '>' . $inner . '</a>';
             } else {
                 $output .= $inner;
             }
