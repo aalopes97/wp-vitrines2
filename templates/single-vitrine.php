@@ -33,7 +33,11 @@ if ( ! in_array( $vitrine_hero_desc_align, array( 'left', 'center', 'right' ), t
     $vitrine_hero_desc_align = $vitrine_hero_align;
 }
 $vitrine_hero_desc_mw  = ! empty( $vitrine_page_settings['hero_desc_max_width'] ) ? intval( $vitrine_page_settings['hero_desc_max_width'] ) : 0;
+<<<<<<< HEAD
 $vitrine_hero_desc_style = 'color:' . esc_attr( $vitrine_hero_desc_clr ) . ';text-align:' . esc_attr( $vitrine_hero_desc_align ) . ';';
+=======
+$vitrine_hero_desc_style = 'color:' . esc_attr( $vitrine_hero_desc_clr ) . ';--vitrine-hero-desc-color:' . esc_attr( $vitrine_hero_desc_clr ) . ';';
+>>>>>>> df00f61dbf5f0db1ef0abf43d469da8196abce2f
 if ( $vitrine_hero_desc_mw > 0 ) {
     $vitrine_hero_desc_style .= '--vitrine-hero-desc-max-w:' . esc_attr( $vitrine_hero_desc_mw ) . 'px;';
 }

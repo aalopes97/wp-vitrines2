@@ -128,12 +128,16 @@
             html += '<span style="position:relative;z-index:1;display:block;width:100%;font-size:' + fs + 'px;font-weight:' + textBold + ';font-style:' + textItal + ';color:' + escapeAttr(color) + ';text-align:' + escapeAttr(align) + ';' + textShadow + '">' + escapeHtml(text) + '</span>';
         }
         if (desc) {
+<<<<<<< HEAD
             var descStyle = 'position:relative;z-index:1;display:block;width:100%;box-sizing:border-box;font-size:' + dfs + 'px;color:' + escapeAttr(descColor) + ';text-align:' + escapeAttr(descAlign) + ';opacity:0.9;' + descShadow;
             descStyle += descMarginMap[descAlign] || descMarginMap.center;
+=======
+            var descStyle = 'position:relative;z-index:1;font-size:' + dfs + 'px;color:' + escapeAttr(descColor) + ';--vitrine-hero-desc-color:' + escapeAttr(descColor) + ';text-align:' + escapeAttr(align) + ';opacity:0.9;' + descShadow;
+>>>>>>> df00f61dbf5f0db1ef0abf43d469da8196abce2f
             if (descMw > 0) {
                 descStyle += 'max-width:' + descMw + 'px;';
             }
-            html += '<span style="' + descStyle + '">' + desc + '</span>';
+            html += '<div class="vitrine-hero-desc" style="' + descStyle + '">' + desc + '</div>';
         }
         if (heroDate) {
             html += '<span style="position:absolute;z-index:2;left:20px;right:20px;bottom:16px;display:flex;justify-content:' + dateJustify + ';"><time style="font-size:' + dateFs + 'px;color:' + escapeAttr(dateColor) + ';font-weight:600;' + dateShadow + '">' + escapeHtml(dateLabel) + '</time></span>';

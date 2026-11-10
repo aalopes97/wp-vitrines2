@@ -156,8 +156,12 @@ class Vitrine_Hero_Meta {
             'hero_text_align'      => $align,
             'hero_description'     => isset( $input['hero_description'] ) ? wp_kses_post( $input['hero_description'] ) : '',
             'hero_desc_size'       => isset( $input['hero_desc_size'] ) ? absint( $input['hero_desc_size'] ) : 18,
+<<<<<<< HEAD
             'hero_desc_color'      => isset( $input['hero_desc_color'] ) ? sanitize_hex_color( $input['hero_desc_color'] ) : '',
             'hero_desc_align'      => $desc_align,
+=======
+            'hero_desc_color'      => isset( $input['hero_desc_color'] ) ? ( sanitize_hex_color( $input['hero_desc_color'] ) ?: '' ) : '',
+>>>>>>> df00f61dbf5f0db1ef0abf43d469da8196abce2f
             'hero_desc_max_width'  => isset( $input['hero_desc_max_width'] ) ? absint( $input['hero_desc_max_width'] ) : 0,
             'hero_text_bold'       => ! empty( $input['hero_text_bold'] ) ? '1' : '0',
             'hero_text_italic'     => ! empty( $input['hero_text_italic'] ) ? '1' : '0',
